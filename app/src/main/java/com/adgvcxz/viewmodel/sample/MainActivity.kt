@@ -1,58 +1,24 @@
 package com.adgvcxz.viewmodel.sample
 
-import com.adgvcxz.IState
+import android.content.Intent
 import com.adgvcxz.ViewModel
-import com.adgvcxz.bindTo
 import com.adgvcxz.viewmodel.sample.databinding.ActivityMainBinding
 import com.jakewharton.rxbinding2.view.clicks
-import com.jakewharton.rxbinding2.widget.text
+import java.util.concurrent.TimeUnit
 
-/**
- * zhaowei
- * Created by zhaowei on 2017/4/27.
- */
+class MainActivity : BaseActivity<ActivityMainBinding, MainViewModel.State>() {
 
-class MainActivity : BaseActivity<ActivityMainBinding, MainActivityViewModel.State>() {
+    override var viewModel: ViewModel<MainViewModel.State> = MainViewModel()
 
-
-    override var viewModel: ViewModel<MainActivityViewModel.State> = MainActivityViewModel()
-
-    init {
-//        viewModel.state.subscribe()
-    }
+    override val layoutId: Int = R.layout.activity_main
 
     override fun initBinding() {
-
-        binding.start.clicks()
-                .map { MainActivityViewModel.Action.StartButtonClicked }
-                .bindTo(viewModel.action)
-
-        binding.stop.clicks()
-                .map { MainActivityViewModel.Action.StopButtonClicked }
-                .bindTo(viewModel.action)
-
-        lifeCycle.filter { it == ActivityLifeCircle.Pause }
-                .map { MainActivityViewModel.Action.ActivityPause }
-                .bindTo(viewModel.action)
-
-        lifeCycle.filter { it == ActivityLifeCircle.Resume }
-                .map { MainActivityViewModel.Action.ActivityResume }
-                .bindTo(viewModel.action)
-
-        viewModel.state
-                .filter { it.status == MainActivityViewModel.TimerStatus.completed }
-                .map { "Timer" }
-                .subscribe(binding.time.text())
-
-        viewModel.state.filter { it.status == MainActivityViewModel.TimerStatus.timing }
-                .map { it.time }
-                .distinctUntilChanged()
-                .map { "$it" }
-                .subscribe(binding.time.text())
-
+        super.initBinding()
+        binding.apply {  }
+        binding.timer.clicks()
+                .throttleFirst(300, TimeUnit.MILLISECONDS)
+                .subscribe {
+                    startActivity(Intent(this, TimerActivity::class.java))
+                }
     }
-
-    override fun contentId(): Int = R.layout.activity_main
-
-    override fun initState(): IState = MainActivityViewModel.State()
 }

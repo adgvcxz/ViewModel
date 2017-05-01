@@ -13,11 +13,10 @@ import java.util.concurrent.TimeUnit
  * Created by zhaowei on 2017/4/27.
  */
 
-class MainActivityViewModel : ViewModel<MainActivityViewModel.State>(State()) {
+class TimerViewModel : ViewModel<TimerViewModel.State>(State()) {
 
-
-    override fun action(action: com.adgvcxz.IAction): Observable<IMutation> {
-        when (action as IAction) {
+    override fun action(action: IAction): Observable<IMutation> {
+        when (action) {
             Action.StartButtonClicked -> {
                 if (this.currentState.status == TimerStatus.completed) {
                     val startTimer = Observable.just(Mutation.StartTimer)
@@ -45,7 +44,7 @@ class MainActivityViewModel : ViewModel<MainActivityViewModel.State>(State()) {
     }
 
     override fun mutate(state: State, mutation: IMutation): State {
-        when (mutation as Mutation) {
+        when (mutation) {
             Mutation.StartTimer -> return state.then {
                 it.time = 0
                 it.status = TimerStatus.timing
@@ -57,6 +56,7 @@ class MainActivityViewModel : ViewModel<MainActivityViewModel.State>(State()) {
             Mutation.PauseTimer -> return state.then { it.status = TimerStatus.pause }
             Mutation.StopTimer -> return state.then { it.status = TimerStatus.completed }
         }
+        return state
     }
 
     enum class Action : IAction {
@@ -81,7 +81,7 @@ class MainActivityViewModel : ViewModel<MainActivityViewModel.State>(State()) {
 
     class State : IState {
         var time: Int = 0
-        var status: MainActivityViewModel.TimerStatus = MainActivityViewModel.TimerStatus.completed
+        var status: TimerViewModel.TimerStatus = TimerViewModel.TimerStatus.completed
     }
 }
 

@@ -17,12 +17,13 @@ abstract class BaseActivity<out B : ViewDataBinding, S : IState> : AppCompatActi
 
     val lifeCycle: PublishSubject<ActivityLifeCircle> = PublishSubject.create<ActivityLifeCircle>()
 
+    abstract var viewModel: ViewModel<S>
+
+    abstract val layoutId: Int
 
     val binding: B by lazy {
-        DataBindingUtil.setContentView<B>(this, contentId())
+        DataBindingUtil.setContentView<B>(this, layoutId)
     }
-
-    abstract var viewModel: ViewModel<S>
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -59,10 +60,6 @@ abstract class BaseActivity<out B : ViewDataBinding, S : IState> : AppCompatActi
         super.onRestart()
         lifeCycle.onNext(ActivityLifeCircle.ReStart)
     }
-
-    abstract fun contentId(): Int
-
-    abstract fun initState(): IState
 
     open fun initBinding() {
 
