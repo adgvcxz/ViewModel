@@ -5,6 +5,6 @@ package com.adgvcxz
  * Created by zhaowei on 2017/4/30.
  */
 
-interface AdgMutation {
+interface IMutation {
 //    fun <T: AdgState>state(state: T): T
 }

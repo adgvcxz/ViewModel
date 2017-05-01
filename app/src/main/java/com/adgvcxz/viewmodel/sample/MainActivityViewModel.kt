@@ -1,6 +1,9 @@
 package com.adgvcxz.viewmodel.sample
 
-import com.adgvcxz.*
+import com.adgvcxz.IMutation
+import com.adgvcxz.IState
+import com.adgvcxz.ViewModel
+import com.adgvcxz.IAction
 import com.adgvcxz.adgdo.then
 import io.reactivex.Observable
 import java.util.concurrent.TimeUnit
@@ -10,14 +13,14 @@ import java.util.concurrent.TimeUnit
  * Created by zhaowei on 2017/4/27.
  */
 
-class MainActivityViewModel : AdgViewModel<MainActivityState>(MainActivityState()) {
+class MainActivityViewModel : ViewModel<MainActivityViewModel.State>(State()) {
 
 
-    override fun action(action: AdgAction): Observable<AdgMutation> {
-        when (action as Action) {
+    override fun action(action: com.adgvcxz.IAction): Observable<IMutation> {
+        when (action as IAction) {
             Action.StartButtonClicked -> {
                 if (this.currentState.status == TimerStatus.completed) {
-                    val startTimer= Observable.just(Mutation.StartTimer)
+                    val startTimer = Observable.just(Mutation.StartTimer)
                     val timing = Observable.interval(1, 1, TimeUnit.SECONDS)
                             .filter { this.currentState.status == TimerStatus.timing }
                             .map { Mutation.Timing }
@@ -41,7 +44,7 @@ class MainActivityViewModel : AdgViewModel<MainActivityState>(MainActivityState(
         return Observable.empty()
     }
 
-    override fun mutate(state: MainActivityState, mutation: AdgMutation): MainActivityState {
+    override fun mutate(state: State, mutation: IMutation): State {
         when (mutation as Mutation) {
             Mutation.StartTimer -> return state.then {
                 it.time = 0
@@ -56,14 +59,14 @@ class MainActivityViewModel : AdgViewModel<MainActivityState>(MainActivityState(
         }
     }
 
-    enum class Action: AdgAction {
+    enum class Action : IAction {
         StartButtonClicked,
         StopButtonClicked,
         ActivityPause,
-        ActivityResume,
+        ActivityResume;
     }
 
-    enum class Mutation: AdgMutation {
+    enum class Mutation : IMutation {
         StartTimer,
         StopTimer,
         PauseTimer,
@@ -75,10 +78,11 @@ class MainActivityViewModel : AdgViewModel<MainActivityState>(MainActivityState(
         timing,
         pause,
     }
+
+    class State : IState {
+        var time: Int = 0
+        var status: MainActivityViewModel.TimerStatus = MainActivityViewModel.TimerStatus.completed
+    }
 }
 
-class MainActivityState : AdgState() {
 
-    var time: Int = 0
-    var status: MainActivityViewModel.TimerStatus = MainActivityViewModel.TimerStatus.completed
-}

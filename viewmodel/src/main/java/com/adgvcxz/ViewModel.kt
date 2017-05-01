@@ -10,9 +10,9 @@ import io.reactivex.subjects.Subject
  * Created by zhaowei on 2017/4/27.
  */
 
-abstract class AdgViewModel<S : AdgState>(initState: S) {
+abstract class ViewModel<S : IState>(initState: S) {
 
-    var action: Subject<AdgAction> = PublishSubject.create<AdgAction>().toSerialized()
+    var action: Subject<IAction> = PublishSubject.create<IAction>().toSerialized()
 
     var currentState: S = initState
     private set
@@ -26,7 +26,7 @@ abstract class AdgViewModel<S : AdgState>(initState: S) {
             .doOnNext { currentState = it}
             .startWith(currentState)
 
-    abstract fun mutate(state: S, mutation: AdgMutation): S
+    abstract fun mutate(state: S, mutation: IMutation): S
 
-    abstract fun action(action: AdgAction): Observable<AdgMutation>
+    abstract fun action(action: IAction): Observable<IMutation>
 }

@@ -4,8 +4,8 @@ import android.databinding.DataBindingUtil
 import android.databinding.ViewDataBinding
 import android.os.Bundle
 import android.support.v7.app.AppCompatActivity
-import com.adgvcxz.AdgState
-import com.adgvcxz.AdgViewModel
+import com.adgvcxz.IState
+import com.adgvcxz.ViewModel
 import io.reactivex.subjects.PublishSubject
 
 /**
@@ -13,7 +13,7 @@ import io.reactivex.subjects.PublishSubject
  * Created by zhaowei on 2017/4/27.
  */
 
-abstract class BaseActivity<out B : ViewDataBinding, S : AdgState> : AppCompatActivity() {
+abstract class BaseActivity<out B : ViewDataBinding, S : IState> : AppCompatActivity() {
 
     val lifeCycle: PublishSubject<ActivityLifeCircle> = PublishSubject.create<ActivityLifeCircle>()
 
@@ -22,7 +22,7 @@ abstract class BaseActivity<out B : ViewDataBinding, S : AdgState> : AppCompatAc
         DataBindingUtil.setContentView<B>(this, contentId())
     }
 
-    abstract var viewModel: AdgViewModel<S>
+    abstract var viewModel: ViewModel<S>
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -62,7 +62,7 @@ abstract class BaseActivity<out B : ViewDataBinding, S : AdgState> : AppCompatAc
 
     abstract fun contentId(): Int
 
-    abstract fun initState(): AdgState
+    abstract fun initState(): IState
 
     open fun initBinding() {
 
