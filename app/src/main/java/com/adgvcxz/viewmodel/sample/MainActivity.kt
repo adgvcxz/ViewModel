@@ -14,7 +14,6 @@ class MainActivity : BaseActivity<ActivityMainBinding, MainViewModel.State>() {
 
     override fun initBinding() {
         super.initBinding()
-        binding.apply {  }
         binding.timer.clicks()
                 .throttleFirst(300, TimeUnit.MILLISECONDS)
                 .subscribe {
