@@ -1,9 +1,9 @@
 package com.adgvcxz.viewmodel.sample
 
+import com.adgvcxz.IAction
 import com.adgvcxz.IMutation
 import com.adgvcxz.IState
 import com.adgvcxz.ViewModel
-import com.adgvcxz.IAction
 import com.adgvcxz.adgdo.then
 import io.reactivex.Observable
 import java.util.concurrent.TimeUnit
@@ -15,7 +15,7 @@ import java.util.concurrent.TimeUnit
 
 class TimerViewModel : ViewModel<TimerViewModel.State>(State()) {
 
-    override fun action(action: IAction): Observable<IMutation> {
+    override fun mutate(action: IAction): Observable<IMutation> {
         when (action) {
             Action.StartButtonClicked -> {
                 if (this.currentState.status == TimerStatus.completed) {
@@ -43,7 +43,7 @@ class TimerViewModel : ViewModel<TimerViewModel.State>(State()) {
         return Observable.empty()
     }
 
-    override fun mutate(state: State, mutation: IMutation): State {
+    override fun scan(state: State, mutation: IMutation): State {
         when (mutation) {
             Mutation.StartTimer -> return state.then {
                 it.time = 0

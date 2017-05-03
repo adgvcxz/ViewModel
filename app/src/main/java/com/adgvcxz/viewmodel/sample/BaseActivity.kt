@@ -6,6 +6,8 @@ import android.os.Bundle
 import android.support.v7.app.AppCompatActivity
 import com.adgvcxz.IState
 import com.adgvcxz.ViewModel
+import com.adgvcxz.adgdo.then
+import com.adgvcxz.adgdo.with
 import io.reactivex.subjects.PublishSubject
 
 /**
@@ -28,7 +30,7 @@ abstract class BaseActivity<out B : ViewDataBinding, S : IState> : AppCompatActi
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         initBinding()
-        lifeCycle.onNext(ActivityLifeCircle.Create)
+        binding.with { lifeCycle.onNext(ActivityLifeCircle.Create) }
     }
 
     override fun onStart() {
