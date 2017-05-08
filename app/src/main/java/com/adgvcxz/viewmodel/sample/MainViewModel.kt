@@ -1,6 +1,6 @@
 package com.adgvcxz.viewmodel.sample
 
-import com.adgvcxz.IState
+import com.adgvcxz.IModel
 import com.adgvcxz.ViewModel
 
 /**
@@ -8,7 +8,7 @@ import com.adgvcxz.ViewModel
  * Created by zhaowei on 2017/5/1.
  */
 
-class MainViewModel: ViewModel<MainViewModel.State>(State()) {
+class MainViewModel: ViewModel<MainViewModel.Model>(Model()) {
 
-    class State: IState
+    class Model : IModel
 }

@@ -2,7 +2,7 @@ package com.adgvcxz.viewmodel.sample
 
 import com.adgvcxz.IAction
 import com.adgvcxz.IMutation
-import com.adgvcxz.IState
+import com.adgvcxz.IModel
 import com.adgvcxz.ViewModel
 import com.adgvcxz.adgdo.then
 import io.reactivex.Observable
@@ -13,7 +13,7 @@ import java.util.concurrent.TimeUnit
  * Created by zhaowei on 2017/4/27.
  */
 
-class TimerViewModel : ViewModel<TimerViewModel.State>(State()) {
+class TimerViewModel : ViewModel<TimerViewModel.Model>(Model()) {
 
     override fun mutate(action: IAction): Observable<IMutation> {
         when (action) {
@@ -43,7 +43,7 @@ class TimerViewModel : ViewModel<TimerViewModel.State>(State()) {
         return Observable.empty()
     }
 
-    override fun scan(state: State, mutation: IMutation): State {
+    override fun scan(state: Model, mutation: IMutation): Model {
         when (mutation) {
             Mutation.StartTimer -> return state.then {
                 it.time = 0
@@ -79,7 +79,7 @@ class TimerViewModel : ViewModel<TimerViewModel.State>(State()) {
         pause,
     }
 
-    class State : IState {
+    class Model : IModel {
         var time: Int = 0
         var status: TimerViewModel.TimerStatus = TimerViewModel.TimerStatus.completed
     }

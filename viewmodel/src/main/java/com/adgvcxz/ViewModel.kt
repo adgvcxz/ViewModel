@@ -10,7 +10,7 @@ import io.reactivex.subjects.Subject
  * Created by zhaowei on 2017/4/27.
  */
 
-class ViewModel<S : IState>(initState: S) : IViewModel<S> {
+open class ViewModel<S : IModel>(initState: S) : IViewModel<S> {
 
     var action: Subject<IAction> = PublishSubject.create<IAction>().toSerialized()
 

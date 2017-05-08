@@ -7,7 +7,7 @@ import io.reactivex.Observable
  * Created by zhaowei on 2017/5/4.
  */
 
-interface IViewModel<S: IState> {
+interface IViewModel<S: IModel> {
 
     fun scan(state: S, mutation: IMutation): S {
         return state
