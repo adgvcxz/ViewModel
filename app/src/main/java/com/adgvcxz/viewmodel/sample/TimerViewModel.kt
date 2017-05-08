@@ -1,8 +1,8 @@
 package com.adgvcxz.viewmodel.sample
 
 import com.adgvcxz.IAction
-import com.adgvcxz.IMutation
 import com.adgvcxz.IModel
+import com.adgvcxz.IMutation
 import com.adgvcxz.ViewModel
 import com.adgvcxz.adgdo.then
 import io.reactivex.Observable
@@ -18,45 +18,45 @@ class TimerViewModel : ViewModel<TimerViewModel.Model>(Model()) {
     override fun mutate(action: IAction): Observable<IMutation> {
         when (action) {
             Action.StartButtonClicked -> {
-                if (this.currentState.status == TimerStatus.completed) {
+                if (this.currentModel.status == TimerStatus.completed) {
                     val startTimer = Observable.just(Mutation.StartTimer)
                     val timing = Observable.interval(1, 1, TimeUnit.SECONDS)
-                            .filter { this.currentState.status == TimerStatus.timing }
+                            .filter { this.currentModel.status == TimerStatus.timing }
                             .map { Mutation.Timing }
-                            .takeWhile { this.currentState.status == TimerStatus.timing }
+                            .takeWhile { this.currentModel.status == TimerStatus.timing }
                     return Observable.concat(startTimer, timing)
                 }
             }
 
             Action.StopButtonClicked -> return Observable.just(Mutation.StopTimer)
-                    .filter { this.currentState.status == TimerStatus.timing }
+                    .filter { this.currentModel.status == TimerStatus.timing }
                     .map { it }
 
             Action.ActivityPause -> return Observable.just(Mutation.PauseTimer)
-                    .filter { this.currentState.status == TimerStatus.timing }
+                    .filter { this.currentModel.status == TimerStatus.timing }
                     .map { it }
 
             Action.ActivityResume -> return Observable.just(Mutation.Timing)
-                    .filter { this.currentState.status == TimerStatus.pause }
+                    .filter { this.currentModel.status == TimerStatus.pause }
                     .map { it }
         }
         return Observable.empty()
     }
 
-    override fun scan(state: Model, mutation: IMutation): Model {
+    override fun scan(model: Model, mutation: IMutation): Model {
         when (mutation) {
-            Mutation.StartTimer -> return state.then {
+            Mutation.StartTimer -> return model.then {
                 it.time = 0
                 it.status = TimerStatus.timing
             }
-            Mutation.Timing -> return state.then {
+            Mutation.Timing -> return model.then {
                 it.status = TimerStatus.timing
                 it.time++
             }
-            Mutation.PauseTimer -> return state.then { it.status = TimerStatus.pause }
-            Mutation.StopTimer -> return state.then { it.status = TimerStatus.completed }
+            Mutation.PauseTimer -> return model.then { it.status = TimerStatus.pause }
+            Mutation.StopTimer -> return model.then { it.status = TimerStatus.completed }
         }
-        return state
+        return model
     }
 
     enum class Action : IAction {
