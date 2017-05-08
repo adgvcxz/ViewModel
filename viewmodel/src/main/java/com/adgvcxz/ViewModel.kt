@@ -10,20 +10,20 @@ import io.reactivex.subjects.Subject
  * Created by zhaowei on 2017/4/27.
  */
 
-open class ViewModel<S : IModel>(initState: S) : IViewModel<S> {
+open class ViewModel<M : IModel>(initModel: M) : IViewModel<M> {
 
     var action: Subject<IAction> = PublishSubject.create<IAction>().toSerialized()
 
-    var currentState: S = initState
+    var currentModel: M = initModel
         private set
 
-    val state: Observable<S> = this.action
+    val model: Observable<M> = this.action
             .flatMap { this.mutate(it) }
             .compose { transform(it) }
-            .scan(initState) { state, mutation -> scan(state, mutation) }
+            .scan(initModel) { model, mutation -> scan(model, mutation) }
             .retry()
             .share()
             .observeOn(AndroidSchedulers.mainThread())
-            .doOnNext { currentState = it }
-            .startWith(currentState)
+            .doOnNext { currentModel = it }
+            .startWith(currentModel)
 }

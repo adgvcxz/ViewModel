@@ -7,10 +7,10 @@ import io.reactivex.Observable
  * Created by zhaowei on 2017/5/4.
  */
 
-interface IViewModel<S: IModel> {
+interface IViewModel<M: IModel> {
 
-    fun scan(state: S, mutation: IMutation): S {
-        return state
+    fun scan(model: M, mutation: IMutation): M {
+        return model
     }
 
     fun mutate(action: IAction): Observable<IMutation> {
