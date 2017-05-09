@@ -19,6 +19,7 @@ open class ViewModel<M : IModel>(initModel: M) : IViewModel<M> {
 
     val model: Observable<M> by lazy {
         this.action
+                .takeUntil(action.filter { it is DisposeAction }.take(1))
                 .flatMap { this.mutate(it) }
                 .compose { transform(it) }
                 .scan(initModel) { model, mutation -> scan(model, mutation) }

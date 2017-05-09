@@ -5,4 +5,10 @@ package com.adgvcxz
  * Created by zhaowei on 2017/4/30.
  */
 
-interface IAction
+interface IAction {
+
+    companion object {
+        val dispose = DisposeAction()
+    }
+
+}

@@ -13,7 +13,7 @@ import kotlinx.android.synthetic.main.activity_timer.*
 
 class TimerActivity : BaseActivity<TimerViewModel.Model>() {
 
-    var viewModel: ViewModel<TimerViewModel.Model> = TimerViewModel()
+    override val viewModel: ViewModel<TimerViewModel.Model> = TimerViewModel()
 
     override val layoutId: Int = R.layout.activity_timer
 

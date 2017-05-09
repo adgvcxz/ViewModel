@@ -2,8 +2,8 @@ package com.adgvcxz.viewmodel.sample
 
 import android.os.Bundle
 import android.support.v7.app.AppCompatActivity
-import com.adgvcxz.IModel
-import com.adgvcxz.ViewModel
+import com.adgvcxz.*
+import io.reactivex.Observable
 import io.reactivex.subjects.PublishSubject
 
 /**
@@ -17,9 +17,16 @@ abstract class BaseActivity<S : IModel> : AppCompatActivity() {
 
     abstract val layoutId: Int
 
+    abstract val viewModel: ViewModel<S>
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(layoutId)
+
+        lifeCycle.filter { it == ActivityLifeCircle.Destroy }
+                .map { IAction.dispose }
+                .bindTo(viewModel.action)
+
         initBinding()
         lifeCycle.onNext(ActivityLifeCircle.Create)
     }
