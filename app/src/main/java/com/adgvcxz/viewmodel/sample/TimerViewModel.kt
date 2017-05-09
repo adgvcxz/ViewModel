@@ -15,6 +15,31 @@ import java.util.concurrent.TimeUnit
 
 class TimerViewModel : ViewModel<TimerViewModel.Model>(Model()) {
 
+    enum class Action : IAction {
+        StartButtonClicked,
+        StopButtonClicked,
+        ActivityPause,
+        ActivityResume;
+    }
+
+    enum class Mutation : IMutation {
+        StartTimer,
+        StopTimer,
+        PauseTimer,
+        Timing
+    }
+
+    enum class TimerStatus {
+        completed,
+        timing,
+        pause,
+    }
+
+    class Model : IModel {
+        var time: Int = 0
+        var status: TimerViewModel.TimerStatus = TimerViewModel.TimerStatus.completed
+    }
+
     override fun mutate(action: IAction): Observable<IMutation> {
         when (action) {
             Action.StartButtonClicked -> {
@@ -57,31 +82,6 @@ class TimerViewModel : ViewModel<TimerViewModel.Model>(Model()) {
             Mutation.StopTimer -> return model.then { it.status = TimerStatus.completed }
         }
         return model
-    }
-
-    enum class Action : IAction {
-        StartButtonClicked,
-        StopButtonClicked,
-        ActivityPause,
-        ActivityResume;
-    }
-
-    enum class Mutation : IMutation {
-        StartTimer,
-        StopTimer,
-        PauseTimer,
-        Timing
-    }
-
-    enum class TimerStatus {
-        completed,
-        timing,
-        pause,
-    }
-
-    class Model : IModel {
-        var time: Int = 0
-        var status: TimerViewModel.TimerStatus = TimerViewModel.TimerStatus.completed
     }
 }
 

@@ -17,13 +17,15 @@ open class ViewModel<M : IModel>(initModel: M) : IViewModel<M> {
     var currentModel: M = initModel
         private set
 
-    val model: Observable<M> = this.action
-            .flatMap { this.mutate(it) }
-            .compose { transform(it) }
-            .scan(initModel) { model, mutation -> scan(model, mutation) }
-            .retry()
-            .share()
-            .observeOn(AndroidSchedulers.mainThread())
-            .doOnNext { currentModel = it }
-            .startWith(currentModel)
+    val model: Observable<M> by lazy {
+        this.action
+                .flatMap { this.mutate(it) }
+                .compose { transform(it) }
+                .scan(initModel) { model, mutation -> scan(model, mutation) }
+                .retry()
+                .share()
+                .observeOn(AndroidSchedulers.mainThread())
+                .doOnNext { currentModel = it }
+                .startWith(currentModel)
+    }
 }

@@ -35,12 +35,12 @@ class TimerActivity : BaseActivity<TimerViewModel.Model>() {
                 .map { TimerViewModel.Action.ActivityResume }
                 .bindTo(viewModel.action)
 
-        viewModel.state
+        viewModel.model
                 .filter { it.status == TimerViewModel.TimerStatus.completed }
                 .map { "Timer" }
                 .subscribe(time.text())
 
-        viewModel.state.filter { it.status == TimerViewModel.TimerStatus.timing }
+        viewModel.model.filter { it.status == TimerViewModel.TimerStatus.timing }
                 .map { it.time }
                 .distinctUntilChanged()
                 .map { "$it" }
