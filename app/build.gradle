@@ -35,6 +35,7 @@ dependencies {
     compile 'com.android.support.constraint:constraint-layout:1.0.2'
     compile 'com.jakewharton.rxbinding2:rxbinding:2.0.0'
     compile 'com.jakewharton.rxbinding2:rxbinding-kotlin:2.0.0'
+    compile 'com.github.adgvcxz:livedata2observable:0.1.0'
     compile 'com.github.adgvcxz:do:1.0.1'
 }
 repositories {

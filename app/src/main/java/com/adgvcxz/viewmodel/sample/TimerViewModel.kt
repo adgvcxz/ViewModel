@@ -1,9 +1,9 @@
 package com.adgvcxz.viewmodel.sample
 
-import com.adgvcxz.IAction
+import com.adgvcxz.AFViewModel
+import com.adgvcxz.IEvent
 import com.adgvcxz.IModel
 import com.adgvcxz.IMutation
-import com.adgvcxz.ViewModel
 import com.adgvcxz.adgdo.then
 import io.reactivex.Observable
 import java.util.concurrent.TimeUnit
@@ -13,9 +13,9 @@ import java.util.concurrent.TimeUnit
  * Created by zhaowei on 2017/4/27.
  */
 
-class TimerViewModel : ViewModel<TimerViewModel.Model>(Model()) {
+class TimerViewModel : AFViewModel<TimerViewModel.Model>(Model()) {
 
-    enum class Action : IAction {
+    enum class Event : IEvent {
         StartButtonClicked,
         StopButtonClicked,
         ActivityPause,
@@ -40,9 +40,9 @@ class TimerViewModel : ViewModel<TimerViewModel.Model>(Model()) {
         var status: TimerViewModel.TimerStatus = TimerViewModel.TimerStatus.completed
     }
 
-    override fun mutate(action: IAction): Observable<IMutation> {
-        when (action) {
-            Action.StartButtonClicked -> {
+    override fun mutate(event: IEvent): Observable<IMutation> {
+        when (event) {
+            Event.StartButtonClicked -> {
                 if (this.currentModel.status == TimerStatus.completed) {
                     val startTimer = Observable.just(Mutation.StartTimer)
                     val timing = Observable.interval(1, 1, TimeUnit.SECONDS)
@@ -53,15 +53,15 @@ class TimerViewModel : ViewModel<TimerViewModel.Model>(Model()) {
                 }
             }
 
-            Action.StopButtonClicked -> return Observable.just(Mutation.StopTimer)
+            Event.StopButtonClicked -> return Observable.just(Mutation.StopTimer)
                     .filter { this.currentModel.status == TimerStatus.timing }
                     .map { it }
 
-            Action.ActivityPause -> return Observable.just(Mutation.PauseTimer)
+            Event.ActivityPause -> return Observable.just(Mutation.PauseTimer)
                     .filter { this.currentModel.status == TimerStatus.timing }
                     .map { it }
 
-            Action.ActivityResume -> return Observable.just(Mutation.Timing)
+            Event.ActivityResume -> return Observable.just(Mutation.Timing)
                     .filter { this.currentModel.status == TimerStatus.pause }
                     .map { it }
         }
@@ -76,7 +76,7 @@ class TimerViewModel : ViewModel<TimerViewModel.Model>(Model()) {
             }
             Mutation.Timing -> return model.then {
                 it.status = TimerStatus.timing
-                it.time++
+                it.time += 1
             }
             Mutation.PauseTimer -> return model.then { it.status = TimerStatus.pause }
             Mutation.StopTimer -> return model.then { it.status = TimerStatus.completed }

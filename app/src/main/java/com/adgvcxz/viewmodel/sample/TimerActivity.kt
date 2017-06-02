@@ -1,6 +1,6 @@
 package com.adgvcxz.viewmodel.sample
 
-import com.adgvcxz.ViewModel
+import android.arch.lifecycle.ViewModelProviders
 import com.adgvcxz.bindTo
 import com.jakewharton.rxbinding2.view.clicks
 import com.jakewharton.rxbinding2.widget.text
@@ -11,29 +11,32 @@ import kotlinx.android.synthetic.main.activity_timer.*
  * Created by zhaowei on 2017/4/27.
  */
 
-class TimerActivity : BaseActivity<TimerViewModel.Model>() {
+class TimerActivity : BaseActivity() {
 
-    override val viewModel: ViewModel<TimerViewModel.Model> = TimerViewModel()
+    val viewModel: TimerViewModel by lazy {
+        ViewModelProviders.of(this).get(TimerViewModel::class.java)
+    }
 
     override val layoutId: Int = R.layout.activity_timer
 
     override fun initBinding() {
 
         start.clicks()
-                .map { TimerViewModel.Action.StartButtonClicked }
+                .map { TimerViewModel.Event.StartButtonClicked }
                 .bindTo(viewModel.action)
 
         stop.clicks()
-                .map { TimerViewModel.Action.StopButtonClicked }
+                .map { TimerViewModel.Event.StopButtonClicked }
                 .bindTo(viewModel.action)
 
-        lifeCycle.filter { it == ActivityLifeCircle.Pause }
-                .map { TimerViewModel.Action.ActivityPause }
-                .bindTo(viewModel.action)
+//        lifeCycle.filter { it == ActivityLifeCircle.Pause }
+//                .map { TimerViewModel.Action.ActivityPause }
+//                .bindTo(viewModel.action)
+//
+//        lifeCycle.filter { it == ActivityLifeCircle.Resume }
+//                .map { TimerViewModel.Action.ActivityResume }
+//                .bindTo(viewModel.action)
 
-        lifeCycle.filter { it == ActivityLifeCircle.Resume }
-                .map { TimerViewModel.Action.ActivityResume }
-                .bindTo(viewModel.action)
 
         viewModel.model
                 .filter { it.status == TimerViewModel.TimerStatus.completed }

@@ -5,4 +5,4 @@ package com.adgvcxz
  * Created by zhaowei on 2017/5/9.
  */
 
-class DisposeAction : IAction
+class DisposeEvent : IEvent
