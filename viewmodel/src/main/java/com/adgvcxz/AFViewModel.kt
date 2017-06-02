@@ -22,7 +22,7 @@ open class AFViewModel<M : IModel>(initModel: M) : ViewModel(), IViewModel<M> {
 
     val model: Observable<M> by lazy {
         this.action
-                .takeUntil(action.filter { it is DisposeEvent }.take(1))
+                .takeUntil(action.filter { it == AFLifecircleEvent.Destroy }.take(1))
                 .flatMap { this.mutate(it) }
                 .compose { transform(it) }
                 .scan(initModel) { model, mutation -> scan(model, mutation) }
@@ -35,10 +35,31 @@ open class AFViewModel<M : IModel>(initModel: M) : ViewModel(), IViewModel<M> {
 
     @OnLifecycleEvent(Lifecycle.Event.ON_CREATE)
     fun onCreate() {
-
+        this.action.onNext(AFLifecircleEvent.Create)
     }
 
-    override fun onCleared() {
-        this.action.onNext(IEvent.dispose)
+    @OnLifecycleEvent(Lifecycle.Event.ON_RESUME)
+    fun onResume() {
+        this.action.onNext(AFLifecircleEvent.Resume)
+    }
+
+    @OnLifecycleEvent(Lifecycle.Event.ON_START)
+    fun onStart() {
+        this.action.onNext(AFLifecircleEvent.Start)
+    }
+
+    @OnLifecycleEvent(Lifecycle.Event.ON_PAUSE)
+    fun onPause() {
+        this.action.onNext(AFLifecircleEvent.Pause)
+    }
+
+    @OnLifecycleEvent(Lifecycle.Event.ON_STOP)
+    fun onStop() {
+        this.action.onNext(AFLifecircleEvent.Stop)
+    }
+
+    @OnLifecycleEvent(Lifecycle.Event.ON_DESTROY)
+    fun onDestroy() {
+        this.action.onNext(AFLifecircleEvent.Destroy)
     }
 }

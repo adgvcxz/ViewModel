@@ -5,10 +5,4 @@ package com.adgvcxz
  * Created by zhaowei on 2017/4/30.
  */
 
-interface IEvent {
-
-    companion object {
-        val dispose = DisposeEvent()
-    }
-
-}
+interface IEvent

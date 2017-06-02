@@ -6,6 +6,10 @@ package com.adgvcxz
  */
 
 enum class AFLifecircleEvent: IEvent {
-    create
-
+    Create,
+    Start,
+    Resume,
+    Pause,
+    Stop,
+    Destroy
 }

@@ -1,9 +1,6 @@
 package com.adgvcxz.viewmodel.sample
 
-import com.adgvcxz.AFViewModel
-import com.adgvcxz.IEvent
-import com.adgvcxz.IModel
-import com.adgvcxz.IMutation
+import com.adgvcxz.*
 import com.adgvcxz.adgdo.then
 import io.reactivex.Observable
 import java.util.concurrent.TimeUnit
@@ -18,8 +15,6 @@ class TimerViewModel : AFViewModel<TimerViewModel.Model>(Model()) {
     enum class Event : IEvent {
         StartButtonClicked,
         StopButtonClicked,
-        ActivityPause,
-        ActivityResume;
     }
 
     enum class Mutation : IMutation {
@@ -57,11 +52,11 @@ class TimerViewModel : AFViewModel<TimerViewModel.Model>(Model()) {
                     .filter { this.currentModel.status == TimerStatus.timing }
                     .map { it }
 
-            Event.ActivityPause -> return Observable.just(Mutation.PauseTimer)
+            AFLifecircleEvent.Pause -> return Observable.just(Mutation.PauseTimer)
                     .filter { this.currentModel.status == TimerStatus.timing }
                     .map { it }
 
-            Event.ActivityResume -> return Observable.just(Mutation.Timing)
+            AFLifecircleEvent.Resume -> return Observable.just(Mutation.Timing)
                     .filter { this.currentModel.status == TimerStatus.pause }
                     .map { it }
         }

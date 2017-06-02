@@ -29,14 +29,6 @@ class TimerActivity : BaseActivity() {
                 .map { TimerViewModel.Event.StopButtonClicked }
                 .bindTo(viewModel.action)
 
-//        lifeCycle.filter { it == ActivityLifeCircle.Pause }
-//                .map { TimerViewModel.Action.ActivityPause }
-//                .bindTo(viewModel.action)
-//
-//        lifeCycle.filter { it == ActivityLifeCircle.Resume }
-//                .map { TimerViewModel.Action.ActivityResume }
-//                .bindTo(viewModel.action)
-
 
         viewModel.model
                 .filter { it.status == TimerViewModel.TimerStatus.completed }
