@@ -21,6 +21,8 @@ class TimerActivity : BaseActivity() {
 
     override fun initBinding() {
 
+        lifecycle.addObserver(viewModel)
+
         start.clicks()
                 .map { TimerViewModel.Event.StartButtonClicked }
                 .bindTo(viewModel.action)

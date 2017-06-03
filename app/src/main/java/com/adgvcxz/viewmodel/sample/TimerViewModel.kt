@@ -52,11 +52,11 @@ class TimerViewModel : AFViewModel<TimerViewModel.Model>(Model()) {
                     .filter { this.currentModel.status == TimerStatus.timing }
                     .map { it }
 
-            AFLifecircleEvent.Pause -> return Observable.just(Mutation.PauseTimer)
+            AFLifeCircleEvent.Pause -> return Observable.just(Mutation.PauseTimer)
                     .filter { this.currentModel.status == TimerStatus.timing }
                     .map { it }
 
-            AFLifecircleEvent.Resume -> return Observable.just(Mutation.Timing)
+            AFLifeCircleEvent.Resume -> return Observable.just(Mutation.Timing)
                     .filter { this.currentModel.status == TimerStatus.pause }
                     .map { it }
         }

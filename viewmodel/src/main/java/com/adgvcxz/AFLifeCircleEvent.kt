@@ -5,7 +5,7 @@ package com.adgvcxz
  * Created by zhaowei on 2017/6/2.
  */
 
-enum class AFLifecircleEvent: IEvent {
+enum class AFLifeCircleEvent : IEvent {
     Create,
     Start,
     Resume,
