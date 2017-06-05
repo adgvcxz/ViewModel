@@ -1,1 +1,1 @@
-include ':app', ':viewmodel'
+include ':app', ':viewmodel', ':recyclerviewmodel'
