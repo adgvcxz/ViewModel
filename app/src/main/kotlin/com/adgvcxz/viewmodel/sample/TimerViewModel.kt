@@ -10,7 +10,8 @@ import java.util.concurrent.TimeUnit
  * Created by zhaowei on 2017/4/27.
  */
 
-class TimerViewModel : AFViewModel<TimerViewModel.Model>(Model()) {
+class TimerViewModel : AFViewModel<TimerViewModel.Model>() {
+    override val initModel: Model = Model()
 
     enum class Event : IEvent {
         StartButtonClicked,

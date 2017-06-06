@@ -11,31 +11,31 @@ import io.reactivex.Observable
  * Created by zhaowei on 2017/6/5.
  */
 
-open class RecyclerViewModel: WidgetViewModel<RecyclerViewModel.Model>(Model()) {
+abstract class RecyclerViewModel : WidgetViewModel<RecyclerViewModel.Model>() {
 
-    class Model: IModel {
+    class Model(values: List<WidgetViewModel<out IModel>>? = null) : IModel {
         var isRefresh: Boolean = false
         var isLoading: Boolean = false
-        var items: List<WidgetViewModel<out IModel>> = arrayListOf()
+        var items: List<WidgetViewModel<out IModel>> = values ?: arrayListOf()
     }
 
-    enum class Event: IEvent {
+    enum class Event : IEvent {
         refresh,
         loadMore
     }
 
-    sealed class StateMutation(val value: Boolean): IMutation {
-        class SetRefresh(value: Boolean): StateMutation(value)
-        class SetLoadMore(value: Boolean): StateMutation(value)
+    sealed class StateMutation(val value: Boolean) : IMutation {
+        class SetRefresh(value: Boolean) : StateMutation(value)
+        class SetLoadMore(value: Boolean) : StateMutation(value)
     }
 
-    sealed class DataMutation(val data: List<WidgetViewModel<out IModel>>): IMutation {
-        class SetData(data: List<WidgetViewModel<out IModel>>): DataMutation(data)
-        class AppendData(data: List<WidgetViewModel<out IModel>>): DataMutation(data)
+    sealed class DataMutation(val data: List<WidgetViewModel<out IModel>>) : IMutation {
+        class SetData(data: List<WidgetViewModel<out IModel>>) : DataMutation(data)
+        class AppendData(data: List<WidgetViewModel<out IModel>>) : DataMutation(data)
     }
 
     override fun mutate(event: IEvent): Observable<IMutation> {
-        when(event) {
+        when (event) {
             Event.refresh -> {
                 val start = Observable.just(StateMutation.SetRefresh(true))
                 val end = Observable.just(StateMutation.SetRefresh(false))
@@ -55,7 +55,7 @@ open class RecyclerViewModel: WidgetViewModel<RecyclerViewModel.Model>(Model()) 
     }
 
     override fun scan(model: Model, mutation: IMutation): Model {
-        when(mutation) {
+        when (mutation) {
             is StateMutation.SetRefresh -> model.isRefresh = mutation.value
             is StateMutation.SetLoadMore -> model.isLoading = mutation.value
             is DataMutation.SetData -> model.items = mutation.data
@@ -68,6 +68,8 @@ open class RecyclerViewModel: WidgetViewModel<RecyclerViewModel.Model>(Model()) 
         return Observable.empty()
     }
 
-    val count: Int = this.currentModel.items.size
-
+    val count: Int
+        get() {
+            return currentModel.items.size
+        }
 }

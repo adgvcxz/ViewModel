@@ -11,24 +11,27 @@ import io.reactivex.subjects.Subject
  * zhaowei
  * Created by zhaowei on 2017/6/3.
  */
-open class WidgetViewModel<M : IModel>(initModel: M) : IViewModel<M> {
+abstract class WidgetViewModel<M : IModel> : IViewModel<M> {
 
     var action: Subject<IEvent> = PublishSubject.create<IEvent>().toSerialized()
 
-    var currentModel: M = initModel
+    abstract val initModel: M
+
+    lateinit var currentModel: M
         private set
 
     val model: Observable<M> by lazy {
         this.action
+                .doOnSubscribe { currentModel = initModel }
                 .takeUntil(action.filter { it == WidgetLifeCircleEvent.Detach }.take(1))
                 .flatMap { this.mutate(it) }
                 .compose { transform(it) }
                 .scan(initModel) { model, mutation -> scan(model, mutation) }
                 .retry()
                 .share()
-                .doOnNext { currentModel = it }
-                .startWith(currentModel)
+                .startWith(initModel)
                 .observeOn(AndroidSchedulers.mainThread())
+                .doOnNext { currentModel = it }
     }
 
     @OnLifecycleEvent(Lifecycle.Event.ON_CREATE)

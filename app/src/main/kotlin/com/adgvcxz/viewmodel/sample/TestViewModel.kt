@@ -13,7 +13,9 @@ import java.util.concurrent.TimeUnit
  * Created by zhaowei on 2017/5/9.
  */
 
-class TestViewModel : AFViewModel<TestViewModel.Model>(Model()) {
+class TestViewModel : AFViewModel<TestViewModel.Model>() {
+
+    override val initModel: Model = Model()
 
     class Model : IModel {
         var number: MutableLiveData<Int> = MutableLiveData()

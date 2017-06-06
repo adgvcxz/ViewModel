@@ -7,21 +7,27 @@ import android.view.ViewGroup
 import com.adgvcxz.IModel
 import com.adgvcxz.WidgetLifeCircleEvent
 import com.adgvcxz.WidgetViewModel
+import io.reactivex.functions.Consumer
 import kotlin.reflect.KClass
 
 /**
  * zhaowei
  * Created by zhaowei on 2017/6/5.
  */
-class RecyclerAdapter(private val configureItem: ((WidgetViewModel<out IModel>) -> IView<*>)) :
-        RecyclerView.Adapter<RecyclerView.ViewHolder>() {
+class RecyclerAdapter(private val viewModel: RecyclerViewModel, private val configureItem: ((WidgetViewModel<out IModel>) -> IView<*>)) :
+        RecyclerView.Adapter<RecyclerView.ViewHolder>(), Consumer<List<WidgetViewModel<out IModel>>> {
+
 
     private var inflater: LayoutInflater? = null
     private var viewMap: HashMap<View, IView<*>?> = HashMap()
     private val layoutMap: HashMap<KClass<WidgetViewModel<out IModel>>, Int> = HashMap()
 
-    lateinit var viewModel: RecyclerViewModel
     private lateinit var iView: IView<*>
+
+    init {
+        viewModel.model.map { it.items }
+                .subscribe(this)
+    }
 
     override fun onAttachedToRecyclerView(recyclerView: RecyclerView?) {
         super.onAttachedToRecyclerView(recyclerView)
@@ -47,13 +53,16 @@ class RecyclerAdapter(private val configureItem: ((WidgetViewModel<out IModel>) 
 
     override fun onViewAttachedToWindow(holder: RecyclerView.ViewHolder) {
         super.onViewAttachedToWindow(holder)
-        holder.adapterPosition
-        viewModel.currentModel.items[holder.adapterPosition].action.onNext(WidgetLifeCircleEvent.Attach)
+        if (holder.adapterPosition != RecyclerView.NO_POSITION) {
+            viewModel.currentModel.items[holder.adapterPosition].action.onNext(WidgetLifeCircleEvent.Attach)
+        }
     }
 
     override fun onViewDetachedFromWindow(holder: RecyclerView.ViewHolder) {
         super.onViewDetachedFromWindow(holder)
-        viewModel.currentModel.items[holder.adapterPosition].action.onNext(WidgetLifeCircleEvent.Detach)
+        if (holder.adapterPosition != RecyclerView.NO_POSITION) {
+            viewModel.currentModel.items[holder.adapterPosition].action.onNext(WidgetLifeCircleEvent.Detach)
+        }
     }
 
     @Suppress("UNCHECKED_CAST")
@@ -66,8 +75,10 @@ class RecyclerAdapter(private val configureItem: ((WidgetViewModel<out IModel>) 
             id = iView.layoutId
         }
         return id
+    }
 
-
+    override fun accept(t: List<WidgetViewModel<out IModel>>) {
+        notifyDataSetChanged()
     }
 
 }
