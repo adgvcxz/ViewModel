@@ -1,6 +1,5 @@
 package com.adgvcxz.recyclerviewmodel
 
-import android.util.Log
 import com.adgvcxz.*
 import io.reactivex.Observable
 
@@ -20,7 +19,6 @@ class LoadingItemViewModel : WidgetViewModel<LoadingItemViewModel.Model>() {
 
     class Model : IModel {
         var state: State = State.success
-        var isAttach: Boolean = false
     }
 
     sealed class StateEvent(val state: State) : IEvent {

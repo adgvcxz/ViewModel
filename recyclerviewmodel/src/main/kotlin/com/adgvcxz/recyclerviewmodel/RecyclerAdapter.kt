@@ -3,7 +3,7 @@ package com.adgvcxz.recyclerviewmodel
 import android.support.v7.util.DiffUtil
 import android.support.v7.util.ListUpdateCallback
 import android.support.v7.widget.RecyclerView
-import android.util.Log
+import android.support.v7.widget.RecyclerView.NO_POSITION
 import android.view.LayoutInflater
 import android.view.ViewGroup
 import com.adgvcxz.IModel
@@ -16,7 +16,8 @@ import kotlin.reflect.KClass
  * zhaowei
  * Created by zhaowei on 2017/6/5.
  */
-class RecyclerAdapter(val viewModel: RecyclerViewModel, private val configureItem: ((WidgetViewModel<out IModel>) -> IView<*>)) :
+class RecyclerAdapter(val viewModel: RecyclerViewModel,
+                      private val configureItem: ((WidgetViewModel<out IModel>) -> IView<*>)) :
         RecyclerView.Adapter<RecyclerView.ViewHolder>(),
         Consumer<DiffUtil.DiffResult> {
 
@@ -26,6 +27,7 @@ class RecyclerAdapter(val viewModel: RecyclerViewModel, private val configureIte
     private lateinit var iView: IView<*>
 
     init {
+        setHasStableIds(true)
         viewModel.model.map { it.items }
                 .bindTo(this)
     }
@@ -64,12 +66,20 @@ class RecyclerAdapter(val viewModel: RecyclerViewModel, private val configureIte
 
     override fun onViewAttachedToWindow(holder: RecyclerView.ViewHolder) {
         super.onViewAttachedToWindow(holder)
-        viewModel.currentModel.items[holder.layoutPosition].action.onNext(WidgetLifeCircleEvent.Attach)
+        if (holder.layoutPosition != NO_POSITION) {
+            viewModel.currentModel.items[holder.layoutPosition].action.onNext(WidgetLifeCircleEvent.Attach)
+        }
     }
 
     override fun onViewDetachedFromWindow(holder: RecyclerView.ViewHolder) {
         super.onViewDetachedFromWindow(holder)
-        viewModel.currentModel.items[holder.layoutPosition].action.onNext(WidgetLifeCircleEvent.Detach)
+        if (holder.layoutPosition != NO_POSITION) {
+            viewModel.currentModel.items[holder.layoutPosition].action.onNext(WidgetLifeCircleEvent.Detach)
+        }
+    }
+
+    override fun getItemId(position: Int): Long {
+        return position.toLong()
     }
 
     fun checkLoadMore(position: Int) {

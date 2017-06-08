@@ -4,6 +4,7 @@ import android.view.View
 import com.adgvcxz.IModel
 import com.adgvcxz.WidgetViewModel
 import com.adgvcxz.recyclerviewmodel.IView
+import com.adgvcxz.recyclerviewmodel.ListResult
 import com.adgvcxz.recyclerviewmodel.LoadingItemViewModel
 import com.adgvcxz.recyclerviewmodel.RecyclerViewModel
 import com.jakewharton.rxbinding2.view.visibility
@@ -26,9 +27,10 @@ class SimpleRecyclerViewModel : RecyclerViewModel() {
     }
 
 
-    override fun request(refresh: Boolean): Observable<List<WidgetViewModel<out IModel>>> {
+    override fun request(refresh: Boolean): Observable<ListResult> {
         return Observable.timer(1, TimeUnit.SECONDS)
                 .map { (0 until 30).map { TextItemViewModel() } }
+                .map { ListResult(it) }
     }
 
 }
