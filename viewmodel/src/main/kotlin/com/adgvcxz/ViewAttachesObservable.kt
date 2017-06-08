@@ -1,28 +1,22 @@
-package com.adgvcxz.recyclerviewmodel
+package com.adgvcxz
 
 import android.view.View
-import com.adgvcxz.WidgetLifeCircleEvent
 import io.reactivex.Observable
 import io.reactivex.Observer
 import io.reactivex.android.MainThreadDisposable
 
 /**
  * zhaowei
- * Created by zhaowei on 2017/5/12.
+ * Created by zhaowei on 2017/6/8.
  */
-
-class ViewAttachesObservable(private val view: View): Observable<WidgetLifeCircleEvent>() {
-
-    init {
-        this.share()
-    }
+class ViewAttachesObservable(private val view: View) : Observable<WidgetLifeCircleEvent>() {
 
     override fun subscribeActual(observer: Observer<in WidgetLifeCircleEvent>) {
         val listener = Listener(view, observer)
         view.addOnAttachStateChangeListener(listener)
     }
 
-    class Listener(private val view: View, private val observer: Observer<in WidgetLifeCircleEvent>): MainThreadDisposable(), View.OnAttachStateChangeListener {
+    class Listener(private val view: View, private val observer: Observer<in WidgetLifeCircleEvent>) : MainThreadDisposable(), View.OnAttachStateChangeListener {
 
 
         override fun onViewDetachedFromWindow(v: View?) {

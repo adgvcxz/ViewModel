@@ -15,7 +15,12 @@ class SimpleRecyclerActivity : AppCompatActivity() {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_simple_recycler)
         val viewModel = SimpleRecyclerViewModel()
-        val adapter = RecyclerAdapter(viewModel) { TextItemView() }
+        val adapter = RecyclerAdapter(viewModel) {
+            when (it) {
+                is TextItemViewModel -> TextItemView()
+                else -> LoadingItemView()
+            }
+        }
         recyclerView.layoutManager = LinearLayoutManager(this)
         recyclerView.adapter = adapter
         appendData.clicks()

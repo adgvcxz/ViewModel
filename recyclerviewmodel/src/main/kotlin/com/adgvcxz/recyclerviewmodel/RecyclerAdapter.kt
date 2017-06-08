@@ -1,7 +1,9 @@
 package com.adgvcxz.recyclerviewmodel
 
 import android.support.v7.util.DiffUtil
+import android.support.v7.util.ListUpdateCallback
 import android.support.v7.widget.RecyclerView
+import android.util.Log
 import android.view.LayoutInflater
 import android.view.ViewGroup
 import com.adgvcxz.IModel
@@ -16,7 +18,7 @@ import kotlin.reflect.KClass
  */
 class RecyclerAdapter(val viewModel: RecyclerViewModel, private val configureItem: ((WidgetViewModel<out IModel>) -> IView<*>)) :
         RecyclerView.Adapter<RecyclerView.ViewHolder>(),
-        Consumer<Pair<List<WidgetViewModel<out IModel>>, DiffUtil.DiffResult?>> {
+        Consumer<DiffUtil.DiffResult> {
 
     private var inflater: LayoutInflater? = null
     private var viewMap: HashMap<Int, IView<*>?> = HashMap()
@@ -33,7 +35,6 @@ class RecyclerAdapter(val viewModel: RecyclerViewModel, private val configureIte
             inflater = LayoutInflater.from(parent.context)
         }
         val view = inflater?.inflate(viewType, parent, false)
-        view?.let { viewMap.put(viewType, iView) }
         return object : RecyclerView.ViewHolder(view) {}
     }
 
@@ -41,6 +42,7 @@ class RecyclerAdapter(val viewModel: RecyclerViewModel, private val configureIte
     override fun onBindViewHolder(holder: RecyclerView.ViewHolder, position: Int) {
         val iView = viewMap[getItemViewType(position)]
         iView?.let { (it as IView<WidgetViewModel<out IModel>>).bind(holder.itemView, viewModel.currentModel.items[position]) }
+        checkLoadMore(position)
     }
 
     override fun getItemCount(): Int {
@@ -55,6 +57,7 @@ class RecyclerAdapter(val viewModel: RecyclerViewModel, private val configureIte
             layoutMap.put(viewModel.currentModel.items[position]::class as KClass<WidgetViewModel<out IModel>>,
                     iView.layoutId)
             id = iView.layoutId
+            viewMap.put(id, iView)
         }
         return id
     }
@@ -69,11 +72,36 @@ class RecyclerAdapter(val viewModel: RecyclerViewModel, private val configureIte
         viewModel.currentModel.items[holder.layoutPosition].action.onNext(WidgetLifeCircleEvent.Detach)
     }
 
-    override fun accept(pair: Pair<List<WidgetViewModel<out IModel>>, DiffUtil.DiffResult?>) {
-        if (pair.second == null) {
-            notifyDataSetChanged()
+    fun checkLoadMore(position: Int) {
+        val loadingModel = viewModel.currentModel.loadingViewModel
+        loadingModel?.let {
+            if ((position == itemCount - 1) && !viewModel.currentModel.isLoading) {
+                viewModel.action.onNext(RecyclerViewModel.Event.loadMore)
+            }
+        }
+    }
+
+    override fun accept(result: DiffUtil.DiffResult) {
+        if (viewModel.currentModel.isAnim) {
+            result.dispatchUpdatesTo(this)
         } else {
-            pair.second?.dispatchUpdatesTo(this)
+            result.dispatchUpdatesTo(object : ListUpdateCallback {
+                override fun onChanged(position: Int, count: Int, payload: Any?) {
+                    notifyDataSetChanged()
+                }
+
+                override fun onMoved(fromPosition: Int, toPosition: Int) {
+                    notifyDataSetChanged()
+                }
+
+                override fun onInserted(position: Int, count: Int) {
+                    notifyDataSetChanged()
+                }
+
+                override fun onRemoved(position: Int, count: Int) {
+                    notifyDataSetChanged()
+                }
+            })
         }
     }
 }
