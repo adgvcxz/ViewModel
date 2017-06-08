@@ -11,7 +11,6 @@ import java.util.concurrent.TimeUnit
  */
 
 class TimerViewModel : AFViewModel<TimerViewModel.Model>() {
-    override val initModel: Model = Model()
 
     enum class Event : IEvent {
         StartButtonClicked,
@@ -79,6 +78,8 @@ class TimerViewModel : AFViewModel<TimerViewModel.Model>() {
         }
         return model
     }
+
+    override fun initModel(): Model = Model()
 }
 
 

@@ -1,6 +1,6 @@
 package com.adgvcxz.viewmodel.sample
 
-import android.arch.lifecycle.ViewModelProviders
+//import android.arch.lifecycle.ViewModelProviders
 import com.adgvcxz.bindTo
 import com.jakewharton.rxbinding2.view.clicks
 import com.jakewharton.rxbinding2.widget.text
@@ -13,16 +13,20 @@ import kotlinx.android.synthetic.main.activity_timer.*
 
 class TimerActivity : BaseActivity() {
 
+//    val viewModel: TimerViewModel by lazy {
+//        ViewModelProviders.of(this).get(TimerViewModel::class.java)
+//    }
+
     val viewModel: TimerViewModel by lazy {
-        ViewModelProviders.of(this).get(TimerViewModel::class.java)
+        TimerViewModel()
     }
 
     override val layoutId: Int = R.layout.activity_timer
 
     override fun initBinding() {
 
-        lifecycle.addObserver(viewModel)
-
+//        lifecycle.addObserver(viewModel)
+//
         start.clicks()
                 .map { TimerViewModel.Event.StartButtonClicked }
                 .bindTo(viewModel.action)

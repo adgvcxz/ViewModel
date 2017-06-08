@@ -1,6 +1,6 @@
 package com.adgvcxz
 
-import android.arch.lifecycle.LifecycleObserver
+//import android.arch.lifecycle.LifecycleObserver
 import io.reactivex.Observable
 
 /**
@@ -8,7 +8,7 @@ import io.reactivex.Observable
  * Created by zhaowei on 2017/5/4.
  */
 
-interface IViewModel<M: IModel>: LifecycleObserver {
+interface IViewModel<M: IModel>/*: LifecycleObserver*/ {
 
     fun scan(model: M, mutation: IMutation): M {
         return model

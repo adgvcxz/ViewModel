@@ -1,7 +1,7 @@
 package com.adgvcxz.viewmodel.sample
 
-import android.arch.lifecycle.LifecycleRegistry
-import android.arch.lifecycle.LifecycleRegistryOwner
+//import android.arch.lifecycle.LifecycleRegistry
+//import android.arch.lifecycle.LifecycleRegistryOwner
 import android.os.Bundle
 import android.support.v7.app.AppCompatActivity
 
@@ -10,9 +10,9 @@ import android.support.v7.app.AppCompatActivity
  * Created by zhaowei on 2017/4/27.
  */
 
-abstract class BaseActivity : AppCompatActivity(), LifecycleRegistryOwner {
+abstract class BaseActivity : AppCompatActivity()/*, LifecycleRegistryOwner*/ {
 
-    val lifecycleRegistry: LifecycleRegistry = LifecycleRegistry(this)
+//    val lifecycleRegistry: LifecycleRegistry = LifecycleRegistry(this)
 
     abstract val layoutId: Int
 
@@ -26,7 +26,7 @@ abstract class BaseActivity : AppCompatActivity(), LifecycleRegistryOwner {
 
     }
 
-    override fun getLifecycle(): LifecycleRegistry {
-        return lifecycleRegistry
-    }
+//    override fun getLifecycle(): LifecycleRegistry {
+//        return lifecycleRegistry
+//    }
 }

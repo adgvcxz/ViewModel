@@ -8,6 +8,7 @@ import com.adgvcxz.recyclerviewmodel.RecyclerViewModel
 import com.jakewharton.rxbinding2.widget.text
 import io.reactivex.Observable
 import kotlinx.android.synthetic.main.item_text_view.view.*
+import java.util.*
 
 /**
  * zhaowei
@@ -16,11 +17,15 @@ import kotlinx.android.synthetic.main.item_text_view.view.*
 
 class SimpleRecyclerViewModel : RecyclerViewModel() {
 
-    override val initModel: Model = Model((0 until 10).map { TextItemViewModel() })
+    override fun initModel(): Model {
+        return Model((0 until 3).map { TextItemViewModel() }, true)
+    }
+
+//    override val initModel: Model = Model((0 until 10).map { TextItemViewModel() }, true)
 
 
     override fun request(refresh: Boolean): Observable<List<WidgetViewModel<out IModel>>> {
-        return Observable.just((0 until 10).map { TextItemViewModel() })
+        return Observable.just((0 until 3).map { TextItemViewModel() })
     }
 
 }
@@ -37,10 +42,13 @@ class TextItemView : IView<TextItemViewModel> {
 }
 
 class TextItemViewModel : WidgetViewModel<TextItemViewModel.Model>() {
+    override fun initModel(): Model {
+        return Model()
+    }
 
-    override val initModel: Model = Model()
+//    override val initModel: Model = Model()
 
     class Model : IModel {
-        val content = "abcd"
+        val content = UUID.randomUUID().toString()
     }
 }

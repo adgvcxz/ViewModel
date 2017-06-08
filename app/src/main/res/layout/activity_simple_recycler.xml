@@ -3,7 +3,14 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
+    android:orientation="vertical"
     tools:context="com.adgvcxz.viewmodel.sample.SimpleRecyclerActivity">
+
+    <Button
+        android:id="@+id/appendData"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="appendData" />
 
     <android.support.v7.widget.RecyclerView
         android:id="@+id/recyclerView"

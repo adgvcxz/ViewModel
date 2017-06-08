@@ -13,9 +13,10 @@ import io.reactivex.Observable
 
 abstract class RecyclerViewModel : WidgetViewModel<RecyclerViewModel.Model>() {
 
-    class Model(values: List<WidgetViewModel<out IModel>>? = null) : IModel {
+    class Model(values: List<WidgetViewModel<out IModel>>? = null, isAnim: Boolean = false) : IModel {
         var isRefresh: Boolean = false
         var isLoading: Boolean = false
+        var isAnim: Boolean = isAnim
         var items: List<WidgetViewModel<out IModel>> = values ?: arrayListOf()
     }
 
@@ -24,9 +25,14 @@ abstract class RecyclerViewModel : WidgetViewModel<RecyclerViewModel.Model>() {
         loadMore
     }
 
+    sealed class BooleanEvent(val value: Boolean): IEvent {
+        class setAnim(value: Boolean): BooleanEvent(value)
+    }
+
     sealed class StateMutation(val value: Boolean) : IMutation {
         class SetRefresh(value: Boolean) : StateMutation(value)
         class SetLoadMore(value: Boolean) : StateMutation(value)
+        class SetAnim(value: Boolean): StateMutation(value)
     }
 
     sealed class DataMutation(val data: List<WidgetViewModel<out IModel>>) : IMutation {
@@ -50,6 +56,7 @@ abstract class RecyclerViewModel : WidgetViewModel<RecyclerViewModel.Model>() {
                         request(false).map { DataMutation.AppendData(it) },
                         end)
             }
+            is BooleanEvent.setAnim -> return Observable.just(StateMutation.SetAnim(event.value))
         }
         return super.mutate(event)
     }
@@ -58,8 +65,9 @@ abstract class RecyclerViewModel : WidgetViewModel<RecyclerViewModel.Model>() {
         when (mutation) {
             is StateMutation.SetRefresh -> model.isRefresh = mutation.value
             is StateMutation.SetLoadMore -> model.isLoading = mutation.value
+            is StateMutation.SetAnim -> model.isAnim = mutation.value
             is DataMutation.SetData -> model.items = mutation.data
-            is DataMutation.AppendData -> model.items = mutation.data
+            is DataMutation.AppendData -> model.items += mutation.data
         }
         return model
     }
@@ -69,7 +77,5 @@ abstract class RecyclerViewModel : WidgetViewModel<RecyclerViewModel.Model>() {
     }
 
     val count: Int
-        get() {
-            return currentModel.items.size
-        }
+        get() = currentModel.items.size
 }
