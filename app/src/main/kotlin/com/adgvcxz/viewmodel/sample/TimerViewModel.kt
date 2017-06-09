@@ -1,7 +1,6 @@
 package com.adgvcxz.viewmodel.sample
 
 import com.adgvcxz.*
-import com.adgvcxz.adgdo.then
 import io.reactivex.Observable
 import java.util.concurrent.TimeUnit
 
@@ -65,16 +64,16 @@ class TimerViewModel : AFViewModel<TimerViewModel.Model>() {
 
     override fun scan(model: Model, mutation: IMutation): Model {
         when (mutation) {
-            Mutation.StartTimer -> return model.then {
+            Mutation.StartTimer -> return model.also {
                 it.time = 0
                 it.status = TimerStatus.timing
             }
-            Mutation.Timing -> return model.then {
+            Mutation.Timing -> return model.also {
                 it.status = TimerStatus.timing
                 it.time += 1
             }
-            Mutation.PauseTimer -> return model.then { it.status = TimerStatus.pause }
-            Mutation.StopTimer -> return model.then { it.status = TimerStatus.completed }
+            Mutation.PauseTimer -> return model.also { it.status = TimerStatus.pause }
+            Mutation.StopTimer -> return model.also { it.status = TimerStatus.completed }
         }
         return model
     }

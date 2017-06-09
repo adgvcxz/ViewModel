@@ -5,6 +5,7 @@ import android.support.v7.util.ListUpdateCallback
 import android.support.v7.widget.RecyclerView
 import android.support.v7.widget.RecyclerView.NO_POSITION
 import android.view.LayoutInflater
+import android.view.View
 import android.view.ViewGroup
 import com.adgvcxz.IModel
 import com.adgvcxz.WidgetLifeCircleEvent
@@ -24,7 +25,7 @@ class RecyclerAdapter(val viewModel: RecyclerViewModel,
     private var inflater: LayoutInflater? = null
     private var viewMap: HashMap<Int, IView<*>?> = HashMap()
     private val layoutMap: HashMap<KClass<WidgetViewModel<out IModel>>, Int> = HashMap()
-    private lateinit var iView: IView<*>
+    var itemClickListener: View.OnClickListener? = null
 
     init {
         setHasStableIds(true)
@@ -37,6 +38,9 @@ class RecyclerAdapter(val viewModel: RecyclerViewModel,
             inflater = LayoutInflater.from(parent.context)
         }
         val view = inflater?.inflate(viewType, parent, false)
+        ifNotNull(view, itemClickListener) { view, listener ->
+            view.setOnClickListener(listener)
+        }
         return object : RecyclerView.ViewHolder(view) {}
     }
 
@@ -55,11 +59,11 @@ class RecyclerAdapter(val viewModel: RecyclerViewModel,
     override fun getItemViewType(position: Int): Int {
         var id = layoutMap[viewModel.currentModel.items[position]::class]
         if (id == null) {
-            iView = configureItem.invoke(viewModel.currentModel.items[position])
+            val view = configureItem.invoke(viewModel.currentModel.items[position])
             layoutMap.put(viewModel.currentModel.items[position]::class as KClass<WidgetViewModel<out IModel>>,
-                    iView.layoutId)
-            id = iView.layoutId
-            viewMap.put(id, iView)
+                    view.layoutId)
+            id = view.layoutId
+            viewMap.put(id, view)
         }
         return id
     }

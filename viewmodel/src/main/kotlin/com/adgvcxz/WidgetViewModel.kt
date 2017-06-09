@@ -18,8 +18,7 @@ abstract class WidgetViewModel<M : IModel> : IViewModel<M> {
     var currentModel: M = initModel()
 
     val model: Observable<M> by lazy {
-        this.action
-                .takeUntil(action.filter { it == WidgetLifeCircleEvent.Detach }.take(1))
+        val value = this.action
                 .flatMap { this.mutate(it) }
                 .compose { transform(it) }
                 .scan(currentModel) { model, mutation -> scan(model, mutation) }
@@ -27,6 +26,8 @@ abstract class WidgetViewModel<M : IModel> : IViewModel<M> {
                 .startWith(currentModel)
                 .observeOn(AndroidSchedulers.mainThread())
                 .doOnNext { currentModel = it }
+        value.subscribe()
+        value
     }
 
     abstract fun initModel(): M

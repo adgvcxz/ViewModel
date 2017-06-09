@@ -1,6 +1,9 @@
 package com.adgvcxz.recyclerviewmodel
 
-import com.adgvcxz.*
+import com.adgvcxz.IEvent
+import com.adgvcxz.IModel
+import com.adgvcxz.IMutation
+import com.adgvcxz.WidgetViewModel
 import io.reactivex.Observable
 
 /**
@@ -38,7 +41,9 @@ class LoadingItemViewModel : WidgetViewModel<LoadingItemViewModel.Model>() {
 
     override fun scan(model: Model, mutation: IMutation): Model {
         when (mutation) {
-            is StateMutation.SetState -> model.state = mutation.state
+            is StateMutation.SetState -> {
+                model.state = mutation.state
+            }
         }
         return model
     }

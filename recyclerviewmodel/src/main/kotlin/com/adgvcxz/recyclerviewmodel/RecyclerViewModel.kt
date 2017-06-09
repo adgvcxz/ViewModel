@@ -14,11 +14,12 @@ import io.reactivex.Observable
 abstract class RecyclerViewModel : WidgetViewModel<RecyclerViewModel.Model>() {
 
     class Model(values: List<WidgetViewModel<out IModel>>? = null,
-                var loadingViewModel: LoadingItemViewModel? = null,
+                hasLoadingItem: Boolean,
                 var isAnim: Boolean = false) : IModel {
 
         var isRefresh: Boolean = false
         var items: List<WidgetViewModel<out IModel>> = arrayListOf()
+        var loadingViewModel: LoadingItemViewModel? = null
 
         init {
             values?.let { items = values }
@@ -26,6 +27,9 @@ abstract class RecyclerViewModel : WidgetViewModel<RecyclerViewModel.Model>() {
                 if (!items.isEmpty()) {
                     items += it
                 }
+            }
+            if (hasLoadingItem) {
+                loadingViewModel = LoadingItemViewModel()
             }
         }
 
