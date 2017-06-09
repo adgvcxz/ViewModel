@@ -17,9 +17,12 @@ abstract class AFViewModel<M : IModel>: /*: ViewModel(),*/ IViewModel<M> {
 
     var action: Subject<IEvent> = PublishSubject.create<IEvent>().toSerialized()
 
-    var currentModel: M = initModel()
+    abstract val initModel: M
+
+    lateinit var currentModel: M
 
     val model: Observable<M> by lazy {
+        currentModel = initModel
         this.action
                 .takeUntil(action.filter { it == AFLifeCircleEvent.Destroy }.take(1))
                 .flatMap { this.mutate(it) }
@@ -31,8 +34,6 @@ abstract class AFViewModel<M : IModel>: /*: ViewModel(),*/ IViewModel<M> {
                 .observeOn(AndroidSchedulers.mainThread())
                 .doOnNext { currentModel = it }
     }
-
-    abstract fun initModel(): M
 
 //    @OnLifecycleEvent(Lifecycle.Event.ON_CREATE)
 //    fun onCreate() {

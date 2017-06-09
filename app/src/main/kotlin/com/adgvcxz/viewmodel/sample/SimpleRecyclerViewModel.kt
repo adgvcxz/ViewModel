@@ -22,9 +22,7 @@ import java.util.concurrent.TimeUnit
 
 class SimpleRecyclerViewModel : RecyclerViewModel() {
 
-    override fun initModel(): Model {
-        return Model((0 until 2).map { TextItemViewModel() }, true, true)
-    }
+    override val initModel: Model = Model((0 until 2).map { TextItemViewModel() }, true, true)
 
 
     override fun request(refresh: Boolean): Observable<ListResult> {
@@ -50,9 +48,7 @@ class TextItemView : IView<TextItemViewModel> {
 }
 
 class TextItemViewModel : WidgetViewModel<TextItemViewModel.Model>() {
-    override fun initModel(): Model {
-        return Model()
-    }
+    override val initModel: Model = Model()
 
     class Model : IModel {
         val content = UUID.randomUUID().toString()

@@ -15,9 +15,12 @@ abstract class WidgetViewModel<M : IModel> : IViewModel<M> {
 
     var action: Subject<IEvent> = PublishSubject.create<IEvent>().toSerialized()
 
-    var currentModel: M = initModel()
+    abstract val initModel: M
+
+    lateinit var currentModel: M
 
     val model: Observable<M> by lazy {
+        currentModel = initModel
         val value = this.action
                 .flatMap { this.mutate(it) }
                 .compose { transform(it) }
@@ -29,8 +32,6 @@ abstract class WidgetViewModel<M : IModel> : IViewModel<M> {
         value.subscribe()
         value
     }
-
-    abstract fun initModel(): M
 
 //    @OnLifecycleEvent(Lifecycle.Event.ON_CREATE)
 //    fun onCreate() {

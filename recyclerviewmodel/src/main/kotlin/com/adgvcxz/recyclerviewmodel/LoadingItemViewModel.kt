@@ -12,7 +12,8 @@ import io.reactivex.Observable
  */
 class LoadingItemViewModel : WidgetViewModel<LoadingItemViewModel.Model>() {
 
-    override fun initModel(): Model = Model()
+
+    override val initModel: Model = Model()
 
     enum class State {
         success,
