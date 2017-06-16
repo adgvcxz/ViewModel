@@ -47,7 +47,9 @@ class RecyclerAdapter(val viewModel: RecyclerViewModel,
     @Suppress("UNCHECKED_CAST")
     override fun onBindViewHolder(holder: RecyclerView.ViewHolder, position: Int) {
         val iView = viewMap[getItemViewType(position)]
-        iView?.let { (it as IView<WidgetViewModel<out IModel>>).bind(holder.itemView, viewModel.currentModel.items[position]) }
+        iView?.let {
+            (it as IView<WidgetViewModel<out IModel>>).bind(holder.itemView, viewModel.currentModel().items[position])
+        }
         checkLoadMore(position)
     }
 
@@ -57,10 +59,10 @@ class RecyclerAdapter(val viewModel: RecyclerViewModel,
 
     @Suppress("UNCHECKED_CAST")
     override fun getItemViewType(position: Int): Int {
-        var id = layoutMap[viewModel.currentModel.items[position]::class]
+        var id = layoutMap[viewModel.currentModel().items[position]::class]
         if (id == null) {
-            val view = configureItem.invoke(viewModel.currentModel.items[position])
-            layoutMap.put(viewModel.currentModel.items[position]::class as KClass<WidgetViewModel<out IModel>>,
+            val view = configureItem.invoke(viewModel.currentModel().items[position])
+            layoutMap.put(viewModel.currentModel().items[position]::class as KClass<WidgetViewModel<out IModel>>,
                     view.layoutId)
             id = view.layoutId
             viewMap.put(id, view)
@@ -71,14 +73,14 @@ class RecyclerAdapter(val viewModel: RecyclerViewModel,
     override fun onViewAttachedToWindow(holder: RecyclerView.ViewHolder) {
         super.onViewAttachedToWindow(holder)
         if (holder.layoutPosition != NO_POSITION) {
-            viewModel.currentModel.items[holder.layoutPosition].action.onNext(WidgetLifeCircleEvent.Attach)
+            viewModel.currentModel().items[holder.layoutPosition].action.onNext(WidgetLifeCircleEvent.Attach)
         }
     }
 
     override fun onViewDetachedFromWindow(holder: RecyclerView.ViewHolder) {
         super.onViewDetachedFromWindow(holder)
         if (holder.layoutPosition != NO_POSITION) {
-            viewModel.currentModel.items[holder.layoutPosition].action.onNext(WidgetLifeCircleEvent.Detach)
+            viewModel.currentModel().items[holder.layoutPosition].action.onNext(WidgetLifeCircleEvent.Detach)
         }
     }
 
@@ -87,16 +89,16 @@ class RecyclerAdapter(val viewModel: RecyclerViewModel,
     }
 
     fun checkLoadMore(position: Int) {
-        val loadingModel = viewModel.currentModel.loadingViewModel
+        val loadingModel = viewModel.currentModel().loadingViewModel
         loadingModel?.let {
-            if ((position == itemCount - 1) && !viewModel.currentModel.isLoading) {
+            if ((position == itemCount - 1) && !viewModel.currentModel().isLoading) {
                 viewModel.action.onNext(RecyclerViewModel.Event.loadMore)
             }
         }
     }
 
     override fun accept(result: DiffUtil.DiffResult) {
-        if (viewModel.currentModel.isAnim) {
+        if (viewModel.currentModel().isAnim) {
             result.dispatchUpdatesTo(this)
         } else {
             result.dispatchUpdatesTo(object : ListUpdateCallback {

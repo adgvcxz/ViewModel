@@ -13,7 +13,7 @@ class ItemDiffCallback(private val oldItems: List<WidgetViewModel<out IModel>>,
 
 
     override fun areItemsTheSame(oldItemPosition: Int, newItemPosition: Int): Boolean {
-        return oldItems[oldItemPosition].currentModel == newItems[newItemPosition].currentModel
+        return oldItems[oldItemPosition].currentModel() == newItems[newItemPosition].currentModel()
     }
 
     override fun getOldListSize(): Int {

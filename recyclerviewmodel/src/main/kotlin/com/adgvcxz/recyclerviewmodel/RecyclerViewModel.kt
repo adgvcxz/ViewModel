@@ -23,18 +23,24 @@ abstract class RecyclerViewModel : WidgetViewModel<RecyclerViewModel.Model>() {
 
         init {
             values?.let { items = values }
+            if (hasLoadingItem) {
+                loadingViewModel = LoadingItemViewModel()
+            }
             loadingViewModel?.let {
                 if (!items.isEmpty()) {
                     items += it
                 }
             }
-            if (hasLoadingItem) {
-                loadingViewModel = LoadingItemViewModel()
-            }
         }
 
         val isLoading: Boolean
-            get() = loadingViewModel?.currentModel?.state == LoadingItemViewModel.State.loading
+            get() {
+                val state = loadingViewModel?.currentModel()?.state
+                if (state != null) {
+                    return state == LoadingItemViewModel.State.loading
+                }
+                return false
+            }
     }
 
     enum class Event : IEvent {
@@ -64,7 +70,7 @@ abstract class RecyclerViewModel : WidgetViewModel<RecyclerViewModel.Model>() {
     override fun mutate(event: IEvent): Observable<IMutation> {
         when (event) {
             Event.refresh -> {
-                if (currentModel.isRefresh || currentModel.isLoading) {
+                if (currentModel().isRefresh || currentModel().isLoading) {
                     return Observable.empty()
                 }
                 val start = Observable.just(StateMutation.SetRefresh(true))
@@ -75,23 +81,24 @@ abstract class RecyclerViewModel : WidgetViewModel<RecyclerViewModel.Model>() {
                         end)
             }
             Event.loadMore -> {
-                if (currentModel.isRefresh || currentModel.isLoading) {
+                if (currentModel().isRefresh || currentModel().isLoading) {
                     return Observable.empty()
                 }
-                currentModel.loadingViewModel?.action?.onNext(
+                currentModel().loadingViewModel?.action?.onNext(
                         LoadingItemViewModel.StateEvent.SetState(LoadingItemViewModel.State.loading))
                 return request(true)
                         .doOnNext {
                             if (it.value == null) {
-                                currentModel.loadingViewModel?.action?.onNext(
+                                currentModel().loadingViewModel?.action?.onNext(
                                         LoadingItemViewModel.StateEvent.SetState(LoadingItemViewModel.State.failure))
                             } else {
-                                currentModel.loadingViewModel?.action?.onNext(
+                                currentModel().loadingViewModel?.action?.onNext(
                                         LoadingItemViewModel.StateEvent.SetState(LoadingItemViewModel.State.success))
                             }
                         }
                         .flatMap { if (it.value == null) Observable.empty() else Observable.just(it.value) }
                         .map { DataMutation.AppendData(it) }
+
             }
             Event.hideLoadingItem -> return Observable.just(Mutation.removeLoadingItem)
             is BooleanEvent.setAnim -> return Observable.just(StateMutation.SetAnim(event.value))
@@ -133,5 +140,5 @@ abstract class RecyclerViewModel : WidgetViewModel<RecyclerViewModel.Model>() {
     }
 
     val count: Int
-        get() = currentModel.items.size
+        get() = currentModel().items.size
 }

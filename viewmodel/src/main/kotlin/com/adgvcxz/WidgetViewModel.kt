@@ -17,20 +17,22 @@ abstract class WidgetViewModel<M : IModel> : IViewModel<M> {
 
     abstract val initModel: M
 
-    lateinit var currentModel: M
+    var _currentModel: M? = null
 
     val model: Observable<M> by lazy {
-        currentModel = initModel
-        val value = this.action
+        this.action
+                .doOnSubscribe { _currentModel = initModel }
                 .flatMap { this.mutate(it) }
                 .compose { transform(it) }
-                .scan(currentModel) { model, mutation -> scan(model, mutation) }
+                .scan(initModel) { model, mutation -> scan(model, mutation) }
                 .share()
-                .startWith(currentModel)
+                .startWith(initModel)
                 .observeOn(AndroidSchedulers.mainThread())
-                .doOnNext { currentModel = it }
-        value.subscribe()
-        value
+                .doOnNext { _currentModel = it }
+    }
+
+    fun currentModel(): M {
+        return _currentModel ?: initModel
     }
 
 //    @OnLifecycleEvent(Lifecycle.Event.ON_CREATE)

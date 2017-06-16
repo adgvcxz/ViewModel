@@ -26,14 +26,14 @@ class SimpleRecyclerViewModel : RecyclerViewModel() {
 
 
     override fun request(refresh: Boolean): Observable<ListResult> {
-        if (Random().nextInt() < 16) {
+//        if (Random().nextInt() < 16) {
             return Observable.timer(1, TimeUnit.SECONDS)
-                    .map { (0 until 30).map { TextItemViewModel() } }
+                    .map { (0 until 10).map { TextItemViewModel() } }
                     .map { ListResult(it) }
-        } else {
-            return Observable.timer(1, TimeUnit.SECONDS)
-                    .map { ListResult(null) }
-        }
+//        } else {
+//            return Observable.timer(1, TimeUnit.SECONDS)
+//                    .map { ListResult(null) }
+//        }
     }
 }
 

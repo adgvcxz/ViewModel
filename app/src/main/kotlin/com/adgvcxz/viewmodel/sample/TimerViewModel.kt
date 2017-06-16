@@ -37,26 +37,26 @@ class TimerViewModel : AFViewModel<TimerViewModel.Model>() {
     override fun mutate(event: IEvent): Observable<IMutation> {
         when (event) {
             Event.StartButtonClicked -> {
-                if (this.currentModel.status == TimerStatus.completed) {
+                if (this.currentModel().status == TimerStatus.completed) {
                     val startTimer = Observable.just(Mutation.StartTimer)
                     val timing = Observable.interval(1, 1, TimeUnit.SECONDS)
-                            .filter { this.currentModel.status == TimerStatus.timing }
+                            .filter { this.currentModel().status == TimerStatus.timing }
                             .map { Mutation.Timing }
-                            .takeWhile { this.currentModel.status == TimerStatus.timing }
+                            .takeWhile { this.currentModel().status == TimerStatus.timing }
                     return Observable.concat(startTimer, timing)
                 }
             }
 
             Event.StopButtonClicked -> return Observable.just(Mutation.StopTimer)
-                    .filter { this.currentModel.status == TimerStatus.timing }
+                    .filter { this.currentModel().status == TimerStatus.timing }
                     .map { it }
 
             AFLifeCircleEvent.Pause -> return Observable.just(Mutation.PauseTimer)
-                    .filter { this.currentModel.status == TimerStatus.timing }
+                    .filter { this.currentModel().status == TimerStatus.timing }
                     .map { it }
 
             AFLifeCircleEvent.Resume -> return Observable.just(Mutation.Timing)
-                    .filter { this.currentModel.status == TimerStatus.pause }
+                    .filter { this.currentModel().status == TimerStatus.pause }
                     .map { it }
         }
         return Observable.empty()

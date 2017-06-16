@@ -1,6 +1,7 @@
 package com.adgvcxz.viewmodel.sample
 
 //import android.arch.lifecycle.ViewModelProviders
+import com.adgvcxz.AFLifeCircleEvent
 import com.adgvcxz.bindTo
 import com.jakewharton.rxbinding2.view.clicks
 import com.jakewharton.rxbinding2.widget.text
@@ -46,5 +47,10 @@ class TimerActivity : BaseActivity() {
                 .distinctUntilChanged()
                 .map { "$it" }
                 .subscribe(time.text())
+    }
+
+    override fun onDestroy() {
+        super.onDestroy()
+        viewModel.action.onNext(AFLifeCircleEvent.Destroy)
     }
 }
