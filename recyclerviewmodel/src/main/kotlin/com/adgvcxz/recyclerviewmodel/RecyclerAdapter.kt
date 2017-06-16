@@ -26,6 +26,7 @@ class RecyclerAdapter(val viewModel: RecyclerViewModel,
     private var viewMap: HashMap<Int, IView<*>?> = HashMap()
     private val layoutMap: HashMap<KClass<WidgetViewModel<out IModel>>, Int> = HashMap()
     var itemClickListener: View.OnClickListener? = null
+    var notify: Boolean = false
 
     init {
         setHasStableIds(true)
@@ -98,7 +99,7 @@ class RecyclerAdapter(val viewModel: RecyclerViewModel,
     }
 
     override fun accept(result: DiffUtil.DiffResult) {
-        if (viewModel.currentModel().isAnim) {
+        if (viewModel.currentModel().isAnim && !notify) {
             result.dispatchUpdatesTo(this)
         } else {
             result.dispatchUpdatesTo(object : ListUpdateCallback {
@@ -119,5 +120,6 @@ class RecyclerAdapter(val viewModel: RecyclerViewModel,
                 }
             })
         }
+        notify = viewModel.currentModel().isRefresh
     }
 }
