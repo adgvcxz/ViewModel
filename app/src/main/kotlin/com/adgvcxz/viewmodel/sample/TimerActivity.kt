@@ -2,6 +2,7 @@ package com.adgvcxz.viewmodel.sample
 
 //import android.arch.lifecycle.ViewModelProviders
 import com.adgvcxz.AFLifeCircleEvent
+import com.adgvcxz.addTo
 import com.adgvcxz.bindTo
 import com.jakewharton.rxbinding2.view.clicks
 import com.jakewharton.rxbinding2.widget.text
@@ -31,22 +32,26 @@ class TimerActivity : BaseActivity() {
         start.clicks()
                 .map { TimerViewModel.Event.StartButtonClicked }
                 .bindTo(viewModel.action)
+                .addTo(disposables)
 
         stop.clicks()
                 .map { TimerViewModel.Event.StopButtonClicked }
                 .bindTo(viewModel.action)
+                .addTo(disposables)
 
 
         viewModel.model
                 .filter { it.status == TimerViewModel.TimerStatus.completed }
                 .map { "Timer" }
                 .subscribe(time.text())
+                .addTo(disposables)
 
         viewModel.model.filter { it.status == TimerViewModel.TimerStatus.timing }
                 .map { it.time }
                 .distinctUntilChanged()
                 .map { "$it" }
                 .subscribe(time.text())
+                .addTo(disposables)
     }
 
     override fun onDestroy() {
