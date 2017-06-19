@@ -18,12 +18,12 @@ import kotlin.reflect.KClass
  * Created by zhaowei on 2017/6/5.
  */
 class RecyclerAdapter(val viewModel: RecyclerViewModel,
-                      private val configureItem: ((WidgetViewModel<out IModel>) -> IView<*>)) :
-        RecyclerView.Adapter<RecyclerView.ViewHolder>(),
+                      private val configureItem: ((WidgetViewModel<out IModel>) -> IView<*, *>)) :
+        RecyclerView.Adapter<ItemViewHolder>(),
         Consumer<DiffUtil.DiffResult> {
 
     private var inflater: LayoutInflater? = null
-    private var viewMap: HashMap<Int, IView<*>?> = HashMap()
+    private var viewMap: HashMap<Int, IView<*, *>?> = HashMap()
     private val layoutMap: HashMap<KClass<WidgetViewModel<out IModel>>, Int> = HashMap()
     var itemClickListener: View.OnClickListener? = null
     var notify: Boolean = false
@@ -34,22 +34,22 @@ class RecyclerAdapter(val viewModel: RecyclerViewModel,
                 .bindTo(this)
     }
 
-    override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): RecyclerView.ViewHolder {
+    override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ItemViewHolder {
         if (inflater == null) {
             inflater = LayoutInflater.from(parent.context)
         }
-        val view = inflater?.inflate(viewType, parent, false)
-        ifNotNull(view, itemClickListener) { view, listener ->
-            view.setOnClickListener(listener)
-        }
-        return object : RecyclerView.ViewHolder(view) {}
+        val view = inflater!!.inflate(viewType, parent, false)
+        ifNotNull(view, itemClickListener) { view, listener -> view.setOnClickListener(listener) }
+        val views = viewMap[viewType]?.initView(view)
+        views?.itemView = view
+        return ItemViewHolder(views)
     }
 
     @Suppress("UNCHECKED_CAST")
-    override fun onBindViewHolder(holder: RecyclerView.ViewHolder, position: Int) {
+    override fun onBindViewHolder(holder: ItemViewHolder, position: Int) {
         val iView = viewMap[getItemViewType(position)]
-        iView?.let {
-            (it as IView<WidgetViewModel<out IModel>>).bind(holder.itemView, viewModel.currentModel().items[position])
+        ifNotNull(iView, holder.views) { iView, views ->
+            (iView as IView<Views, WidgetViewModel<out IModel>>).bind(views, viewModel.currentModel().items[position])
         }
         checkLoadMore(position)
     }
@@ -60,25 +60,26 @@ class RecyclerAdapter(val viewModel: RecyclerViewModel,
 
     @Suppress("UNCHECKED_CAST")
     override fun getItemViewType(position: Int): Int {
-        var id = layoutMap[viewModel.currentModel().items[position]::class]
+        val model = viewModel.currentModel().items[position]
+        var id = layoutMap[model::class]
         if (id == null) {
-            val view = configureItem.invoke(viewModel.currentModel().items[position])
-            layoutMap.put(viewModel.currentModel().items[position]::class as KClass<WidgetViewModel<out IModel>>,
-                    view.layoutId)
+            val type = model::class as KClass<WidgetViewModel<out IModel>>
+            val view = configureItem.invoke(model)
+            layoutMap.put(type, view.layoutId)
             id = view.layoutId
             viewMap.put(id, view)
         }
         return id
     }
 
-    override fun onViewAttachedToWindow(holder: RecyclerView.ViewHolder) {
+    override fun onViewAttachedToWindow(holder: ItemViewHolder) {
         super.onViewAttachedToWindow(holder)
         if (holder.layoutPosition != NO_POSITION) {
             viewModel.currentModel().items[holder.layoutPosition].action.onNext(WidgetLifeCircleEvent.Attach)
         }
     }
 
-    override fun onViewDetachedFromWindow(holder: RecyclerView.ViewHolder) {
+    override fun onViewDetachedFromWindow(holder: ItemViewHolder) {
         super.onViewDetachedFromWindow(holder)
         if (holder.layoutPosition != NO_POSITION) {
             viewModel.currentModel().items[holder.layoutPosition].action.onNext(WidgetLifeCircleEvent.Detach)
