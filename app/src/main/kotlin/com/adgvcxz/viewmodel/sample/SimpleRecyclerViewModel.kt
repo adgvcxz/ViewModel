@@ -33,25 +33,24 @@ class SimpleRecyclerViewModel : RecyclerViewModel() {
     }
 }
 
-class TextItemView : IView<TextItemView.TextItemViews, TextItemViewModel> {
+class TextItemView : IView<TextItemView.TextItemViewHolder, TextItemViewModel> {
     override val layoutId: Int = R.layout.item_text_view
 
-    class TextItemViews: Views() {
+    class TextItemViewHolder : BaseViewHolder() {
         lateinit var content: TextView
     }
 
 
-
-    override fun initView(view: View): TextItemViews {
-        return TextItemViews().also {
+    override fun initView(view: View): TextItemViewHolder {
+        return TextItemViewHolder().also {
             it.content = view.findViewById(R.id.textView) as TextView
         }
     }
 
-    override fun bind(view: TextItemViews, viewModel: TextItemViewModel) {
+    override fun bind(viewHolder: TextItemViewHolder, viewModel: TextItemViewModel) {
         viewModel.model.map { it.content }
                 .distinctUntilChanged()
-                .subscribe(view.content.text())
+                .subscribe(viewHolder.content.text())
     }
 }
 
@@ -72,12 +71,12 @@ class LoadingItemView : IDefaultView<LoadingItemViewModel> {
 
     override val layoutId: Int = R.layout.item_loading
 
-    override fun bind(view: Views, viewModel: LoadingItemViewModel) {
+    override fun bind(viewHolder: BaseViewHolder, viewModel: LoadingItemViewModel) {
         viewModel.model.map { it.state }
                 .map { it != LoadingItemViewModel.State.failure }
-                .subscribe(view.itemView.loading.visibility())
+                .subscribe(viewHolder.itemView.loading.visibility())
         viewModel.model.map { it.state }
                 .map { it == LoadingItemViewModel.State.failure }
-                .subscribe(view.itemView.failed.visibility())
+                .subscribe(viewHolder.itemView.failed.visibility())
     }
 }

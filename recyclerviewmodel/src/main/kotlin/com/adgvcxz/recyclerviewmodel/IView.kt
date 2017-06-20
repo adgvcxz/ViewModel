@@ -8,16 +8,16 @@ import com.adgvcxz.WidgetViewModel
  * zhaowei
  * Created by zhaowei on 2017/6/5.
  */
-interface IView<V: Views, in M: WidgetViewModel<out IModel>> {
+interface IView<V: BaseViewHolder, in M: WidgetViewModel<out IModel>> {
 
     val layoutId: Int
 
     @Suppress("UNCHECKED_CAST")
     fun initView(view: View): V {
-        return Views() as V
+        return BaseViewHolder() as V
     }
 
-    fun bind(view: V, viewModel: M) {
+    fun bind(viewHolder: V, viewModel: M) {
 
     }
 }

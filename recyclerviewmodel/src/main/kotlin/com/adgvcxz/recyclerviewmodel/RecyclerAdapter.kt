@@ -48,8 +48,8 @@ class RecyclerAdapter(val viewModel: RecyclerViewModel,
     @Suppress("UNCHECKED_CAST")
     override fun onBindViewHolder(holder: ItemViewHolder, position: Int) {
         val iView = viewMap[getItemViewType(position)]
-        ifNotNull(iView, holder.views) { iView, views ->
-            (iView as IView<Views, WidgetViewModel<out IModel>>).bind(views, viewModel.currentModel().items[position])
+        ifNotNull(iView, holder.baseViewHolder) { iView, views ->
+            (iView as IView<BaseViewHolder, WidgetViewModel<out IModel>>).bind(views, viewModel.currentModel().items[position])
         }
         checkLoadMore(position)
     }

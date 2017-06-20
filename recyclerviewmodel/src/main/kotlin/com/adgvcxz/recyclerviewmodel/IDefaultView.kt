@@ -8,4 +8,4 @@ import com.adgvcxz.WidgetViewModel
  * Created by zhaowei on 2017/6/19.
  */
 
-interface IDefaultView<in M: WidgetViewModel<out IModel>>: IView<Views, M>
+interface IDefaultView<in M: WidgetViewModel<out IModel>>: IView<BaseViewHolder, M>

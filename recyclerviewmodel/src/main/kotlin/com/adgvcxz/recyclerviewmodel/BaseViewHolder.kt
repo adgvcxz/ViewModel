@@ -6,6 +6,6 @@ import android.view.View
  * zhaowei
  * Created by zhaowei on 2017/6/19.
  */
-open class Views {
+open class BaseViewHolder {
     lateinit var itemView: View
 }
