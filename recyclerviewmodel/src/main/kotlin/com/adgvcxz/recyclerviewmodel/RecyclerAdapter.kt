@@ -27,6 +27,7 @@ class RecyclerAdapter(val viewModel: RecyclerViewModel,
     private val layoutMap: HashMap<KClass<WidgetViewModel<out IModel>>, Int> = HashMap()
     var itemClickListener: View.OnClickListener? = null
     var notify: Boolean = false
+    var loading: Boolean = false
 
     init {
         setHasStableIds(true)
@@ -93,8 +94,11 @@ class RecyclerAdapter(val viewModel: RecyclerViewModel,
     fun checkLoadMore(position: Int) {
         val loadingModel = viewModel.currentModel().loadingViewModel
         loadingModel?.let {
-            if ((position == itemCount - 1) && !viewModel.currentModel().isLoading) {
+            if ((position == itemCount - 1) && !viewModel.currentModel().isLoading && !loading) {
                 viewModel.action.onNext(RecyclerViewModel.Event.loadMore)
+                loading = true
+            } else {
+                loading = false
             }
         }
     }

@@ -4,6 +4,7 @@ import android.os.Bundle
 import android.support.v7.app.AppCompatActivity
 import android.support.v7.widget.LinearLayoutManager
 import android.support.v7.widget.RecyclerView
+import android.util.Log
 import com.adgvcxz.bindTo
 import com.adgvcxz.recyclerviewmodel.RecyclerAdapter
 import com.adgvcxz.recyclerviewmodel.RecyclerViewModel
@@ -38,7 +39,9 @@ class SimpleRecyclerActivity : AppCompatActivity() {
                 .bindTo(viewModel.action)
 
         viewModel.model.map { it.isRefresh }
-                .distinctUntilChanged()
+                .filter { it != refreshLayout.isRefreshing }
                 .subscribe(refreshLayout.refreshing())
+
+        viewModel.action.onNext(RecyclerViewModel.Event.refresh)
     }
 }

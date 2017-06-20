@@ -86,7 +86,7 @@ abstract class RecyclerViewModel : WidgetViewModel<RecyclerViewModel.Model>() {
                 }
                 currentModel().loadingViewModel?.action?.onNext(
                         LoadingItemViewModel.StateEvent.SetState(LoadingItemViewModel.State.loading))
-                return request(true)
+                return request(false)
                         .doOnNext {
                             if (it.value == null) {
                                 currentModel().loadingViewModel?.action?.onNext(
@@ -108,7 +108,9 @@ abstract class RecyclerViewModel : WidgetViewModel<RecyclerViewModel.Model>() {
 
     override fun scan(model: Model, mutation: IMutation): Model {
         when (mutation) {
-            is StateMutation.SetRefresh -> model.isRefresh = mutation.value
+            is StateMutation.SetRefresh -> {
+                model.isRefresh = mutation.value
+            }
             is StateMutation.SetAnim -> model.isAnim = mutation.value
             is DataMutation.SetData -> {
                 model.items = mutation.data

@@ -18,17 +18,16 @@ import java.util.concurrent.TimeUnit
 
 class SimpleRecyclerViewModel : RecyclerViewModel() {
 
-    override val initModel: Model = Model((0 until 2).map { TextItemViewModel() }, true, false)
+    override val initModel: Model = Model(null, true, true)
 
 
     override fun request(refresh: Boolean): Observable<ListResult> {
 //        if (Random().nextInt() < 16) {
-            return Observable.timer(1, TimeUnit.SECONDS)
-                    .map { (0 until 10).map { TextItemViewModel() } }
-                    .map { ListResult(it) }
+        return Observable.timer(1, TimeUnit.SECONDS)
+                .map { (0 until 10).map { TextItemViewModel() } }
+                .map { ListResult(it) }
 //        } else {
-//            return Observable.timer(1, TimeUnit.SECONDS)
-//                    .map { ListResult(null) }
+//            return Observable.just(ListResult(null))
 //        }
     }
 }
