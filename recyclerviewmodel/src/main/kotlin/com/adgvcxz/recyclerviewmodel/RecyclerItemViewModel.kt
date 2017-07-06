@@ -8,8 +8,8 @@ import io.reactivex.disposables.Disposable
  * zhaowei
  * Created by zhaowei on 2017/7/6.
  */
-abstract class RecyclerItemViewModel<M : IModel>: WidgetViewModel<M>() {
+abstract class RecyclerItemViewModel<M : IModel> : WidgetViewModel<M>() {
 
-    var disposable: Disposable? = null
+    lateinit var disposable: Disposable
 
 }

@@ -3,6 +3,7 @@ package com.adgvcxz.viewmodel.sample
 import android.view.View
 import android.widget.TextView
 import com.adgvcxz.IModel
+import com.adgvcxz.addTo
 import com.adgvcxz.recyclerviewmodel.*
 import com.jakewharton.rxbinding2.view.visibility
 import com.jakewharton.rxbinding2.widget.text
@@ -49,6 +50,7 @@ class TextItemView : IView<TextItemView.TextItemViewHolder, TextItemViewModel> {
         viewModel.model.map { it.content }
                 .distinctUntilChanged()
                 .subscribe(viewHolder.content.text())
+                .addTo(viewHolder.disposables)
     }
 }
 
@@ -73,8 +75,11 @@ class LoadingItemView : IDefaultView<LoadingItemViewModel> {
         viewModel.model.map { it.state }
                 .map { it != LoadingItemViewModel.State.failure }
                 .subscribe(viewHolder.itemView.loading.visibility())
+                .addTo(viewHolder.disposables)
+
         viewModel.model.map { it.state }
                 .map { it == LoadingItemViewModel.State.failure }
                 .subscribe(viewHolder.itemView.failed.visibility())
+                .addTo(viewHolder.disposables)
     }
 }

@@ -114,7 +114,7 @@ abstract class RecyclerViewModel : WidgetViewModel<RecyclerViewModel.Model>() {
             }
             is StateMutation.SetAnim -> model.isAnim = mutation.value
             is DataMutation.SetData -> {
-                model.items.forEach { it.disposable?.dispose() }
+                model.items.forEach { it.disposable.dispose() }
                 model.items = mutation.data
                 model.loadingViewModel?.let {
                     if (!model.items.isEmpty()) {

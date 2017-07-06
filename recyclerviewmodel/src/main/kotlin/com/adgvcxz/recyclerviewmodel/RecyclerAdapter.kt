@@ -4,12 +4,14 @@ import android.support.v7.util.DiffUtil
 import android.support.v7.util.ListUpdateCallback
 import android.support.v7.widget.RecyclerView
 import android.support.v7.widget.RecyclerView.NO_POSITION
-import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import com.adgvcxz.IModel
 import com.adgvcxz.WidgetLifeCircleEvent
+import com.adgvcxz.addTo
+import io.reactivex.disposables.CompositeDisposable
+import io.reactivex.disposables.Disposable
 import io.reactivex.functions.Consumer
 import kotlin.reflect.KClass
 
@@ -28,11 +30,13 @@ class RecyclerAdapter(val viewModel: RecyclerViewModel,
     var itemClickListener: View.OnClickListener? = null
     var notify: Boolean = false
     var loading: Boolean = false
+    val disposables: CompositeDisposable by lazy { CompositeDisposable() }
 
     init {
         setHasStableIds(true)
         viewModel.model.map { it.items }
                 .bindTo(this)
+                .addTo(disposables)
     }
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ItemViewHolder {
@@ -84,7 +88,7 @@ class RecyclerAdapter(val viewModel: RecyclerViewModel,
         super.onViewDetachedFromWindow(holder)
         if (holder.layoutPosition != NO_POSITION) {
             viewModel.currentModel().items[holder.layoutPosition].action.onNext(WidgetLifeCircleEvent.Detach)
-            holder.baseViewHolder?.disposables?.dispose()
+            holder.baseViewHolder?.disposables?.clear()
         }
     }
 
@@ -109,7 +113,8 @@ class RecyclerAdapter(val viewModel: RecyclerViewModel,
         super.onAttachedToRecyclerView(recyclerView)
         recyclerView?.addOnAttachStateChangeListener(object : View.OnAttachStateChangeListener {
             override fun onViewDetachedFromWindow(v: View?) {
-                viewModel.currentModel().items.forEach { it.disposable?.dispose() }
+                viewModel.currentModel().items.forEach { it.disposable.dispose() }
+                disposables.dispose()
             }
 
             override fun onViewAttachedToWindow(v: View?) {
