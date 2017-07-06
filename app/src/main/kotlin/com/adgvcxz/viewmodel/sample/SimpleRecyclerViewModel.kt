@@ -3,7 +3,6 @@ package com.adgvcxz.viewmodel.sample
 import android.view.View
 import android.widget.TextView
 import com.adgvcxz.IModel
-import com.adgvcxz.WidgetViewModel
 import com.adgvcxz.recyclerviewmodel.*
 import com.jakewharton.rxbinding2.view.visibility
 import com.jakewharton.rxbinding2.widget.text
@@ -55,7 +54,7 @@ class TextItemView : IView<TextItemView.TextItemViewHolder, TextItemViewModel> {
 
 var a = 1
 
-class TextItemViewModel : WidgetViewModel<TextItemViewModel.Model>() {
+class TextItemViewModel : RecyclerItemViewModel<TextItemViewModel.Model>() {
     override val initModel: Model = Model()
 
     class Model : IModel {

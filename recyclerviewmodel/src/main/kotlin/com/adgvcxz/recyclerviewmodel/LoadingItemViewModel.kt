@@ -3,14 +3,13 @@ package com.adgvcxz.recyclerviewmodel
 import com.adgvcxz.IEvent
 import com.adgvcxz.IModel
 import com.adgvcxz.IMutation
-import com.adgvcxz.WidgetViewModel
 import io.reactivex.Observable
 
 /**
  * zhaowei
  * Created by zhaowei on 2017/6/8.
  */
-class LoadingItemViewModel : WidgetViewModel<LoadingItemViewModel.Model>() {
+class LoadingItemViewModel : RecyclerItemViewModel<LoadingItemViewModel.Model>() {
 
 
     override val initModel: Model = Model()

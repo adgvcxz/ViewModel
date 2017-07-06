@@ -1,6 +1,7 @@
 package com.adgvcxz.recyclerviewmodel
 
 import android.view.View
+import io.reactivex.disposables.CompositeDisposable
 
 /**
  * zhaowei
@@ -8,4 +9,5 @@ import android.view.View
  */
 open class BaseViewHolder {
     lateinit var itemView: View
+    val disposables: CompositeDisposable by lazy { CompositeDisposable() }
 }

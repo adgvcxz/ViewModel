@@ -13,12 +13,12 @@ import io.reactivex.Observable
 
 abstract class RecyclerViewModel : WidgetViewModel<RecyclerViewModel.Model>() {
 
-    class Model(values: List<WidgetViewModel<out IModel>>? = null,
+    class Model(values: List<RecyclerItemViewModel<out IModel>>? = null,
                 hasLoadingItem: Boolean,
                 var isAnim: Boolean = false) : IModel {
 
         var isRefresh: Boolean = false
-        var items: List<WidgetViewModel<out IModel>> = arrayListOf()
+        var items: List<RecyclerItemViewModel<out IModel>> = arrayListOf()
         var loadingViewModel: LoadingItemViewModel? = null
 
         init {
@@ -31,6 +31,7 @@ abstract class RecyclerViewModel : WidgetViewModel<RecyclerViewModel.Model>() {
                     items += it
                 }
             }
+            items.forEach { it.disposable = it.model.subscribe() }
         }
 
         val isLoading: Boolean
@@ -58,9 +59,9 @@ abstract class RecyclerViewModel : WidgetViewModel<RecyclerViewModel.Model>() {
         class SetAnim(value: Boolean) : StateMutation(value)
     }
 
-    sealed class DataMutation(val data: List<WidgetViewModel<out IModel>>) : IMutation {
-        class SetData(data: List<WidgetViewModel<out IModel>>) : DataMutation(data)
-        class AppendData(data: List<WidgetViewModel<out IModel>>) : DataMutation(data)
+    sealed class DataMutation(val data: List<RecyclerItemViewModel<out IModel>>) : IMutation {
+        class SetData(data: List<RecyclerItemViewModel<out IModel>>) : DataMutation(data)
+        class AppendData(data: List<RecyclerItemViewModel<out IModel>>) : DataMutation(data)
     }
 
     enum class Mutation : IMutation {
@@ -113,18 +114,20 @@ abstract class RecyclerViewModel : WidgetViewModel<RecyclerViewModel.Model>() {
             }
             is StateMutation.SetAnim -> model.isAnim = mutation.value
             is DataMutation.SetData -> {
+                model.items.forEach { it.disposable?.dispose() }
                 model.items = mutation.data
                 model.loadingViewModel?.let {
                     if (!model.items.isEmpty()) {
                         model.items += it
                     }
                 }
+                model.items.forEach { it.disposable = it.model.subscribe() }
             }
             is DataMutation.AppendData -> {
                 if (model.items.last() is LoadingItemViewModel) {
                     model.items = model.items.subList(0, model.items.size - 1)
                 }
-                model.items += mutation.data
+                model.items += mutation.data.also { it.forEach { it.disposable = it.model.subscribe() } }
                 model.loadingViewModel?.let { model.items += it }
             }
             Mutation.removeLoadingItem -> {
