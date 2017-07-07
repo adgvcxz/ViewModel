@@ -11,44 +11,46 @@ import io.reactivex.Observable
  * Created by zhaowei on 2017/6/5.
  */
 
-abstract class RecyclerViewModel : WidgetViewModel<RecyclerViewModel.Model>() {
+class RecyclerModel(values: List<RecyclerItemViewModel<out IModel>>? = null,
+            hasLoadingItem: Boolean = false,
+            var isAnim: Boolean = false) : IModel {
 
-    class Model(values: List<RecyclerItemViewModel<out IModel>>? = null,
-                hasLoadingItem: Boolean,
-                var isAnim: Boolean = false) : IModel {
+    var isRefresh: Boolean = false
+    var items: List<RecyclerItemViewModel<out IModel>> = arrayListOf()
+    var loadingViewModel: LoadingItemViewModel? = null
 
-        var isRefresh: Boolean = false
-        var items: List<RecyclerItemViewModel<out IModel>> = arrayListOf()
-        var loadingViewModel: LoadingItemViewModel? = null
-
-        init {
-            values?.let { items = values }
-            if (hasLoadingItem) {
-                loadingViewModel = LoadingItemViewModel()
-            }
-            loadingViewModel?.let {
-                if (!items.isEmpty()) {
-                    items += it
-                }
-            }
-            items.forEach { it.disposable = it.model.subscribe() }
+    init {
+        values?.let { items = values }
+        if (hasLoadingItem) {
+            loadingViewModel = LoadingItemViewModel()
         }
-
-        val isLoading: Boolean
-            get() {
-                val state = loadingViewModel?.currentModel()?.state
-                if (state != null) {
-                    return state == LoadingItemViewModel.State.loading
-                }
-                return false
+        loadingViewModel?.let {
+            if (!items.isEmpty()) {
+                items += it
             }
+        }
     }
+
+    val isLoading: Boolean
+        get() {
+            val state = loadingViewModel?.currentModel()?.state
+            if (state != null) {
+                return state == LoadingItemViewModel.State.loading
+            }
+            return false
+        }
+}
+
+abstract class RecyclerViewModel : WidgetViewModel<RecyclerModel>() {
 
     enum class Event : IEvent {
         refresh,
         loadMore,
         hideLoadingItem
     }
+
+    class ReplaceDataEvent(val index: List<Int>, val data: List<RecyclerItemViewModel<out IModel>>) : IEvent
+    class RemoveDataEvent(val index: List<Int>) : IEvent
 
     sealed class BooleanEvent(val value: Boolean) : IEvent {
         class setAnim(value: Boolean) : BooleanEvent(value)
@@ -62,7 +64,10 @@ abstract class RecyclerViewModel : WidgetViewModel<RecyclerViewModel.Model>() {
     sealed class DataMutation(val data: List<RecyclerItemViewModel<out IModel>>) : IMutation {
         class SetData(data: List<RecyclerItemViewModel<out IModel>>) : DataMutation(data)
         class AppendData(data: List<RecyclerItemViewModel<out IModel>>) : DataMutation(data)
+        class ReplaceData(val index: List<Int>, data: List<RecyclerItemViewModel<out IModel>>) : DataMutation(data)
     }
+
+    class RemoveDateMutation(val index: List<Int>) : IMutation
 
     enum class Mutation : IMutation {
         removeLoadingItem
@@ -103,32 +108,54 @@ abstract class RecyclerViewModel : WidgetViewModel<RecyclerViewModel.Model>() {
             }
             Event.hideLoadingItem -> return Observable.just(Mutation.removeLoadingItem)
             is BooleanEvent.setAnim -> return Observable.just(StateMutation.SetAnim(event.value))
+            is ReplaceDataEvent -> {
+                return Observable.just(DataMutation.ReplaceData(event.index, event.data))
+            }
+            is RemoveDataEvent -> return Observable.just(RemoveDateMutation(event.index))
         }
         return super.mutate(event)
     }
 
-    override fun scan(model: Model, mutation: IMutation): Model {
+    override fun scan(model: RecyclerModel, mutation: IMutation): RecyclerModel {
         when (mutation) {
             is StateMutation.SetRefresh -> {
                 model.isRefresh = mutation.value
             }
             is StateMutation.SetAnim -> model.isAnim = mutation.value
             is DataMutation.SetData -> {
-                model.items.forEach { it.disposable.dispose() }
+                model.items.forEach { it.dispose() }
                 model.items = mutation.data
                 model.loadingViewModel?.let {
                     if (!model.items.isEmpty()) {
                         model.items += it
                     }
                 }
-                model.items.forEach { it.disposable = it.model.subscribe() }
+                model.items
             }
             is DataMutation.AppendData -> {
                 if (model.items.last() is LoadingItemViewModel) {
                     model.items = model.items.subList(0, model.items.size - 1)
                 }
-                model.items += mutation.data.also { it.forEach { it.disposable = it.model.subscribe() } }
+                model.items += mutation.data
                 model.loadingViewModel?.let { model.items += it }
+            }
+            is DataMutation.ReplaceData -> {
+                model.items = model.items.mapIndexed { index, viewModel ->
+                    if (mutation.index.contains(index)) {
+                        viewModel.dispose()
+                        mutation.data[mutation.index.indexOf(index)]
+                    }
+                    viewModel
+                }
+            }
+            is RemoveDateMutation -> {
+                model.items = model.items.filterIndexed { index, viewModel ->
+                    val exist = mutation.index.contains(index)
+                    if (exist) {
+                        viewModel.dispose()
+                    }
+                    !exist
+                }
             }
             Mutation.removeLoadingItem -> {
                 if (model.items.last() is LoadingItemViewModel) {

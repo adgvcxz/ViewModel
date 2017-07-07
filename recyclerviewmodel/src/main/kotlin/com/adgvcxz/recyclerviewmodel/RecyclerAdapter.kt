@@ -11,7 +11,6 @@ import com.adgvcxz.IModel
 import com.adgvcxz.WidgetLifeCircleEvent
 import com.adgvcxz.addTo
 import io.reactivex.disposables.CompositeDisposable
-import io.reactivex.disposables.Disposable
 import io.reactivex.functions.Consumer
 import kotlin.reflect.KClass
 
@@ -33,7 +32,6 @@ class RecyclerAdapter(val viewModel: RecyclerViewModel,
     val disposables: CompositeDisposable by lazy { CompositeDisposable() }
 
     init {
-        setHasStableIds(true)
         viewModel.model.map { it.items }
                 .bindTo(this)
                 .addTo(disposables)
@@ -87,14 +85,11 @@ class RecyclerAdapter(val viewModel: RecyclerViewModel,
     override fun onViewDetachedFromWindow(holder: ItemViewHolder) {
         super.onViewDetachedFromWindow(holder)
         if (holder.layoutPosition != NO_POSITION) {
-            viewModel.currentModel().items[holder.layoutPosition].action.onNext(WidgetLifeCircleEvent.Detach)
+//            viewModel.currentModel().items[holder.layoutPosition].action.onNext(WidgetLifeCircleEvent.Detach)
             holder.baseViewHolder?.disposables?.clear()
         }
     }
 
-    override fun getItemId(position: Int): Long {
-        return position.toLong()
-    }
 
     fun checkLoadMore(position: Int) {
         val loadingModel = viewModel.currentModel().loadingViewModel
@@ -113,13 +108,12 @@ class RecyclerAdapter(val viewModel: RecyclerViewModel,
         super.onAttachedToRecyclerView(recyclerView)
         recyclerView?.addOnAttachStateChangeListener(object : View.OnAttachStateChangeListener {
             override fun onViewDetachedFromWindow(v: View?) {
-                viewModel.currentModel().items.forEach { it.disposable.dispose() }
+                viewModel.currentModel().items.forEach { it.dispose() }
                 disposables.dispose()
             }
 
             override fun onViewAttachedToWindow(v: View?) {
             }
-
         })
     }
 

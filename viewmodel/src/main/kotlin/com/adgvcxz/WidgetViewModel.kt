@@ -2,10 +2,8 @@ package com.adgvcxz
 
 //import android.arch.lifecycle.Lifecycle
 //import android.arch.lifecycle.OnLifecycleEvent
-import android.view.View
 import io.reactivex.Observable
 import io.reactivex.android.schedulers.AndroidSchedulers
-import io.reactivex.disposables.CompositeDisposable
 import io.reactivex.subjects.PublishSubject
 import io.reactivex.subjects.Subject
 
@@ -17,13 +15,11 @@ abstract class WidgetViewModel<M : IModel> : IViewModel<M> {
 
     var action: Subject<IEvent> = PublishSubject.create<IEvent>().toSerialized()
 
-    abstract val initModel: M
-
-    var _currentModel: M? = null
+    private var _currentModel: M? = null
 
     val model: Observable<M> by lazy {
+        val initModel = initModel()
         this.action
-                .doOnSubscribe { _currentModel = initModel }
                 .flatMap { this.mutate(it) }
                 .compose { transform(it) }
                 .scan(initModel) { model, mutation -> scan(model, mutation) }
@@ -34,8 +30,10 @@ abstract class WidgetViewModel<M : IModel> : IViewModel<M> {
     }
 
     fun currentModel(): M {
-        return _currentModel ?: initModel
+        return _currentModel ?: initModel()
     }
+
+    abstract fun initModel(): M
 
 //    @OnLifecycleEvent(Lifecycle.Event.ON_CREATE)
 //    fun onCreate() {

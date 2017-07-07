@@ -12,7 +12,7 @@ import io.reactivex.Observable
 class LoadingItemViewModel : RecyclerItemViewModel<LoadingItemViewModel.Model>() {
 
 
-    override val initModel: Model = Model()
+    override fun initModel(): Model = Model()
 
     enum class State {
         success,

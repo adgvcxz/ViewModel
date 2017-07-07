@@ -78,7 +78,7 @@ class TimerViewModel : AFViewModel<TimerViewModel.Model>() {
         return model
     }
 
-    override val initModel: Model = Model()
+    override fun initModel(): Model = Model()
 }
 
 

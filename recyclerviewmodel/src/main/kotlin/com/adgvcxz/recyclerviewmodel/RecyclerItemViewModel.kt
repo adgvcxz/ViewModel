@@ -10,6 +10,10 @@ import io.reactivex.disposables.Disposable
  */
 abstract class RecyclerItemViewModel<M : IModel> : WidgetViewModel<M>() {
 
-    lateinit var disposable: Disposable
+    private val disposable: Disposable = model.subscribe()
+
+    internal fun dispose() {
+        disposable.dispose()
+    }
 
 }

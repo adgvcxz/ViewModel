@@ -13,15 +13,15 @@ import io.reactivex.subjects.Subject
  * Created by zhaowei on 2017/4/27.
  */
 
-abstract class AFViewModel<M : IModel>: /*: ViewModel(),*/ IViewModel<M> {
+abstract class AFViewModel<M : IModel> : /*: ViewModel(),*/ IViewModel<M> {
 
     var action: Subject<IEvent> = PublishSubject.create<IEvent>().toSerialized()
 
-    abstract val initModel: M
 
-    var _currentModel: M? = null
+    private var _currentModel: M? = null
 
     val model: Observable<M> by lazy {
+        val initModel = initModel()
         this.action
                 .takeUntil(action.filter { it == AFLifeCircleEvent.Destroy }.take(1))
                 .flatMap { this.mutate(it) }
@@ -35,8 +35,10 @@ abstract class AFViewModel<M : IModel>: /*: ViewModel(),*/ IViewModel<M> {
     }
 
     fun currentModel(): M {
-        return _currentModel ?: initModel
+        return _currentModel ?: initModel()
     }
+
+    abstract fun initModel(): M
 
 //    @OnLifecycleEvent(Lifecycle.Event.ON_CREATE)
 //    fun onCreate() {

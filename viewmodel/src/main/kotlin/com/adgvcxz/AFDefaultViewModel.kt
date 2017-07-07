@@ -9,12 +9,12 @@ class DefaultModel: IModel
 
 open class AFDefaultViewModel: AFViewModel<DefaultModel>() {
 
-    override val initModel: DefaultModel = DefaultModel()
+    override fun initModel(): DefaultModel = DefaultModel()
 
 }
 
 open class WidgetDefaultViewModel: WidgetViewModel<DefaultModel>() {
 
-    override val initModel: DefaultModel = DefaultModel()
+    override fun initModel(): DefaultModel = DefaultModel()
 
 }

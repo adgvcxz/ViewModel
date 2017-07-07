@@ -9,6 +9,7 @@ import com.jakewharton.rxbinding2.view.visibility
 import com.jakewharton.rxbinding2.widget.text
 import io.reactivex.Observable
 import kotlinx.android.synthetic.main.item_loading.view.*
+import java.util.*
 import java.util.concurrent.TimeUnit
 
 /**
@@ -18,7 +19,7 @@ import java.util.concurrent.TimeUnit
 
 class SimpleRecyclerViewModel : RecyclerViewModel() {
 
-    override val initModel: Model = Model(null, true, true)
+    override fun initModel(): RecyclerModel = RecyclerModel(null, true, false)
 
 
     override fun request(refresh: Boolean): Observable<ListResult> {
@@ -57,10 +58,10 @@ class TextItemView : IView<TextItemView.TextItemViewHolder, TextItemViewModel> {
 var a = 1
 
 class TextItemViewModel : RecyclerItemViewModel<TextItemViewModel.Model>() {
-    override val initModel: Model = Model()
+    override fun initModel(): Model = Model()
 
     class Model : IModel {
-        val content: String = "$a"
+        val content: String = "$a     ${UUID.randomUUID().toString()}"
         init {
             a++
         }
