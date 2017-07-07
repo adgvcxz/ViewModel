@@ -32,6 +32,7 @@ class RecyclerAdapter(val viewModel: RecyclerViewModel,
     val disposables: CompositeDisposable by lazy { CompositeDisposable() }
 
     init {
+//        setHasStableIds(true)
         viewModel.model.map { it.items }
                 .bindTo(this)
                 .addTo(disposables)
@@ -116,6 +117,10 @@ class RecyclerAdapter(val viewModel: RecyclerViewModel,
             }
         })
     }
+
+//    override fun getItemId(position: Int): Long {
+//        return viewModel.currentModel().items[position]._id
+//    }
 
     override fun accept(result: DiffUtil.DiffResult) {
         if (viewModel.currentModel().isAnim && !notify) {

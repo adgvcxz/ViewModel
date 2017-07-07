@@ -6,7 +6,6 @@ import com.adgvcxz.IModel
 import com.adgvcxz.addTo
 import com.adgvcxz.recyclerviewmodel.*
 import com.jakewharton.rxbinding2.view.visibility
-import com.jakewharton.rxbinding2.widget.text
 import io.reactivex.Observable
 import kotlinx.android.synthetic.main.item_loading.view.*
 import java.util.*
@@ -48,23 +47,15 @@ class TextItemView : IView<TextItemView.TextItemViewHolder, TextItemViewModel> {
     }
 
     override fun bind(viewHolder: TextItemViewHolder, viewModel: TextItemViewModel) {
-        viewModel.model.map { it.content }
-                .distinctUntilChanged()
-                .subscribe(viewHolder.content.text())
-                .addTo(viewHolder.disposables)
+        viewHolder.content.text = viewModel.currentModel().content
     }
 }
-
-var a = 1
 
 class TextItemViewModel : RecyclerItemViewModel<TextItemViewModel.Model>() {
     override fun initModel(): Model = Model()
 
     class Model : IModel {
-        val content: String = "$a     ${UUID.randomUUID().toString()}"
-        init {
-            a++
-        }
+        val content: String = UUID.randomUUID().toString()
     }
 }
 

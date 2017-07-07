@@ -108,9 +108,7 @@ abstract class RecyclerViewModel : WidgetViewModel<RecyclerModel>() {
             }
             Event.hideLoadingItem -> return Observable.just(Mutation.removeLoadingItem)
             is BooleanEvent.setAnim -> return Observable.just(StateMutation.SetAnim(event.value))
-            is ReplaceDataEvent -> {
-                return Observable.just(DataMutation.ReplaceData(event.index, event.data))
-            }
+            is ReplaceDataEvent -> return Observable.just(DataMutation.ReplaceData(event.index, event.data))
             is RemoveDataEvent -> return Observable.just(RemoveDateMutation(event.index))
         }
         return super.mutate(event)
@@ -144,8 +142,9 @@ abstract class RecyclerViewModel : WidgetViewModel<RecyclerModel>() {
                     if (mutation.index.contains(index)) {
                         viewModel.dispose()
                         mutation.data[mutation.index.indexOf(index)]
+                    } else {
+                        viewModel
                     }
-                    viewModel
                 }
             }
             is RemoveDateMutation -> {

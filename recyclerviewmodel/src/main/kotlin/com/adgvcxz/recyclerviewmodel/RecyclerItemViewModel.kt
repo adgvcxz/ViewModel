@@ -15,5 +15,4 @@ abstract class RecyclerItemViewModel<M : IModel> : WidgetViewModel<M>() {
     internal fun dispose() {
         disposable.dispose()
     }
-
 }
