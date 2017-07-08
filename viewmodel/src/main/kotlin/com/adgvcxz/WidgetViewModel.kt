@@ -26,7 +26,7 @@ abstract class WidgetViewModel<M : IModel> : IViewModel<M> {
                 .compose { transform(it) }
                 .scan(initModel) { model, mutation -> scan(model, mutation) }
                 .share()
-                .startWith(initModel)
+                .retry()
                 .observeOn(AndroidSchedulers.mainThread())
                 .doOnNext { _currentModel = it }
     }

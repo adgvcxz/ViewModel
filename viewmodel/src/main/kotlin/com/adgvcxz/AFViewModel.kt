@@ -29,7 +29,6 @@ abstract class AFViewModel<M : IModel> : /*: ViewModel(),*/ IViewModel<M> {
                 .scan(initModel) { model, mutation -> scan(model, mutation) }
                 .retry()
                 .share()
-                .startWith(initModel)
                 .observeOn(AndroidSchedulers.mainThread())
                 .doOnNext { _currentModel = it }
     }
