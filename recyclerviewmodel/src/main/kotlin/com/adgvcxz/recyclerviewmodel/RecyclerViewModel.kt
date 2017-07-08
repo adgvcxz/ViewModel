@@ -29,6 +29,7 @@ class RecyclerModel(values: List<RecyclerItemViewModel<out IModel>>? = null,
                 items += it
             }
         }
+        items.forEach { it.disposable = it.model.subscribe() }
     }
 
     val isLoading: Boolean
@@ -128,20 +129,21 @@ abstract class RecyclerViewModel : WidgetViewModel<RecyclerModel>() {
                         model.items += it
                     }
                 }
-                model.items
+                model.items.forEach { it.disposable = it.model.subscribe() }
             }
             is DataMutation.AppendData -> {
                 if (model.items.last() is LoadingItemViewModel) {
                     model.items = model.items.subList(0, model.items.size - 1)
                 }
                 model.items += mutation.data
+                mutation.data.forEach { it.disposable = it.model.subscribe() }
                 model.loadingViewModel?.let { model.items += it }
             }
             is DataMutation.ReplaceData -> {
                 model.items = model.items.mapIndexed { index, viewModel ->
                     if (mutation.index.contains(index)) {
                         viewModel.dispose()
-                        mutation.data[mutation.index.indexOf(index)]
+                        mutation.data[mutation.index.indexOf(index)].also { it.disposable = it.model.subscribe() }
                     } else {
                         viewModel
                     }

@@ -15,10 +15,12 @@ abstract class WidgetViewModel<M : IModel> : IViewModel<M> {
 
     var action: Subject<IEvent> = PublishSubject.create<IEvent>().toSerialized()
 
+    //initialization initModel maybe have some parameters, so there is no abstract method initModel()
+    abstract val initModel: M
+
     private var _currentModel: M? = null
 
     val model: Observable<M> by lazy {
-        val initModel = initModel()
         this.action
                 .flatMap { this.mutate(it) }
                 .compose { transform(it) }
@@ -30,10 +32,8 @@ abstract class WidgetViewModel<M : IModel> : IViewModel<M> {
     }
 
     fun currentModel(): M {
-        return _currentModel ?: initModel()
+        return _currentModel ?: initModel
     }
-
-    abstract fun initModel(): M
 
 //    @OnLifecycleEvent(Lifecycle.Event.ON_CREATE)
 //    fun onCreate() {
