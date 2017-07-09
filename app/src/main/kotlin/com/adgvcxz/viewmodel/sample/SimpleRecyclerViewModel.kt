@@ -4,8 +4,10 @@ import android.view.View
 import android.widget.TextView
 import com.adgvcxz.IModel
 import com.adgvcxz.addTo
+import com.adgvcxz.bindTo
 import com.adgvcxz.recyclerviewmodel.*
 import com.jakewharton.rxbinding2.view.visibility
+import com.jakewharton.rxbinding2.widget.text
 import io.reactivex.Observable
 import kotlinx.android.synthetic.main.item_loading.view.*
 import java.util.*
@@ -18,7 +20,7 @@ import java.util.concurrent.TimeUnit
 
 class SimpleRecyclerViewModel : RecyclerViewModel() {
 
-    override var initModel: RecyclerModel = RecyclerModel(null, true, false)
+    override var initModel: RecyclerModel = RecyclerModel(null, true, true)
 
 
     override fun request(refresh: Boolean): Observable<ListResult> {
@@ -47,7 +49,11 @@ class TextItemView : IView<TextItemView.TextItemViewHolder, TextItemViewModel> {
     }
 
     override fun bind(viewHolder: TextItemViewHolder, viewModel: TextItemViewModel) {
-        viewHolder.content.text = viewModel.currentModel().content
+//        viewHolder.content.text = viewModel.currentModel().content
+        viewModel.model.map { it.content }
+                .distinctUntilChanged()
+                .subscribe(viewHolder.content.text())
+                .addTo(viewHolder.disposables)
     }
 }
 

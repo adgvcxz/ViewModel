@@ -3,6 +3,7 @@ package com.adgvcxz
 //import android.arch.lifecycle.Lifecycle
 //import android.arch.lifecycle.OnLifecycleEvent
 //import android.arch.lifecycle.ViewModel
+import android.util.Log
 import io.reactivex.Observable
 import io.reactivex.android.schedulers.AndroidSchedulers
 import io.reactivex.subjects.PublishSubject
@@ -23,14 +24,17 @@ abstract class AFViewModel<M : IModel> : /*: ViewModel(),*/ IViewModel<M> {
 
     val model: Observable<M> by lazy {
         this.action
-                .takeUntil(action.filter { it == AFLifeCircleEvent.Destroy }.take(1))
                 .flatMap { this.mutate(it) }
                 .compose { transform(it) }
                 .scan(initModel) { model, mutation -> scan(model, mutation) }
-                .retry()
+                .skip(1)
+                .onErrorResumeNext(Observable.empty())
                 .share()
+                .startWith(initModel)
                 .observeOn(AndroidSchedulers.mainThread())
                 .doOnNext { _currentModel = it }
+                .replay(1)
+                .refCount()
     }
 
     fun currentModel(): M {
