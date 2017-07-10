@@ -27,10 +27,8 @@ abstract class AFViewModel<M : IModel> : /*: ViewModel(),*/ IViewModel<M> {
                 .flatMap { this.mutate(it) }
                 .compose { transform(it) }
                 .scan(initModel) { model, mutation -> scan(model, mutation) }
-                .skip(1)
-                .onErrorResumeNext(Observable.empty())
-                .share()
-                .startWith(initModel)
+                .doOnError { it.printStackTrace() }
+                .retry()
                 .observeOn(AndroidSchedulers.mainThread())
                 .doOnNext { _currentModel = it }
                 .replay(1)

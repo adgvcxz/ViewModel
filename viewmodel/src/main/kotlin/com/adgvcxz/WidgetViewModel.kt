@@ -25,9 +25,8 @@ abstract class WidgetViewModel<M : IModel> : IViewModel<M> {
                 .flatMap { this.mutate(it) }
                 .compose { transform(it) }
                 .scan(initModel) { model, mutation -> scan(model, mutation) }
-                .skip(1)
-                .onErrorResumeNext(Observable.empty())
-                .startWith(initModel)
+                .doOnError { it.printStackTrace() }
+                .retry()
                 .observeOn(AndroidSchedulers.mainThread())
                 .doOnNext { _currentModel = it }
                 .replay(1)
