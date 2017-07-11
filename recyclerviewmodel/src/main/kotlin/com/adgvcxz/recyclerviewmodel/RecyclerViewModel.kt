@@ -51,6 +51,8 @@ abstract class RecyclerViewModel : WidgetViewModel<RecyclerModel>() {
     }
 
     class ReplaceDataEvent(val index: List<Int>, val data: List<RecyclerItemViewModel<out IModel>>) : IEvent
+    class SetDataEvent(val data: List<RecyclerItemViewModel<out IModel>>) : IEvent
+    class AppendDataEvent(val data: List<RecyclerItemViewModel<out IModel>>) : IEvent
     class RemoveDataEvent(val index: List<Int>) : IEvent
 
     sealed class BooleanEvent(val value: Boolean) : IEvent {
@@ -111,6 +113,8 @@ abstract class RecyclerViewModel : WidgetViewModel<RecyclerModel>() {
             is BooleanEvent.setAnim -> return Observable.just(StateMutation.SetAnim(event.value))
             is ReplaceDataEvent -> return Observable.just(DataMutation.ReplaceData(event.index, event.data))
             is RemoveDataEvent -> return Observable.just(RemoveDateMutation(event.index))
+            is SetDataEvent -> return Observable.just(DataMutation.SetData(event.data))
+            is AppendDataEvent -> return Observable.just(DataMutation.AppendData(event.data))
         }
         return super.mutate(event)
     }
