@@ -4,7 +4,6 @@ import android.view.View
 import android.widget.TextView
 import com.adgvcxz.IModel
 import com.adgvcxz.addTo
-import com.adgvcxz.bindTo
 import com.adgvcxz.recyclerviewmodel.*
 import com.jakewharton.rxbinding2.view.visibility
 import com.jakewharton.rxbinding2.widget.text
@@ -48,7 +47,7 @@ class TextItemView : IView<TextItemView.TextItemViewHolder, TextItemViewModel> {
         }
     }
 
-    override fun bind(viewHolder: TextItemViewHolder, viewModel: TextItemViewModel) {
+    override fun bind(viewHolder: TextItemViewHolder, viewModel: TextItemViewModel, position: Int) {
 //        viewHolder.content.text = viewModel.currentModel().content
         viewModel.model.map { it.content }
                 .distinctUntilChanged()
@@ -69,7 +68,7 @@ class LoadingItemView : IDefaultView<LoadingItemViewModel> {
 
     override val layoutId: Int = R.layout.item_loading
 
-    override fun bind(viewHolder: BaseViewHolder, viewModel: LoadingItemViewModel) {
+    override fun bind(viewHolder: BaseViewHolder, viewModel: LoadingItemViewModel, position: Int) {
         viewModel.model.map { it.state }
                 .map { it != LoadingItemViewModel.State.failure }
                 .subscribe(viewHolder.itemView.loading.visibility())

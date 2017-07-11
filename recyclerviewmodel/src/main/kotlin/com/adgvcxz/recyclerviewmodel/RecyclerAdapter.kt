@@ -53,7 +53,8 @@ class RecyclerAdapter(val viewModel: RecyclerViewModel,
     override fun onBindViewHolder(holder: ItemViewHolder, position: Int) {
         val iView = viewMap[getItemViewType(position)]
         ifNotNull(iView, holder.baseViewHolder) { iView, views ->
-            (iView as IView<BaseViewHolder, RecyclerItemViewModel<out IModel>>).bind(views, viewModel.currentModel().items[position])
+            (iView as IView<BaseViewHolder, RecyclerItemViewModel<out IModel>>)
+                    .bind(views, viewModel.currentModel().items[position], position)
         }
         checkLoadMore(position)
     }

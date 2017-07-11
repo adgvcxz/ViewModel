@@ -16,7 +16,7 @@ interface IView<V: BaseViewHolder, in M: RecyclerItemViewModel<out IModel>> {
         return BaseViewHolder() as V
     }
 
-    fun bind(viewHolder: V, viewModel: M) {
+    fun bind(viewHolder: V, viewModel: M, position: Int) {
 
     }
 }
