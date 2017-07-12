@@ -4,11 +4,9 @@ import android.support.v7.util.DiffUtil
 import android.support.v7.util.ListUpdateCallback
 import android.support.v7.widget.RecyclerView
 import android.support.v7.widget.RecyclerView.NO_POSITION
-import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import android.widget.TextView
 import com.adgvcxz.IModel
 import com.adgvcxz.WidgetLifeCircleEvent
 import com.adgvcxz.addTo
@@ -112,20 +110,12 @@ class RecyclerAdapter(val viewModel: RecyclerViewModel,
         recyclerView.addOnAttachStateChangeListener(object : View.OnAttachStateChangeListener {
             override fun onViewDetachedFromWindow(v: View?) {
                 viewModel.currentModel().items.forEach {
-                    Log.e("zhaow", "akhdkjahskhdj    $it")
                     it.dispose()
                 }
                 disposables.dispose()
                 (0 until recyclerView.childCount).forEach {
                     val view = recyclerView.getChildAt(it)
                     val holder = (recyclerView.getChildViewHolder(view) as ItemViewHolder)
-                    Log.e("zhaow", "forEach     $holder")
-                    if (view is ViewGroup) {
-                        val textView = view.getChildAt(0)
-                        if (textView is TextView) {
-                            Log.e("zhaow", "forEach Value    ${textView.text}")
-                        }
-                    }
                     holder.disposables.dispose()
                 }
             }
