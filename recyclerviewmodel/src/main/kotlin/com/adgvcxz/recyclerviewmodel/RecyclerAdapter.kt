@@ -4,9 +4,11 @@ import android.support.v7.util.DiffUtil
 import android.support.v7.util.ListUpdateCallback
 import android.support.v7.widget.RecyclerView
 import android.support.v7.widget.RecyclerView.NO_POSITION
+import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.widget.TextView
 import com.adgvcxz.IModel
 import com.adgvcxz.WidgetLifeCircleEvent
 import com.adgvcxz.addTo
@@ -43,19 +45,12 @@ class RecyclerAdapter(val viewModel: RecyclerViewModel,
             inflater = LayoutInflater.from(parent.context)
         }
         val view = inflater!!.inflate(viewType, parent, false)
-        ifNotNull(view, itemClickListener) { view, listener -> view.setOnClickListener(listener) }
-        val views = viewMap[viewType]?.initView(view)
-        views?.itemView = view
-        return ItemViewHolder(views)
+        ifNotNull(view, itemClickListener) { _, listener -> view.setOnClickListener(listener) }
+        val holder = viewMap[viewType]!!.initView(view)
+        return holder
     }
 
-    @Suppress("UNCHECKED_CAST")
     override fun onBindViewHolder(holder: ItemViewHolder, position: Int) {
-        val iView = viewMap[getItemViewType(position)]
-        ifNotNull(iView, holder.baseViewHolder) { iView, views ->
-            (iView as IView<BaseViewHolder, RecyclerItemViewModel<out IModel>>)
-                    .bind(views, viewModel.currentModel().items[position], position)
-        }
         checkLoadMore(position)
     }
 
@@ -77,9 +72,15 @@ class RecyclerAdapter(val viewModel: RecyclerViewModel,
         return id
     }
 
+    @Suppress("UNCHECKED_CAST")
     override fun onViewAttachedToWindow(holder: ItemViewHolder) {
         super.onViewAttachedToWindow(holder)
         if (holder.layoutPosition != NO_POSITION) {
+            val iView = viewMap[getItemViewType(holder.layoutPosition)]
+            iView?.let {
+                (it as IView<ItemViewHolder, RecyclerItemViewModel<out IModel>>)
+                        .bind(holder, viewModel.currentModel().items[holder.layoutPosition], holder.layoutPosition)
+            }
             viewModel.currentModel().items[holder.layoutPosition].action.onNext(WidgetLifeCircleEvent.Attach)
         }
     }
@@ -88,7 +89,7 @@ class RecyclerAdapter(val viewModel: RecyclerViewModel,
         super.onViewDetachedFromWindow(holder)
         if (holder.layoutPosition != NO_POSITION) {
 //            viewModel.currentModel().items[holder.layoutPosition].action.onNext(WidgetLifeCircleEvent.Detach)
-            holder.baseViewHolder?.disposables?.clear()
+            holder.disposables.clear()
         }
     }
 
@@ -106,12 +107,27 @@ class RecyclerAdapter(val viewModel: RecyclerViewModel,
     }
 
 
-    override fun onAttachedToRecyclerView(recyclerView: RecyclerView?) {
+    override fun onAttachedToRecyclerView(recyclerView: RecyclerView) {
         super.onAttachedToRecyclerView(recyclerView)
-        recyclerView?.addOnAttachStateChangeListener(object : View.OnAttachStateChangeListener {
+        recyclerView.addOnAttachStateChangeListener(object : View.OnAttachStateChangeListener {
             override fun onViewDetachedFromWindow(v: View?) {
-                viewModel.currentModel().items.forEach { it.dispose() }
+                viewModel.currentModel().items.forEach {
+                    Log.e("zhaow", "akhdkjahskhdj    $it")
+                    it.dispose()
+                }
                 disposables.dispose()
+                (0 until recyclerView.childCount).forEach {
+                    val view = recyclerView.getChildAt(it)
+                    val holder = (recyclerView.getChildViewHolder(view) as ItemViewHolder)
+                    Log.e("zhaow", "forEach     $holder")
+                    if (view is ViewGroup) {
+                        val textView = view.getChildAt(0)
+                        if (textView is TextView) {
+                            Log.e("zhaow", "forEach Value    ${textView.text}")
+                        }
+                    }
+                    holder.disposables.dispose()
+                }
             }
 
             override fun onViewAttachedToWindow(v: View?) {

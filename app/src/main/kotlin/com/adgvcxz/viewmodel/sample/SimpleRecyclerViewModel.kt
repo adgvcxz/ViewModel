@@ -3,6 +3,7 @@ package com.adgvcxz.viewmodel.sample
 import android.view.View
 import android.widget.TextView
 import com.adgvcxz.IModel
+import com.adgvcxz.IMutation
 import com.adgvcxz.addTo
 import com.adgvcxz.recyclerviewmodel.*
 import com.jakewharton.rxbinding2.view.visibility
@@ -17,9 +18,11 @@ import java.util.concurrent.TimeUnit
  * Created by zhaowei on 2017/6/6.
  */
 
+var initId = 0
+
 class SimpleRecyclerViewModel : RecyclerViewModel() {
 
-    override var initModel: RecyclerModel = RecyclerModel(null, true, true)
+    override var initModel: RecyclerModel = RecyclerModel(null, true, false)
 
 
     override fun request(refresh: Boolean): Observable<ListResult> {
@@ -36,15 +39,13 @@ class SimpleRecyclerViewModel : RecyclerViewModel() {
 class TextItemView : IView<TextItemView.TextItemViewHolder, TextItemViewModel> {
     override val layoutId: Int = R.layout.item_text_view
 
-    class TextItemViewHolder : BaseViewHolder() {
-        lateinit var content: TextView
+    class TextItemViewHolder(view: View) : ItemViewHolder(view) {
+        var content: TextView = view.findViewById(R.id.textView) as TextView
     }
 
 
     override fun initView(view: View): TextItemViewHolder {
-        return TextItemViewHolder().also {
-            it.content = view.findViewById(R.id.textView) as TextView
-        }
+        return TextItemViewHolder(view)
     }
 
     override fun bind(viewHolder: TextItemViewHolder, viewModel: TextItemViewModel, position: Int) {
@@ -59,8 +60,25 @@ class TextItemView : IView<TextItemView.TextItemViewHolder, TextItemViewModel> {
 class TextItemViewModel : RecyclerItemViewModel<TextItemViewModel.Model>() {
     override var initModel: Model = Model()
 
+    class ValueChangeMutation(val value: String): IMutation
+
+    override fun transform(mutation: Observable<IMutation>): Observable<IMutation> {
+        val value = RxBus.instance.toObservable(ValueChangeEvent::class.java)
+                .filter { it.id == currentModel().id }
+                .map { ValueChangeMutation(it.value) }
+        return Observable.merge(value, mutation)
+    }
+
+    override fun scan(model: Model, mutation: IMutation): Model {
+        when(mutation) {
+            is ValueChangeMutation -> model.content = mutation.value
+        }
+        return model
+    }
+
     class Model : IModel {
-        val content: String = UUID.randomUUID().toString()
+        var content: String = UUID.randomUUID().toString()  + "====    ${initId}"
+        var id = initId++
     }
 }
 
@@ -68,7 +86,7 @@ class LoadingItemView : IDefaultView<LoadingItemViewModel> {
 
     override val layoutId: Int = R.layout.item_loading
 
-    override fun bind(viewHolder: BaseViewHolder, viewModel: LoadingItemViewModel, position: Int) {
+    override fun bind(viewHolder: ItemViewHolder, viewModel: LoadingItemViewModel, position: Int) {
         viewModel.model.map { it.state }
                 .map { it != LoadingItemViewModel.State.failure }
                 .subscribe(viewHolder.itemView.loading.visibility())

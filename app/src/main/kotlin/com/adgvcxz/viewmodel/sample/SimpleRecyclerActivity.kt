@@ -1,5 +1,6 @@
 package com.adgvcxz.viewmodel.sample
 
+import android.content.Intent
 import android.os.Bundle
 import android.support.v7.app.AppCompatActivity
 import android.support.v7.widget.LinearLayoutManager
@@ -41,10 +42,24 @@ class SimpleRecyclerActivity : AppCompatActivity() {
                 .bindTo(viewModel.action)
                 .addTo(disposables)
 
+//        adapter.itemClicks()
+//                .filter { it == adapter.itemCount - 1 }
+//                .map { RecyclerViewModel.Event.loadMore }
+//                .bindTo(viewModel.action)
+//                .addTo(disposables)
+
         adapter.itemClicks()
-                .filter { it == adapter.itemCount - 1 }
-                .map { RecyclerViewModel.Event.loadMore }
-                .bindTo(viewModel.action)
+                .map { viewModel.currentModel().items[it].currentModel() as TextItemViewModel.Model }
+                .subscribe {
+                    if (it.id == 0) {
+                        val intent = Intent(this, TestActivity::class.java)
+                        intent.putExtra("id", it.id)
+                        intent.putExtra("value", it.content)
+                        startActivity(intent)
+                    } else {
+                        viewModel.action.onNext(RecyclerViewModel.ReplaceDataEvent(arrayListOf(it.id), arrayListOf(TextItemViewModel())))
+                    }
+                }
                 .addTo(disposables)
 
 //        adapter.itemClicks()
@@ -58,11 +73,11 @@ class SimpleRecyclerActivity : AppCompatActivity() {
 //                .subscribe { adapter.notifyDataSetChanged() }
 //                .addTo(disposables)
 
-        adapter.itemClicks()
-                .filter { it != adapter.itemCount - 1 }
-                .map { RecyclerViewModel.ReplaceDataEvent(arrayListOf(it), arrayListOf(TextItemViewModel())) }
-                .bindTo(viewModel.action)
-                .addTo(disposables)
+//        adapter.itemClicks()
+//                .filter { it != adapter.itemCount - 1 }
+//                .map { RecyclerViewModel.ReplaceDataEvent(arrayListOf(it), arrayListOf(TextItemViewModel())) }
+//                .bindTo(viewModel.action)
+//                .addTo(disposables)
 
         viewModel.model.map { it.isRefresh }
                 .filter { it != refreshLayout.isRefreshing }

@@ -23,5 +23,10 @@ class MainActivity : BaseActivity() {
                 .throttleFirst(300, TimeUnit.MILLISECONDS)
                 .subscribe { startActivity(Intent(this, SimpleRecyclerActivity::class.java)) }
                 .addTo(disposables)
+
+        rxbus.clicks()
+                .throttleFirst(300, TimeUnit.MILLISECONDS)
+                .subscribe { startActivity(Intent(this, TestActivity::class.java)) }
+                .addTo(disposables)
     }
 }

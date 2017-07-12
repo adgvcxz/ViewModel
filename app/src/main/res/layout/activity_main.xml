@@ -15,7 +15,13 @@
         android:id="@+id/recycler"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="Recycler"
+        android:text="Recycler" />
+
+    <Button
+        android:id="@+id/rxbus"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="RxBus"
         />
 
 </LinearLayout>
