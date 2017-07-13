@@ -77,7 +77,7 @@ class TextItemViewModel : RecyclerItemViewModel<TextItemViewModel.Model>() {
     }
 
     class Model : IModel {
-        var content: String = UUID.randomUUID().toString()  + "====    ${initId}"
+        var content: String = UUID.randomUUID().toString()  + "====    $initId"
         var id = initId++
     }
 }

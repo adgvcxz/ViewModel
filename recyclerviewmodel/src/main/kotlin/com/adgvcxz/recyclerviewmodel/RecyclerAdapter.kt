@@ -30,6 +30,7 @@ class RecyclerAdapter(val viewModel: RecyclerViewModel,
     var notify: Boolean = false
     var loading: Boolean = false
     val disposables: CompositeDisposable by lazy { CompositeDisposable() }
+    val holders = arrayListOf<ItemViewHolder>()
 
     init {
 //        setHasStableIds(true)
@@ -48,7 +49,15 @@ class RecyclerAdapter(val viewModel: RecyclerViewModel,
         return holder
     }
 
+    @Suppress("UNCHECKED_CAST")
     override fun onBindViewHolder(holder: ItemViewHolder, position: Int) {
+        val iView = viewMap[getItemViewType(holder.layoutPosition)]
+        iView?.let {
+            holder.disposables.clear()
+            holders.add(holder)
+            (it as IView<in ItemViewHolder, RecyclerItemViewModel<out IModel>>)
+                    .bind(holder, viewModel.currentModel().items[holder.layoutPosition], holder.layoutPosition)
+        }
         checkLoadMore(position)
     }
 
@@ -70,15 +79,14 @@ class RecyclerAdapter(val viewModel: RecyclerViewModel,
         return id
     }
 
-    @Suppress("UNCHECKED_CAST")
     override fun onViewAttachedToWindow(holder: ItemViewHolder) {
         super.onViewAttachedToWindow(holder)
         if (holder.layoutPosition != NO_POSITION) {
-            val iView = viewMap[getItemViewType(holder.layoutPosition)]
-            iView?.let {
-                (it as IView<ItemViewHolder, RecyclerItemViewModel<out IModel>>)
-                        .bind(holder, viewModel.currentModel().items[holder.layoutPosition], holder.layoutPosition)
-            }
+//            val iView = viewMap[getItemViewType(holder.layoutPosition)]
+//            iView?.let {
+//                (it as IView<in ItemViewHolder, RecyclerItemViewModel<out IModel>>)
+//                        .bind(holder, viewModel.currentModel().items[holder.layoutPosition], holder.layoutPosition)
+//            }
             viewModel.currentModel().items[holder.layoutPosition].action.onNext(WidgetLifeCircleEvent.Attach)
         }
     }
@@ -87,6 +95,7 @@ class RecyclerAdapter(val viewModel: RecyclerViewModel,
         super.onViewDetachedFromWindow(holder)
         if (holder.layoutPosition != NO_POSITION) {
 //            viewModel.currentModel().items[holder.layoutPosition].action.onNext(WidgetLifeCircleEvent.Detach)
+            holders.remove(holder)
             holder.disposables.clear()
         }
     }
@@ -113,6 +122,7 @@ class RecyclerAdapter(val viewModel: RecyclerViewModel,
                     it.dispose()
                 }
                 disposables.dispose()
+                holders.forEach { it.disposables.dispose() }
                 (0 until recyclerView.childCount).forEach {
                     val view = recyclerView.getChildAt(it)
                     val holder = (recyclerView.getChildViewHolder(view) as ItemViewHolder)
