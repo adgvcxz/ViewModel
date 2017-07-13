@@ -1,6 +1,7 @@
 package com.adgvcxz.viewmodel.sample
 
 import android.view.View
+import android.view.ViewGroup
 import android.widget.TextView
 import com.adgvcxz.IModel
 import com.adgvcxz.IMutation
@@ -44,7 +45,7 @@ class TextItemView : IView<TextItemView.TextItemViewHolder, TextItemViewModel> {
     }
 
 
-    override fun initView(view: View): TextItemViewHolder {
+    override fun initView(view: View, parent: ViewGroup): TextItemViewHolder {
         return TextItemViewHolder(view)
     }
 

@@ -1,6 +1,7 @@
 package com.adgvcxz.recyclerviewmodel
 
 import android.view.View
+import android.view.ViewGroup
 import com.adgvcxz.IModel
 
 /**
@@ -12,7 +13,7 @@ interface IView<V: ItemViewHolder, in M: RecyclerItemViewModel<out IModel>> {
     val layoutId: Int
 
     @Suppress("UNCHECKED_CAST")
-    fun initView(view: View): V {
+    fun initView(view: View, parent: ViewGroup): V {
         return ItemViewHolder(view) as V
     }
 

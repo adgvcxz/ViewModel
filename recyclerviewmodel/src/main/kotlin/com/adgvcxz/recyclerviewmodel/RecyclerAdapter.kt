@@ -45,7 +45,7 @@ class RecyclerAdapter(val viewModel: RecyclerViewModel,
         }
         val view = inflater!!.inflate(viewType, parent, false)
         ifNotNull(view, itemClickListener) { _, listener -> view.setOnClickListener(listener) }
-        val holder = viewMap[viewType]!!.initView(view)
+        val holder = viewMap[viewType]!!.initView(view, parent)
         return holder
     }
 
