@@ -12,6 +12,7 @@ import com.adgvcxz.WidgetLifeCircleEvent
 import com.adgvcxz.addTo
 import io.reactivex.disposables.CompositeDisposable
 import io.reactivex.functions.Consumer
+import io.reactivex.subjects.Subject
 import kotlin.reflect.KClass
 
 /**
@@ -27,6 +28,7 @@ class RecyclerAdapter(val viewModel: RecyclerViewModel,
     private var viewMap: HashMap<Int, IView<*, *>?> = HashMap()
     private val layoutMap: HashMap<KClass<RecyclerItemViewModel<out IModel>>, Int> = HashMap()
     var itemClickListener: View.OnClickListener? = null
+    var action: Subject<Int>? = null
     var notify: Boolean = false
     var loading: Boolean = false
     val disposables: CompositeDisposable by lazy { CompositeDisposable() }
@@ -51,6 +53,7 @@ class RecyclerAdapter(val viewModel: RecyclerViewModel,
 
     @Suppress("UNCHECKED_CAST")
     override fun onBindViewHolder(holder: ItemViewHolder, position: Int) {
+        action?.let { holder.itemView.setOnClickListener { _ -> it.onNext(position) } }
         val iView = viewMap[getItemViewType(holder.layoutPosition)]
         iView?.let {
             holder.disposables.clear()

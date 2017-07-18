@@ -6,6 +6,7 @@ import io.reactivex.Observable
 import io.reactivex.android.schedulers.AndroidSchedulers
 import io.reactivex.disposables.Disposable
 import io.reactivex.schedulers.Schedulers
+import io.reactivex.subjects.PublishSubject
 
 /**
  * zhaowei
@@ -34,5 +35,8 @@ fun <T1, T2> ifNotNull(value1: T1?, value2: T2?, bothNotNull: (T1, T2) -> (Unit)
 }
 
 fun RecyclerAdapter.itemClicks(): Observable<Int> {
-    return ItemClickObservable(this)
+    if (action == null) {
+        action = PublishSubject.create<Int>().toSerialized()
+    }
+    return action!!
 }
