@@ -27,7 +27,7 @@ class RecyclerAdapter(val viewModel: RecyclerViewModel,
     private var inflater: LayoutInflater? = null
     private var viewMap: HashMap<Int, IView<*, *>?> = HashMap()
     private val layoutMap: HashMap<KClass<RecyclerItemViewModel<out IModel>>, Int> = HashMap()
-    var itemClickListener: View.OnClickListener? = null
+    internal var itemClickListener: View.OnClickListener? = null
     var action: Subject<Int>? = null
     var notify: Boolean = false
     var loading: Boolean = false
