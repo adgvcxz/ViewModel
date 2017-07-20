@@ -42,13 +42,8 @@ class SimpleRecyclerActivity : AppCompatActivity() {
                 .bindTo(viewModel.action)
                 .addTo(disposables)
 
-//        adapter.itemClicks()
-//                .filter { it == adapter.itemCount - 1 }
-//                .map { RecyclerViewModel.Event.loadMore }
-//                .bindTo(viewModel.action)
-//                .addTo(disposables)
-
         adapter.itemClicks()
+                .filter { viewModel.currentModel().items[it].currentModel() is TextItemViewModel.Model }
                 .map { viewModel.currentModel().items[it].currentModel() as TextItemViewModel.Model }
                 .subscribe {
                     if (it.id == 0) {

@@ -26,14 +26,20 @@ class SimpleRecyclerViewModel : RecyclerViewModel() {
     override var initModel: RecyclerModel = RecyclerModel(null, true, false)
 
 
-    override fun request(refresh: Boolean): Observable<ListResult> {
-//        if (Random().nextInt() < 16) {
-        return Observable.timer(1, TimeUnit.SECONDS)
-                .map { (0 until 10).map { TextItemViewModel() } }
-                .map { ListResult(it) }
-//        } else {
-//            return Observable.just(ListResult(null))
-//        }
+    override fun request(refresh: Boolean): Observable<IMutation> {
+        if (Random().nextInt() < 16) {
+            return Observable.timer(1, TimeUnit.SECONDS)
+                    .map { (0 until 10).map { TextItemViewModel() } }
+                    .flatMap {
+                        if (!refresh && currentModel().items.size > 30) {
+                            Observable.concat(Observable.just(DataMutation.UpdateData(it)), Observable.just(Mutation.removeLoadingItem))
+                        } else {
+                            Observable.just(DataMutation.UpdateData(it))
+                        }
+                    }
+        } else {
+            return Observable.just(Mutation.LoadFailure)
+        }
     }
 }
 
@@ -61,7 +67,7 @@ class TextItemView : IView<TextItemView.TextItemViewHolder, TextItemViewModel> {
 class TextItemViewModel : RecyclerItemViewModel<TextItemViewModel.Model>() {
     override var initModel: Model = Model()
 
-    class ValueChangeMutation(val value: String): IMutation
+    class ValueChangeMutation(val value: String) : IMutation
 
     override fun transform(mutation: Observable<IMutation>): Observable<IMutation> {
         val value = RxBus.instance.toObservable(ValueChangeEvent::class.java)
@@ -71,14 +77,14 @@ class TextItemViewModel : RecyclerItemViewModel<TextItemViewModel.Model>() {
     }
 
     override fun scan(model: Model, mutation: IMutation): Model {
-        when(mutation) {
+        when (mutation) {
             is ValueChangeMutation -> model.content = mutation.value
         }
         return model
     }
 
     class Model : IModel {
-        var content: String = UUID.randomUUID().toString()  + "====    $initId"
+        var content: String = UUID.randomUUID().toString() + "====    $initId"
         var id = initId++
     }
 }

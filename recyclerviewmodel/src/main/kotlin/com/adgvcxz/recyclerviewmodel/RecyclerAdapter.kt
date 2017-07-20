@@ -10,6 +10,7 @@ import android.view.ViewGroup
 import com.adgvcxz.IModel
 import com.adgvcxz.WidgetLifeCircleEvent
 import com.adgvcxz.addTo
+import com.adgvcxz.bindTo
 import io.reactivex.disposables.CompositeDisposable
 import io.reactivex.functions.Consumer
 import io.reactivex.subjects.Subject
@@ -38,6 +39,12 @@ class RecyclerAdapter(val viewModel: RecyclerViewModel,
 //        setHasStableIds(true)
         viewModel.model.map { it.items }
                 .bindTo(this)
+                .addTo(disposables)
+
+        itemClicks()
+                .filter { viewModel.currentModel().items[it] is LoadingItemViewModel }
+                .map { RecyclerViewModel.Event.loadMore }
+                .bindTo(viewModel.action)
                 .addTo(disposables)
     }
 

@@ -12,8 +12,8 @@ import io.reactivex.Observable
  */
 
 class RecyclerModel(values: List<RecyclerItemViewModel<out IModel>>? = null,
-            hasLoadingItem: Boolean = false,
-            var isAnim: Boolean = false) : IModel {
+                    val hasLoadingItem: Boolean = false,
+                    var isAnim: Boolean = false) : IModel {
 
     var isRefresh: Boolean = false
     var items: List<RecyclerItemViewModel<out IModel>> = arrayListOf()
@@ -65,6 +65,7 @@ abstract class RecyclerViewModel : WidgetViewModel<RecyclerModel>() {
     }
 
     sealed class DataMutation(val data: List<RecyclerItemViewModel<out IModel>>) : IMutation {
+        class UpdateData(data: List<RecyclerItemViewModel<out IModel>>) : DataMutation(data)
         class SetData(data: List<RecyclerItemViewModel<out IModel>>) : DataMutation(data)
         class AppendData(data: List<RecyclerItemViewModel<out IModel>>) : DataMutation(data)
         class ReplaceData(val index: List<Int>, data: List<RecyclerItemViewModel<out IModel>>) : DataMutation(data)
@@ -73,7 +74,8 @@ abstract class RecyclerViewModel : WidgetViewModel<RecyclerModel>() {
     class RemoveDateMutation(val index: List<Int>) : IMutation
 
     enum class Mutation : IMutation {
-        removeLoadingItem
+        removeLoadingItem,
+        LoadFailure
     }
 
     override fun mutate(event: IEvent): Observable<IMutation> {
@@ -85,8 +87,12 @@ abstract class RecyclerViewModel : WidgetViewModel<RecyclerModel>() {
                 val start = Observable.just(StateMutation.SetRefresh(true))
                 val end = Observable.just(StateMutation.SetRefresh(false))
                 return Observable.concat(start,
-                        request(true).flatMap { if (it.value == null) Observable.empty() else Observable.just(it.value) }
-                                .map { DataMutation.SetData(it) },
+                        request(true).map {
+                            when (it) {
+                                is DataMutation.UpdateData -> DataMutation.SetData(it.data)
+                                else -> it
+                            }
+                        },
                         end)
             }
             Event.loadMore -> {
@@ -96,18 +102,20 @@ abstract class RecyclerViewModel : WidgetViewModel<RecyclerModel>() {
                 currentModel().loadingViewModel?.action?.onNext(
                         LoadingItemViewModel.StateEvent.SetState(LoadingItemViewModel.State.loading))
                 return request(false)
+                        .map {
+                            when (it) {
+                                is DataMutation.UpdateData -> DataMutation.AppendData(it.data)
+                                else -> it
+                            }
+                        }
                         .doOnNext {
-                            if (it.value == null) {
-                                currentModel().loadingViewModel?.action?.onNext(
+                            when (it) {
+                                Mutation.LoadFailure -> currentModel().loadingViewModel?.action?.onNext(
                                         LoadingItemViewModel.StateEvent.SetState(LoadingItemViewModel.State.failure))
-                            } else {
-                                currentModel().loadingViewModel?.action?.onNext(
+                                is DataMutation.AppendData -> currentModel().loadingViewModel?.action?.onNext(
                                         LoadingItemViewModel.StateEvent.SetState(LoadingItemViewModel.State.success))
                             }
                         }
-                        .flatMap { if (it.value == null) Observable.empty() else Observable.just(it.value) }
-                        .map { DataMutation.AppendData(it) }
-
             }
             Event.hideLoadingItem -> return Observable.just(Mutation.removeLoadingItem)
             is BooleanEvent.setAnim -> return Observable.just(StateMutation.SetAnim(event.value))
@@ -128,9 +136,14 @@ abstract class RecyclerViewModel : WidgetViewModel<RecyclerModel>() {
             is DataMutation.SetData -> {
                 model.items.forEach { it.dispose() }
                 model.items = mutation.data
-                model.loadingViewModel?.let {
-                    if (!model.items.isEmpty()) {
-                        model.items += it
+                if (model.hasLoadingItem) {
+                    if (model.loadingViewModel == null) {
+                        model.loadingViewModel = LoadingItemViewModel()
+                    }
+                    model.loadingViewModel?.let {
+                        if (model.items.isNotEmpty()) {
+                            model.items += it
+                        }
                     }
                 }
                 model.items.forEach { it.disposable = it.model.subscribe() }
@@ -165,6 +178,7 @@ abstract class RecyclerViewModel : WidgetViewModel<RecyclerModel>() {
             Mutation.removeLoadingItem -> {
                 if (model.items.last() is LoadingItemViewModel) {
                     model.items = model.items.subList(0, model.items.size - 1)
+                    model.loadingViewModel?.dispose()
                     model.loadingViewModel = null
                 }
             }
@@ -172,7 +186,7 @@ abstract class RecyclerViewModel : WidgetViewModel<RecyclerModel>() {
         return model
     }
 
-    open fun request(refresh: Boolean): Observable<ListResult> {
+    open fun request(refresh: Boolean): Observable<IMutation> {
         return Observable.empty()
     }
 
