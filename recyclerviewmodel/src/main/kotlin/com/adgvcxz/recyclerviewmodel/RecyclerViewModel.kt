@@ -75,7 +75,7 @@ abstract class RecyclerViewModel : WidgetViewModel<RecyclerModel>() {
 
     enum class Mutation : IMutation {
         removeLoadingItem,
-        LoadFailure
+        loadFailure
     }
 
     override fun mutate(event: IEvent): Observable<IMutation> {
@@ -110,7 +110,7 @@ abstract class RecyclerViewModel : WidgetViewModel<RecyclerModel>() {
                         }
                         .doOnNext {
                             when (it) {
-                                Mutation.LoadFailure -> currentModel().loadingViewModel?.action?.onNext(
+                                Mutation.loadFailure -> currentModel().loadingViewModel?.action?.onNext(
                                         LoadingItemViewModel.StateEvent.SetState(LoadingItemViewModel.State.failure))
                                 is DataMutation.AppendData -> currentModel().loadingViewModel?.action?.onNext(
                                         LoadingItemViewModel.StateEvent.SetState(LoadingItemViewModel.State.success))

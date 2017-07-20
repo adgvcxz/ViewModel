@@ -38,7 +38,7 @@ class SimpleRecyclerViewModel : RecyclerViewModel() {
                         }
                     }
         } else {
-            return Observable.just(Mutation.LoadFailure)
+            return Observable.just(Mutation.loadFailure)
         }
     }
 }
