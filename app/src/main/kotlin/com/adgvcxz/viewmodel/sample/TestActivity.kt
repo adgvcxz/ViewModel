@@ -57,7 +57,7 @@ class ValueChangeMutation(val value: String) : IMutation
 class TestViewModel(id: Int, value: String) : AFViewModel<TextModel>() {
     override val initModel: TextModel = TextModel(id, value)
 
-    override fun transform(mutation: Observable<IMutation>): Observable<IMutation> {
+    override fun transformMutation(mutation: Observable<IMutation>): Observable<IMutation> {
         val add = RxBus.instance.toObservable(ValueChangeEvent::class.java)
                 .map { ValueChangeMutation(it.value) }
         return Observable.merge(add, mutation)

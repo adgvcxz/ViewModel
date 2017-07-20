@@ -69,7 +69,7 @@ class TextItemViewModel : RecyclerItemViewModel<TextItemViewModel.Model>() {
 
     class ValueChangeMutation(val value: String) : IMutation
 
-    override fun transform(mutation: Observable<IMutation>): Observable<IMutation> {
+    override fun transformMutation(mutation: Observable<IMutation>): Observable<IMutation> {
         val value = RxBus.instance.toObservable(ValueChangeEvent::class.java)
                 .filter { it.id == currentModel().id }
                 .map { ValueChangeMutation(it.value) }

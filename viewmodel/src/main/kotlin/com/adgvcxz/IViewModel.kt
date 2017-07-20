@@ -18,7 +18,11 @@ interface IViewModel<M: IModel>/*: LifecycleObserver*/ {
         return Observable.empty()
     }
 
-    fun transform(mutation: Observable<IMutation>): Observable<IMutation> {
+    fun transformMutation(mutation: Observable<IMutation>): Observable<IMutation> {
         return mutation
+    }
+
+    fun transformEvent(event: Observable<IEvent>): Observable<IEvent> {
+        return event
     }
 }

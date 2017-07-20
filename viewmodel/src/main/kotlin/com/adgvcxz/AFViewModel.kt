@@ -24,8 +24,9 @@ abstract class AFViewModel<M : IModel> : /*: ViewModel(),*/ IViewModel<M> {
 
     val model: Observable<M> by lazy {
         this.action
+                .compose { transformEvent(it) }
                 .flatMap { this.mutate(it) }
-                .compose { transform(it) }
+                .compose { transformMutation(it) }
                 .scan(initModel) { model, mutation -> scan(model, mutation) }
                 .doOnError { it.printStackTrace() }
                 .retry()
