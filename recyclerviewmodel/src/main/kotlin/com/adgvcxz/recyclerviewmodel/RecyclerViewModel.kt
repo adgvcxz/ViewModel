@@ -149,7 +149,7 @@ abstract class RecyclerViewModel : WidgetViewModel<RecyclerModel>() {
                 model.items.forEach { it.disposable = it.model.subscribe() }
             }
             is DataMutation.AppendData -> {
-                if (model.items.last() is LoadingItemViewModel) {
+                if (model.items.isNotEmpty() && model.items.last() is LoadingItemViewModel) {
                     model.items = model.items.subList(0, model.items.size - 1)
                 }
                 model.items += mutation.data
@@ -176,7 +176,7 @@ abstract class RecyclerViewModel : WidgetViewModel<RecyclerModel>() {
                 }
             }
             Mutation.removeLoadingItem -> {
-                if (model.items.last() is LoadingItemViewModel) {
+                if (model.items.isNotEmpty() && model.items.last() is LoadingItemViewModel) {
                     model.items = model.items.subList(0, model.items.size - 1)
                     model.loadingViewModel?.dispose()
                     model.loadingViewModel = null
