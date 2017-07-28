@@ -32,13 +32,13 @@ class SimpleRecyclerViewModel : RecyclerViewModel() {
                     .map { (0 until 10).map { TextItemViewModel() } }
                     .flatMap {
                         if (!refresh && currentModel().items.size > 30) {
-                            Observable.concat(Observable.just(DataMutation.UpdateData(it)), Observable.just(Mutation.removeLoadingItem))
+                            Observable.concat(Observable.just(UpdateData(it)), Observable.just(RemoveLoadingItem))
                         } else {
-                            Observable.just(DataMutation.UpdateData(it))
+                            Observable.just(UpdateData(it))
                         }
                     }
         } else {
-            return Observable.just(Mutation.loadFailure)
+            return Observable.just(LoadFailure)
         }
     }
 }

@@ -7,7 +7,8 @@ import android.support.v7.widget.LinearLayoutManager
 import com.adgvcxz.addTo
 import com.adgvcxz.bindTo
 import com.adgvcxz.recyclerviewmodel.RecyclerAdapter
-import com.adgvcxz.recyclerviewmodel.RecyclerViewModel
+import com.adgvcxz.recyclerviewmodel.Refresh
+import com.adgvcxz.recyclerviewmodel.ReplaceData
 import com.adgvcxz.recyclerviewmodel.itemClicks
 import com.jakewharton.rxbinding2.support.v4.widget.refreshes
 import com.jakewharton.rxbinding2.support.v4.widget.refreshing
@@ -38,7 +39,7 @@ class SimpleRecyclerActivity : AppCompatActivity() {
 //        recyclerView.setHasFixedSize(true)
 
         refreshLayout.refreshes()
-                .map { RecyclerViewModel.Event.refresh }
+                .map { Refresh }
                 .bindTo(viewModel.action)
                 .addTo(disposables)
 
@@ -52,7 +53,7 @@ class SimpleRecyclerActivity : AppCompatActivity() {
                         intent.putExtra("value", it.content)
                         startActivity(intent)
                     } else {
-                        viewModel.action.onNext(RecyclerViewModel.ReplaceDataEvent(arrayListOf(it.id), arrayListOf(TextItemViewModel())))
+                        viewModel.action.onNext(ReplaceData(arrayListOf(it.id), arrayListOf(TextItemViewModel())))
                     }
                 }
                 .addTo(disposables)
@@ -79,7 +80,7 @@ class SimpleRecyclerActivity : AppCompatActivity() {
                 .subscribe(refreshLayout.refreshing())
                 .addTo(disposables)
 
-        viewModel.action.onNext(RecyclerViewModel.Event.refresh)
+        viewModel.action.onNext(Refresh)
     }
 
     override fun onDestroy() {
