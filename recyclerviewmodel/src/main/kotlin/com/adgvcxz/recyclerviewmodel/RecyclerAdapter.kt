@@ -43,7 +43,7 @@ class RecyclerAdapter(val viewModel: RecyclerViewModel,
 
         itemClicks()
                 .filter { viewModel.currentModel().items[it] is LoadingItemViewModel }
-                .map { RecyclerViewModel.Event.loadMore }
+                .map { LoadMore }
                 .bindTo(viewModel.action)
                 .addTo(disposables)
     }
@@ -115,7 +115,7 @@ class RecyclerAdapter(val viewModel: RecyclerViewModel,
         val loadingModel = viewModel.currentModel().loadingViewModel
         loadingModel?.let {
             if ((position == itemCount - 1) && !viewModel.currentModel().isLoading && !loading) {
-                viewModel.action.onNext(RecyclerViewModel.Event.loadMore)
+                viewModel.action.onNext(LoadMore)
                 loading = true
             } else {
                 loading = false
