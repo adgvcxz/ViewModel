@@ -37,15 +37,26 @@ class TextItemView : IDefaultView<TextItemViewModel> {
 viewmodel.action.onNext(SetData(arrayListOf()))
 
 //在尾部插入数据
-viewmodel.action.onNext(AppendData(arrayListOf()))
+viewodel.action.onNext(AppendData(arrayListOf()))
 
 等等...
 ```
 也可以自定义想要的操作，仅仅发送一次事件，无需```notifyDataSetChanged()```或者```notifyItemRangeInserted()```等操作
 
 内部已经实现自动```Refresh```或者```LoadMore```等操作，只需要
+1. 绑定SwipeRefreshLayout
+```java
+refreshLayout.refreshes()
+                .map { Refresh }
+                .bindTo(viewModel.action)
+                .addTo(disposables)
+```
+2. 实现request方法
 ```java
 override fun request(refresh: Boolean): Observable<IMutation> {
+    //refresh: 
+    //true: 下拉刷新数据
+    //false: 列表在底部加载更多数据
     ...
 }
 ```
