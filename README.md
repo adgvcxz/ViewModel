@@ -1,14 +1,17 @@
 ## ViewModel 
 
-#### Temporarily remove the Android official ViewModel, because the compilation is very slow
+### 以RxJava为基础，分离Model与View，以Event来驱动更新Model和View
 
-##### 1. Configure RecyclerView
+#### 支持Activity Fragment RecyclerView 以及普通自定义View
 
-* Initialization
+##### 以RecyclerView为例:
+
+* 初始化
 
 ```
 val viewModel = SimpleRecyclerViewModel()
-//multi-type
+// 多类型
+// 配置每个ViewModel对应的View
 val adapter = RecyclerAdapter(viewModel) {
     when (it) {
         is TextItemViewModel -> TextItemView()
@@ -17,10 +20,42 @@ val adapter = RecyclerAdapter(viewModel) {
 }
 recyclerView.layoutManager = LinearLayoutManager(this)
 recyclerView.adapter = adapter
+
+...
+
+class TextItemView : IDefaultView<TextItemViewModel> {
+    override fun bind(viewHolder: ItemViewHolder, viewModel: TextItemViewModel, position: Int) {
+        //绑定View与Model
+        ...
+    }
+}
 ```
 
-* ItemClickListener
+* 更新
+```java
+//刷新数据
+viewmodel.action.onNext(SetData(arrayListOf()))
+
+//在尾部插入数据
+viewmodel.action.onNext(AppendData(arrayListOf()))
+
+等等...
+```
+也可以自定义想要的操作，仅仅发送一次事件，无需```notifyDataSetChanged()```或者```notifyItemRangeInserted()```等操作
+
+内部已经实现自动```Refresh```或者```LoadMore```等操作，只需要
+```java
+override fun request(refresh: Boolean): Observable<IMutation> {
+    ...
+}
+```
+
+* ItemClickListener(可以重复监听)
 
 ```
 adapter.itemClicks().subscribe()
+
+adapter.itemClicks().subscribe()
 ```
+
+* 同步列表页面和详情页面的Model和View 同样只需要定义事件以及做好监听
