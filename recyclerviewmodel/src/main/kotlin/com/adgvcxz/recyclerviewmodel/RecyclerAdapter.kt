@@ -29,11 +29,12 @@ class RecyclerAdapter(val viewModel: RecyclerViewModel,
     private var viewMap: HashMap<Int, IView<*, *>?> = HashMap()
     private val layoutMap: HashMap<KClass<RecyclerItemViewModel<out IModel>>, Int> = HashMap()
     internal var itemClickListener: View.OnClickListener? = null
-    var action: Subject<Int>? = null
-    var notify: Boolean = false
-    var loading: Boolean = false
-    val disposables: CompositeDisposable by lazy { CompositeDisposable() }
-    val holders = arrayListOf<ItemViewHolder>()
+    internal var action: Subject<Int>? = null
+    private var notify: Boolean = false
+    private var loading: Boolean = false
+    private val disposables: CompositeDisposable by lazy { CompositeDisposable() }
+    private val holders = arrayListOf<ItemViewHolder>()
+    var isAttachToBind = false
 
     init {
 //        setHasStableIds(true)
@@ -61,12 +62,14 @@ class RecyclerAdapter(val viewModel: RecyclerViewModel,
     @Suppress("UNCHECKED_CAST")
     override fun onBindViewHolder(holder: ItemViewHolder, position: Int) {
         action?.let { holder.itemView.setOnClickListener { _ -> it.onNext(position) } }
-        val iView = viewMap[getItemViewType(holder.layoutPosition)]
-        iView?.let {
-            holder.disposables.clear()
-            holders.add(holder)
-            (it as IView<in ItemViewHolder, RecyclerItemViewModel<out IModel>>)
-                    .bind(holder, viewModel.currentModel().items[holder.layoutPosition], holder.layoutPosition)
+        if (!isAttachToBind) {
+            val iView = viewMap[getItemViewType(holder.layoutPosition)]
+            iView?.let {
+                holder.disposables.clear()
+                holders.add(holder)
+                (it as IView<in ItemViewHolder, RecyclerItemViewModel<out IModel>>)
+                        .bind(holder, viewModel.currentModel().items[holder.layoutPosition], holder.layoutPosition)
+            }
         }
         checkLoadMore(position)
     }
@@ -89,15 +92,16 @@ class RecyclerAdapter(val viewModel: RecyclerViewModel,
         return id
     }
 
+    @Suppress("UNCHECKED_CAST")
     override fun onViewAttachedToWindow(holder: ItemViewHolder) {
         super.onViewAttachedToWindow(holder)
-        if (holder.layoutPosition != NO_POSITION) {
-//            val iView = viewMap[getItemViewType(holder.layoutPosition)]
-//            iView?.let {
-//                (it as IView<in ItemViewHolder, RecyclerItemViewModel<out IModel>>)
-//                        .bind(holder, viewModel.currentModel().items[holder.layoutPosition], holder.layoutPosition)
-//            }
-            viewModel.currentModel().items[holder.layoutPosition].action.onNext(WidgetLifeCircleEvent.Attach)
+        if (holder.layoutPosition != NO_POSITION && isAttachToBind) {
+            val iView = viewMap[getItemViewType(holder.layoutPosition)]
+            iView?.let {
+                (it as IView<in ItemViewHolder, RecyclerItemViewModel<out IModel>>)
+                        .bind(holder, viewModel.currentModel().items[holder.layoutPosition], holder.layoutPosition)
+            }
+//            viewModel.currentModel().items[holder.layoutPosition].action.onNext(WidgetLifeCircleEvent.Attach)
         }
     }
 

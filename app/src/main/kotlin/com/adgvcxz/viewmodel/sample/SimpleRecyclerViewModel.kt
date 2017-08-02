@@ -23,7 +23,7 @@ var initId = 0
 
 class SimpleRecyclerViewModel : RecyclerViewModel() {
 
-    override var initModel: RecyclerModel = RecyclerModel(null, true, false)
+    override var initModel: RecyclerModel = RecyclerModel(null, true, true)
 
 
     override fun request(refresh: Boolean): Observable<IMutation> {
