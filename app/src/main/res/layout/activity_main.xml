@@ -21,7 +21,12 @@
         android:id="@+id/rxbus"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="RxBus"
-        />
+        android:text="RxBus" />
+
+    <Button
+        android:id="@+id/viewPager"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="View Pager" />
 
 </LinearLayout>

@@ -8,8 +8,12 @@ import com.adgvcxz.WidgetViewModel
  * Created by zhaowei on 2017/8/4.
  */
 
-class ViewPagerModel: IModel {
-    val items: List<ViewPagerItemViewModel<out IModel>> = arrayListOf()
+class ViewPagerModel(values: List<ViewPagerItemViewModel<out IModel>>? = null): IModel {
+    var items: List<ViewPagerItemViewModel<out IModel>> = arrayListOf()
+
+    init {
+        values?.let { items = it }
+    }
 }
 
 abstract class ViewPagerViewModel: WidgetViewModel<ViewPagerModel>() {

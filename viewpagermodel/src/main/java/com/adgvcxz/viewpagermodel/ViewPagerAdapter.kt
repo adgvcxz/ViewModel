@@ -28,11 +28,10 @@ class ViewPagerAdapter(val viewModel: ViewPagerViewModel,
     }
 
     override fun getCount(): Int {
-        return 1
+        return viewModel.currentModel().items.size
     }
 
     override fun destroyItem(container: ViewGroup?, position: Int, `object`: Any?) {
-        super.destroyItem(container, position, `object`)
         `object`?.let {
             if (it is View) {
                 container?.removeView(it)
@@ -64,6 +63,7 @@ class ViewPagerAdapter(val viewModel: ViewPagerViewModel,
             override fun onViewAttachedToWindow(v: View?) {
             }
         })
+        container.addView(view)
         (viewMap[layoutId] as IPagerItemView<ViewPagerItemHolder, ViewPagerItemViewModel<out IModel>>)
                 .bind(holder, viewModel.currentModel().items[position], position)
         return view

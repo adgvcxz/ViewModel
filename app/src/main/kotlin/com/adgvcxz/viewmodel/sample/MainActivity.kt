@@ -28,5 +28,10 @@ class MainActivity : BaseActivity() {
                 .throttleFirst(300, TimeUnit.MILLISECONDS)
                 .subscribe { startActivity(Intent(this, TestActivity::class.java)) }
                 .addTo(disposables)
+
+        viewPager.clicks()
+                .throttleFirst(300, TimeUnit.MILLISECONDS)
+                .subscribe { startActivity(Intent(this, SimpleViewPagerActivity::class.java)) }
+                .addTo(disposables)
     }
 }
