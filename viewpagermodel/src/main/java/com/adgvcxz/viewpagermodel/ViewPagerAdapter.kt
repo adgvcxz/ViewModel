@@ -5,6 +5,7 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import com.adgvcxz.IModel
+import com.adgvcxz.addTo
 import io.reactivex.disposables.CompositeDisposable
 import kotlin.reflect.KClass
 
@@ -22,6 +23,11 @@ class ViewPagerAdapter(val viewModel: ViewPagerViewModel,
     private val layoutMap: HashMap<KClass<ViewPagerItemViewModel<out IModel>>, Int> = HashMap()
     private var inflater: LayoutInflater? = null
 
+    init {
+        viewModel.model.map { it.items }
+                .subscribe { notifyDataSetChanged() }
+                .addTo(disposables)
+    }
 
     override fun isViewFromObject(view: View?, `object`: Any?): Boolean {
         return view == `object`
@@ -83,6 +89,10 @@ class ViewPagerAdapter(val viewModel: ViewPagerViewModel,
                 }
             })
         }
+    }
+
+    override fun getItemPosition(`object`: Any?): Int {
+        return POSITION_NONE
     }
 
 }

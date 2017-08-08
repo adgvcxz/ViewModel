@@ -15,17 +15,17 @@ import java.util.*
  * Created by zhaowei on 2017/8/7.
  */
 
-class SimpleViewPagerViewModel: ViewPagerViewModel() {
+class SimpleViewPagerViewModel : ViewPagerViewModel() {
     override val initModel: ViewPagerModel = ViewPagerModel(arrayListOf(ItemViewModel(), ItemViewModel(), ItemViewModel(), ItemViewModel()))
 }
 
-class ItemModel: IModel {
+class ItemModel : IModel {
     var value = "abababab"
 }
 
-class SetValueMutation(val value: String): IMutation
+class SetValueMutation(val value: String) : IMutation
 
-class ItemViewModel: ViewPagerItemViewModel<ItemModel>() {
+class ItemViewModel : ViewPagerItemViewModel<ItemModel>() {
     override val initModel: ItemModel = ItemModel()
 
     override fun transformMutation(mutation: Observable<IMutation>): Observable<IMutation> {
@@ -36,14 +36,14 @@ class ItemViewModel: ViewPagerItemViewModel<ItemModel>() {
     }
 
     override fun scan(model: ItemModel, mutation: IMutation): ItemModel {
-        when(mutation) {
+        when (mutation) {
             is SetValueMutation -> model.value = mutation.value
         }
         return super.scan(model, mutation)
     }
 }
 
-class ItemView: IPagerItemView<ViewPagerItemHolder, ItemViewModel> {
+class ItemView : IPagerItemView<ViewPagerItemHolder, ItemViewModel> {
     override val layoutId: Int = R.layout.item_view_pager
 
     override fun bind(holder: ViewPagerItemHolder, viewModel: ItemViewModel, position: Int) {
