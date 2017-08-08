@@ -29,3 +29,4 @@ class RxBus {
 }
 
 class ValueChangeEvent(val id: Int, val value: String)
+class ViewPagerEvent(val value: String)

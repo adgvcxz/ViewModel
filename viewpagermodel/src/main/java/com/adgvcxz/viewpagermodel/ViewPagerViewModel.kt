@@ -13,6 +13,7 @@ class ViewPagerModel(values: List<ViewPagerItemViewModel<out IModel>>? = null): 
 
     init {
         values?.let { items = it }
+        items.forEach { it.disposable = it.model.subscribe() }
     }
 }
 
