@@ -2,7 +2,7 @@
 
 ### 以RxJava为基础，分离Model与View，以Event来驱动更新Model和View
 
-#### 支持Activity Fragment RecyclerView 以及普通自定义View
+#### 支持Activity Fragment RecyclerView ViewPager 以及普通自定义View
 
 ##### 以RecyclerView为例:
 
@@ -70,3 +70,18 @@ adapter.itemClicks().subscribe()
 ```
 
 * 同步列表页面和详情页面的Model和View 同样只需要定义事件以及做好监听
+
+
+#### 导入
+	allprojects {
+        repositories {
+            ...
+            maven { url 'https://jitpack.io' }
+        }
+	}
+	
+	dependencies {
+	    compile 'com.github.adgvcxz.viewModel:viewmodel:0.4.8'
+        compile 'com.github.adgvcxz.viewModel:recyclerviewmodel:0.4.8'
+        compile 'com.github.adgvcxz.viewModel:viewpagermodel:0.4.8'
+    }

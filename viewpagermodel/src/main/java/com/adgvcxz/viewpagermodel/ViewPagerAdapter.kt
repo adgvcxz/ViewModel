@@ -14,7 +14,8 @@ import kotlin.reflect.KClass
  * Created by zhaowei on 2017/8/4.
  */
 class ViewPagerAdapter(val viewModel: ViewPagerViewModel,
-                       private val configureItem: ((ViewPagerItemViewModel<out IModel>) -> IPagerItemView<*, *>)) : PagerAdapter() {
+                       private val configureItem: ((ViewPagerItemViewModel<out IModel>) -> IPagerItemView<*, *>),
+                       private val configureTitle: ((Int) -> CharSequence)? = null) : PagerAdapter() {
 
     var viewGroup: ViewGroup? = null
 
@@ -95,4 +96,12 @@ class ViewPagerAdapter(val viewModel: ViewPagerViewModel,
         return POSITION_NONE
     }
 
+    override fun getPageTitle(position: Int): CharSequence {
+        val block = configureTitle
+        if (block == null) {
+            return super.getPageTitle(position)
+        } else {
+            return block.invoke(position)
+        }
+    }
 }
