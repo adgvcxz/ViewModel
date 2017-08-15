@@ -7,6 +7,7 @@ import com.adgvcxz.addTo
 import com.adgvcxz.bindTo
 import com.adgvcxz.viewpagermodel.AppendData
 import com.adgvcxz.viewpagermodel.RemoveData
+import com.adgvcxz.viewpagermodel.SetData
 import com.adgvcxz.viewpagermodel.ViewPagerAdapter
 import com.jakewharton.rxbinding2.view.clicks
 import io.reactivex.disposables.CompositeDisposable
@@ -28,10 +29,10 @@ class SimpleViewPagerActivity: AppCompatActivity() {
 
     fun initViewModel() {
         val viewModel = SimpleViewPagerViewModel()
-        val adapter = ViewPagerAdapter(viewModel) { ItemView() }
+        val adapter = ViewPagerAdapter(viewModel, { ItemView() })
         viewPager.adapter = adapter
         add.clicks()
-                .map { AppendData(arrayListOf(ItemViewModel())) }
+                .map { SetData(arrayListOf(ItemViewModel(), ItemViewModel())) }
                 .bindTo(viewModel.action)
                 .addTo(disposables)
         remove.clicks()

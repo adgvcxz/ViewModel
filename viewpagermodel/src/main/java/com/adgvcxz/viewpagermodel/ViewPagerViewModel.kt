@@ -57,7 +57,10 @@ abstract class ViewPagerViewModel: WidgetViewModel<ViewPagerModel>() {
                     !exist
                 }
             }
-            is SetData -> model.items = mutation.data
+            is SetData -> {
+                model.items.forEach { it.dispose() }
+                model.items = mutation.data.also { it.forEach { it.disposable = it.model.subscribe() } }
+            }
         }
         return super.scan(model, mutation)
     }
