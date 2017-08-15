@@ -8,7 +8,7 @@
 
 * 初始化
 
-```
+```kotlin
 val viewModel = SimpleRecyclerViewModel()
 // 多类型
 // 配置每个ViewModel对应的View
@@ -32,7 +32,7 @@ class TextItemView : IDefaultView<TextItemViewModel> {
 ```
 
 * 更新
-```java
+```kotlin
 //刷新数据
 viewmodel.action.onNext(SetData(arrayListOf()))
 
@@ -41,11 +41,11 @@ viewodel.action.onNext(AppendData(arrayListOf()))
 
 等等...
 ```
-也可以自定义想要的操作，仅仅发送一次事件，无需```notifyDataSetChanged()```或者```notifyItemRangeInserted()```等操作
+也可以自定义想要的操作，仅仅发送一次事件，无需`notifyDataSetChanged()`或者`notifyItemRangeInserted()`等操作
 
-内部已经实现自动```Refresh```或者```LoadMore```等操作，只需要
+内部已经实现自动`Refresh`或者`LoadMore`等操作，只需要
 1. 绑定SwipeRefreshLayout
-```java
+```kotlin
 refreshLayout.refreshes()
                 .map { Refresh }
                 .bindTo(viewModel.action)
@@ -81,7 +81,7 @@ adapter.itemClicks().subscribe()
 	}
 	
 	dependencies {
-	    compile 'com.github.adgvcxz.viewModel:viewmodel:0.4.8'
-        compile 'com.github.adgvcxz.viewModel:recyclerviewmodel:0.4.8'
-        compile 'com.github.adgvcxz.viewModel:viewpagermodel:0.4.8'
+	    compile 'com.github.adgvcxz.viewModel:viewmodel:0.4.9'
+        compile 'com.github.adgvcxz.viewModel:recyclerviewmodel:0.4.9'
+        compile 'com.github.adgvcxz.viewModel:viewpagermodel:0.4.9'
     }
