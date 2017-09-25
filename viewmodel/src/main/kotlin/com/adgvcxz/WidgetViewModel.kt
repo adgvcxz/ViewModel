@@ -34,9 +34,7 @@ abstract class WidgetViewModel<M : IModel> : IViewModel<M> {
                 .refCount()
     }
 
-    fun currentModel(): M {
-        return _currentModel ?: initModel
-    }
+    fun currentModel(): M = _currentModel ?: initModel
 
 //    @OnLifecycleEvent(Lifecycle.Event.ON_CREATE)
 //    fun onCreate() {

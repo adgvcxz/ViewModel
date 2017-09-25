@@ -18,7 +18,7 @@ import kotlinx.android.synthetic.main.activity_simple_recycler.*
 
 class SimpleRecyclerActivity : AppCompatActivity() {
 
-    val disposables: CompositeDisposable by lazy { CompositeDisposable() }
+    private val disposables: CompositeDisposable by lazy { CompositeDisposable() }
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)

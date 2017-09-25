@@ -13,9 +13,7 @@ interface IView<V: ItemViewHolder, in M: RecyclerItemViewModel<out IModel>> {
     val layoutId: Int
 
     @Suppress("UNCHECKED_CAST")
-    fun initView(view: View, parent: ViewGroup): V {
-        return ItemViewHolder(view) as V
-    }
+    fun initView(view: View, parent: ViewGroup): V = ItemViewHolder(view) as V
 
     fun bind(viewHolder: V, viewModel: M, position: Int) {
 

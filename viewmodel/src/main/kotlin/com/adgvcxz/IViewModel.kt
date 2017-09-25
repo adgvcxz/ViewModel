@@ -10,19 +10,11 @@ import io.reactivex.Observable
 
 interface IViewModel<M: IModel>/*: LifecycleObserver*/ {
 
-    fun scan(model: M, mutation: IMutation): M {
-        return model
-    }
+    fun scan(model: M, mutation: IMutation): M = model
 
-    fun mutate(event: IEvent): Observable<IMutation> {
-        return Observable.empty()
-    }
+    fun mutate(event: IEvent): Observable<IMutation> = Observable.empty()
 
-    fun transformMutation(mutation: Observable<IMutation>): Observable<IMutation> {
-        return mutation
-    }
+    fun transformMutation(mutation: Observable<IMutation>): Observable<IMutation> = mutation
 
-    fun transformEvent(event: Observable<IEvent>): Observable<IEvent> {
-        return event
-    }
+    fun transformEvent(event: Observable<IEvent>): Observable<IEvent> = event
 }

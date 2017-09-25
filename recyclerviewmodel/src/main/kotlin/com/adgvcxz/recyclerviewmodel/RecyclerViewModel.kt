@@ -36,7 +36,7 @@ class RecyclerModel(values: List<RecyclerItemViewModel<out IModel>>? = null,
         get() {
             val state = loadingViewModel?.currentModel()?.state
             if (state != null) {
-                return state == LoadingItemViewModel.State.loading
+                return state == LoadingItemViewModel.State.Loading
             }
             return false
         }
@@ -86,7 +86,7 @@ abstract class RecyclerViewModel : WidgetViewModel<RecyclerModel>() {
                     return Observable.empty()
                 }
                 currentModel().loadingViewModel?.action?.onNext(
-                        LoadingItemViewModel.StateEvent.SetState(LoadingItemViewModel.State.loading))
+                        LoadingItemViewModel.StateEvent.SetState(LoadingItemViewModel.State.Loading))
                 return request(false)
                         .map {
                             when (it) {
@@ -97,9 +97,9 @@ abstract class RecyclerViewModel : WidgetViewModel<RecyclerModel>() {
                         .doOnNext {
                             when (it) {
                                 is LoadFailure -> currentModel().loadingViewModel?.action?.onNext(
-                                        LoadingItemViewModel.StateEvent.SetState(LoadingItemViewModel.State.failure))
+                                        LoadingItemViewModel.StateEvent.SetState(LoadingItemViewModel.State.Failure))
                                 is AppendData -> currentModel().loadingViewModel?.action?.onNext(
-                                        LoadingItemViewModel.StateEvent.SetState(LoadingItemViewModel.State.success))
+                                        LoadingItemViewModel.StateEvent.SetState(LoadingItemViewModel.State.Success))
                             }
                         }
             }
@@ -167,9 +167,7 @@ abstract class RecyclerViewModel : WidgetViewModel<RecyclerModel>() {
         return model
     }
 
-    open fun request(refresh: Boolean): Observable<IMutation> {
-        return Observable.empty()
-    }
+    open fun request(refresh: Boolean): Observable<IMutation> = Observable.empty()
 
     val count: Int
         get() = currentModel().items.size

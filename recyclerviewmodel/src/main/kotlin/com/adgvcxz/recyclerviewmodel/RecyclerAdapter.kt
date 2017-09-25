@@ -8,7 +8,6 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import com.adgvcxz.IModel
-import com.adgvcxz.WidgetLifeCircleEvent
 import com.adgvcxz.addTo
 import com.adgvcxz.bindTo
 import io.reactivex.disposables.CompositeDisposable
@@ -34,7 +33,7 @@ class RecyclerAdapter(val viewModel: RecyclerViewModel,
     private var loading: Boolean = false
     private val disposables: CompositeDisposable by lazy { CompositeDisposable() }
     private val holders = arrayListOf<ItemViewHolder>()
-    var isAttachToBind = false
+    var isAttachToBind = true
 
     init {
 //        setHasStableIds(true)
@@ -55,8 +54,7 @@ class RecyclerAdapter(val viewModel: RecyclerViewModel,
         }
         val view = inflater!!.inflate(viewType, parent, false)
         ifNotNull(view, itemClickListener) { _, listener -> view.setOnClickListener(listener) }
-        val holder = viewMap[viewType]!!.initView(view, parent)
-        return holder
+        return viewMap[viewType]!!.initView(view, parent)
     }
 
     @Suppress("UNCHECKED_CAST")
@@ -74,9 +72,7 @@ class RecyclerAdapter(val viewModel: RecyclerViewModel,
         checkLoadMore(position)
     }
 
-    override fun getItemCount(): Int {
-        return viewModel.count
-    }
+    override fun getItemCount(): Int = viewModel.count
 
     @Suppress("UNCHECKED_CAST")
     override fun getItemViewType(position: Int): Int {
@@ -115,7 +111,7 @@ class RecyclerAdapter(val viewModel: RecyclerViewModel,
     }
 
 
-    fun checkLoadMore(position: Int) {
+    private fun checkLoadMore(position: Int) {
         val loadingModel = viewModel.currentModel().loadingViewModel
         loadingModel?.let {
             if ((position == itemCount - 1) && !viewModel.currentModel().isLoading && !loading) {

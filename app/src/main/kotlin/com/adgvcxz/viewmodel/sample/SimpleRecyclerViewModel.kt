@@ -27,8 +27,8 @@ class SimpleRecyclerViewModel : RecyclerViewModel() {
 
 
     override fun request(refresh: Boolean): Observable<IMutation> {
-        if (Random().nextInt() < 16) {
-            return Observable.timer(1, TimeUnit.SECONDS)
+        return if (Random().nextInt() < 16) {
+            Observable.timer(1, TimeUnit.SECONDS)
                     .map { (0 until 10).map { TextItemViewModel() } }
                     .flatMap {
                         if (!refresh && currentModel().items.size > 30) {
@@ -38,7 +38,7 @@ class SimpleRecyclerViewModel : RecyclerViewModel() {
                         }
                     }
         } else {
-            return Observable.just(LoadFailure)
+            Observable.just(LoadFailure)
         }
     }
 }
@@ -47,13 +47,12 @@ class TextItemView : IView<TextItemView.TextItemViewHolder, TextItemViewModel> {
     override val layoutId: Int = R.layout.item_text_view
 
     class TextItemViewHolder(view: View) : ItemViewHolder(view) {
-        var content: TextView = view.findViewById(R.id.textView) as TextView
+        var content: TextView = view.findViewById(R.id.textView)
     }
 
 
-    override fun initView(view: View, parent: ViewGroup): TextItemViewHolder {
-        return TextItemViewHolder(view)
-    }
+    override fun initView(view: View, parent: ViewGroup): TextItemViewHolder =
+            TextItemViewHolder(view)
 
     override fun bind(viewHolder: TextItemViewHolder, viewModel: TextItemViewModel, position: Int) {
 //        viewHolder.content.text = viewModel.currentModel().content
@@ -95,12 +94,12 @@ class LoadingItemView : IDefaultView<LoadingItemViewModel> {
 
     override fun bind(viewHolder: ItemViewHolder, viewModel: LoadingItemViewModel, position: Int) {
         viewModel.model.map { it.state }
-                .map { it != LoadingItemViewModel.State.failure }
+                .map { it != LoadingItemViewModel.State.Failure }
                 .subscribe(viewHolder.itemView.loading.visibility())
                 .addTo(viewHolder.disposables)
 
         viewModel.model.map { it.state }
-                .map { it == LoadingItemViewModel.State.failure }
+                .map { it == LoadingItemViewModel.State.Failure }
                 .subscribe(viewHolder.itemView.failed.visibility())
                 .addTo(viewHolder.disposables)
     }

@@ -11,20 +11,14 @@ class ItemDiffCallback(private val oldItems: List<RecyclerItemViewModel<out IMod
                        private val newItems: List<RecyclerItemViewModel<out IModel>>) : DiffUtil.Callback() {
 
 
-    override fun areItemsTheSame(oldItemPosition: Int, newItemPosition: Int): Boolean {
-        return oldItems[oldItemPosition].currentModel() == newItems[newItemPosition].currentModel()
-    }
+    override fun areItemsTheSame(oldItemPosition: Int, newItemPosition: Int): Boolean =
+            oldItems[oldItemPosition].currentModel() == newItems[newItemPosition].currentModel()
 
-    override fun getOldListSize(): Int {
-        return oldItems.size
-    }
+    override fun getOldListSize(): Int = oldItems.size
 
-    override fun getNewListSize(): Int {
-        return newItems.size
-    }
+    override fun getNewListSize(): Int = newItems.size
 
-    override fun areContentsTheSame(oldItemPosition: Int, newItemPosition: Int): Boolean {
-        return oldItems[oldItemPosition] == newItems[newItemPosition]
-    }
+    override fun areContentsTheSame(oldItemPosition: Int, newItemPosition: Int): Boolean =
+            oldItems[oldItemPosition] == newItems[newItemPosition]
 
 }

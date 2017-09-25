@@ -15,13 +15,13 @@ class LoadingItemViewModel : RecyclerItemViewModel<LoadingItemViewModel.Model>()
     override var initModel: Model = Model()
 
     enum class State {
-        success,
-        failure,
-        loading
+        Success,
+        Failure,
+        Loading
     }
 
     class Model : IModel {
-        var state: State = State.success
+        var state: State = State.Success
     }
 
     sealed class StateEvent(val state: State) : IEvent {

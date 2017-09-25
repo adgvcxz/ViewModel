@@ -19,7 +19,7 @@ class TimerActivity : BaseActivity() {
 //        ViewModelProviders.of(this).get(TimerViewModel::class.java)
 //    }
 
-    val viewModel: TimerViewModel by lazy {
+    private val viewModel: TimerViewModel by lazy {
         TimerViewModel()
     }
 
@@ -41,12 +41,12 @@ class TimerActivity : BaseActivity() {
 
 
         viewModel.model
-                .filter { it.status == TimerViewModel.TimerStatus.completed }
+                .filter { it.status == TimerViewModel.TimerStatus.Completed }
                 .map { "Timer" }
                 .subscribe(time.text())
                 .addTo(disposables)
 
-        viewModel.model.filter { it.status == TimerViewModel.TimerStatus.timing }
+        viewModel.model.filter { it.status == TimerViewModel.TimerStatus.Timing }
                 .map { it.time }
                 .distinctUntilChanged()
                 .map { "$it" }

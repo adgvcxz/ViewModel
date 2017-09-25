@@ -2,10 +2,8 @@ package com.adgvcxz.viewmodel.sample
 
 import android.os.Bundle
 import android.support.v7.app.AppCompatActivity
-import android.util.Log
 import com.adgvcxz.addTo
 import com.adgvcxz.bindTo
-import com.adgvcxz.viewpagermodel.AppendData
 import com.adgvcxz.viewpagermodel.RemoveData
 import com.adgvcxz.viewpagermodel.SetData
 import com.adgvcxz.viewpagermodel.ViewPagerAdapter
@@ -19,7 +17,7 @@ import kotlinx.android.synthetic.main.activity_simple_view_pager.*
  */
 class SimpleViewPagerActivity: AppCompatActivity() {
 
-    val disposables: CompositeDisposable by lazy { CompositeDisposable() }
+    private val disposables: CompositeDisposable by lazy { CompositeDisposable() }
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -27,7 +25,7 @@ class SimpleViewPagerActivity: AppCompatActivity() {
         initViewModel()
     }
 
-    fun initViewModel() {
+    private fun initViewModel() {
         val viewModel = SimpleViewPagerViewModel()
         val adapter = ViewPagerAdapter(viewModel, { ItemView() })
         viewPager.adapter = adapter
