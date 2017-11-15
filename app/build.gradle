@@ -4,7 +4,7 @@ apply plugin: 'kotlin-android-extensions'
 
 android {
     compileSdkVersion 26
-    buildToolsVersion "26.0.0"
+    buildToolsVersion "26.0.2"
     defaultConfig {
         applicationId "com.adgvcxz.viewmodel.sample"
         minSdkVersion 15
@@ -30,7 +30,7 @@ dependencies {
     compile project(':viewmodel')
     compile project(':recyclerviewmodel')
     compile project(':viewpagermodel')
-    compile 'com.android.support:appcompat-v7:26.0.0'
+    compile 'com.android.support:appcompat-v7:26.1.0'
     compile 'com.jakewharton.rxbinding2:rxbinding:2.0.0'
     compile 'com.jakewharton.rxbinding2:rxbinding-kotlin:2.0.0'
     compile 'com.jakewharton.rxbinding2:rxbinding-support-v4:2.0.0'

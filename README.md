@@ -81,7 +81,7 @@ adapter.itemClicks().subscribe()
 	}
 	
 	dependencies {
-	    compile 'com.github.adgvcxz.viewModel:viewmodel:0.4.9'
-        compile 'com.github.adgvcxz.viewModel:recyclerviewmodel:0.4.9'
-        compile 'com.github.adgvcxz.viewModel:viewpagermodel:0.4.9'
+	    compile 'com.github.adgvcxz.viewModel:viewmodel:0.5.1'
+        compile 'com.github.adgvcxz.viewModel:recyclerviewmodel:0.5.1'
+        compile 'com.github.adgvcxz.viewModel:viewpagermodel:0.5.1'
     }
