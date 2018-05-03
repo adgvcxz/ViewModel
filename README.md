@@ -8,39 +8,35 @@
 
 ```koltin
 viewModel.toEvents {
-            section<Unit, View> {
-                observable = { clicks() }
-                item {
-                    event { TimerViewModel.Event.StartButtonClicked }
-                    view = start
-                }
-                item {
-                    event { TimerViewModel.Event.StopButtonClicked }
-                    view = stop
-                }
-            }
-        }.addTo(disposables)
+    section<Unit, View> {
+        observable = { clicks() }
+        item {
+            event { TimerViewModel.Event.StartButtonClicked }
+            view = start
+        }
+        item {
+            event { TimerViewModel.Event.StopButtonClicked }
+            view = stop
+        }
+    }
+}.addTo(disposables)
 
-        viewModel.toBuilder {
-            section<TimerViewModel.Model> {
-                mapItem<String> {
-                    value { this }
-                    filter {
-                        filter {
-                            it.status == TimerViewModel.TimerStatus.Completed
-                        }
-                    }
-                    map { "Timer" }
-                    behavior = time.text()
-                }
-                mapItem<String> {
-                    value { this }
-                    filter { filter { it.status == TimerViewModel.TimerStatus.Timing } }
-                    map { "$time" }
-                    behavior = time.text()
-                }
-            }
-        }.addTo(disposables)
+viewModel.toBuilder {
+    section<TimerViewModel.Model> {
+        mapItem<String> {
+            value { this }
+            filter { filter { it.status == TimerViewModel.TimerStatus.Completed } }
+            map { "Timer" }
+            behavior = time.text()
+        }
+        mapItem<String> {
+            value { this }
+            filter { filter { it.status == TimerViewModel.TimerStatus.Timing } }
+            map { "$time" }
+            behavior = time.text()
+        }
+    }
+}.addTo(disposables)
 ```
 
 ##### 以RecyclerView为例:
@@ -120,7 +116,7 @@ adapter.itemClicks().subscribe()
 	}
 	
 	dependencies {
-	    compile 'com.github.adgvcxz.viewModel:viewmodel:0.5.1'
-        compile 'com.github.adgvcxz.viewModel:recyclerviewmodel:0.5.1'
-        compile 'com.github.adgvcxz.viewModel:viewpagermodel:0.5.1'
+	    compile 'com.github.adgvcxz.viewModel:viewmodel:0.6.0'
+        compile 'com.github.adgvcxz.viewModel:recyclerviewmodel:0.6.0'
+        compile 'com.github.adgvcxz.viewModel:viewpagermodel:0.6.0'
     }
