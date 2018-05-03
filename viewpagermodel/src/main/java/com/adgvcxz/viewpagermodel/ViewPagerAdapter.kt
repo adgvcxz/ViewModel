@@ -30,15 +30,13 @@ class ViewPagerAdapter(val viewModel: ViewPagerViewModel,
                 .addTo(disposables)
     }
 
-    override fun isViewFromObject(view: View?, `object`: Any?): Boolean = view == `object`
+    override fun isViewFromObject(view: View, `object`: Any): Boolean = view == `object`
 
     override fun getCount(): Int = viewModel.currentModel().items.size
 
-    override fun destroyItem(container: ViewGroup?, position: Int, `object`: Any?) {
-        `object`?.let {
-            if (it is View) {
-                container?.removeView(it)
-            }
+    override fun destroyItem(container: ViewGroup, position: Int, `object`: Any) {
+        if (`object` is View) {
+            container.removeView(`object`)
         }
     }
 
@@ -88,9 +86,9 @@ class ViewPagerAdapter(val viewModel: ViewPagerViewModel,
         }
     }
 
-    override fun getItemPosition(`object`: Any?): Int = POSITION_NONE
+    override fun getItemPosition(`object`: Any): Int = POSITION_NONE
 
-    override fun getPageTitle(position: Int): CharSequence {
+    override fun getPageTitle(position: Int): CharSequence? {
         val block = configureTitle
         return block?.invoke(position) ?: super.getPageTitle(position)
     }
