@@ -3,26 +3,21 @@ package com.adgvcxz
 //import android.arch.lifecycle.Lifecycle
 //import android.arch.lifecycle.OnLifecycleEvent
 //import android.arch.lifecycle.ViewModel
-import android.util.Log
 import io.reactivex.Observable
 import io.reactivex.android.schedulers.AndroidSchedulers
-import io.reactivex.subjects.PublishSubject
-import io.reactivex.subjects.Subject
 
 /**
  * zhaowei
  * Created by zhaowei on 2017/4/27.
  */
 
-abstract class AFViewModel<M : IModel> : /*: ViewModel(),*/ IViewModel<M> {
-
-    var action: Subject<IEvent> = PublishSubject.create<IEvent>().toSerialized()
+abstract class AFViewModel<M : IModel> : /*: ViewModel(),*/ IViewModel<M>() {
 
     abstract val initModel: M
 
     private var _currentModel: M? = null
 
-    val model: Observable<M> by lazy {
+    override val model: Observable<M> by lazy {
         this.action
                 .compose { transformEvent(it) }
                 .flatMap { this.mutate(it) }

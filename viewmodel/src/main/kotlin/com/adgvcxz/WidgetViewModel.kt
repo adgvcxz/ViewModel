@@ -11,16 +11,14 @@ import io.reactivex.subjects.Subject
  * zhaowei
  * Created by zhaowei on 2017/6/3.
  */
-abstract class WidgetViewModel<M : IModel> : IViewModel<M> {
-
-    var action: Subject<IEvent> = PublishSubject.create<IEvent>().toSerialized()
+abstract class WidgetViewModel<M : IModel> : IViewModel<M>() {
 
     //initialization initModel maybe have some parameters, so there is no abstract method initModel()
     abstract val initModel: M
 
     private var _currentModel: M? = null
 
-    val model: Observable<M> by lazy {
+    override val model: Observable<M> by lazy {
         this.action
                 .compose { transformEvent(it) }
                 .flatMap { this.mutate(it) }

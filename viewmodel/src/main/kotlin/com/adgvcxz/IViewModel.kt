@@ -2,19 +2,25 @@ package com.adgvcxz
 
 //import android.arch.lifecycle.LifecycleObserver
 import io.reactivex.Observable
+import io.reactivex.subjects.PublishSubject
+import io.reactivex.subjects.Subject
 
 /**
  * zhaowei
  * Created by zhaowei on 2017/5/4.
  */
 
-interface IViewModel<M: IModel>/*: LifecycleObserver*/ {
+abstract class IViewModel<M: IModel>/*: LifecycleObserver*/ {
 
-    fun scan(model: M, mutation: IMutation): M = model
+    var action: Subject<IEvent> = PublishSubject.create<IEvent>().toSerialized()
 
-    fun mutate(event: IEvent): Observable<IMutation> = Observable.empty()
+    abstract val model: Observable<M>
 
-    fun transformMutation(mutation: Observable<IMutation>): Observable<IMutation> = mutation
+    open fun scan(model: M, mutation: IMutation): M = model
 
-    fun transformEvent(event: Observable<IEvent>): Observable<IEvent> = event
+    open fun mutate(event: IEvent): Observable<IMutation> = Observable.empty()
+
+    open fun transformMutation(mutation: Observable<IMutation>): Observable<IMutation> = mutation
+
+    open fun transformEvent(event: Observable<IEvent>): Observable<IEvent> = event
 }

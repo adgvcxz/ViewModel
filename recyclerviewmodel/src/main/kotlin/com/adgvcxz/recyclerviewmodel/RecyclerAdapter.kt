@@ -27,6 +27,7 @@ class RecyclerAdapter(val viewModel: RecyclerViewModel,
     private var inflater: LayoutInflater? = null
     private var viewMap: HashMap<Int, IView<*, *>?> = HashMap()
     private val layoutMap: HashMap<KClass<RecyclerItemViewModel<out IModel>>, Int> = HashMap()
+    private val items: MutableList<RecyclerItemViewModel<out IModel>> = arrayListOf()
     internal var itemClickListener: View.OnClickListener? = null
     internal var action: Subject<Int>? = null
     private var notify: Boolean = false
@@ -42,7 +43,7 @@ class RecyclerAdapter(val viewModel: RecyclerViewModel,
                 .addTo(disposables)
 
         itemClicks()
-                .filter { viewModel.currentModel().items[it] is LoadingItemViewModel }
+                .filter { items[it] is LoadingItemViewModel }
                 .map { LoadMore }
                 .bindTo(viewModel.action)
                 .addTo(disposables)
@@ -66,17 +67,17 @@ class RecyclerAdapter(val viewModel: RecyclerViewModel,
                 holder.disposables.clear()
                 holders.add(holder)
                 (it as IView<in ItemViewHolder, RecyclerItemViewModel<out IModel>>)
-                        .bind(holder, viewModel.currentModel().items[holder.layoutPosition], holder.layoutPosition)
+                        .bind(holder, items[holder.layoutPosition], holder.layoutPosition)
             }
         }
         checkLoadMore(position)
     }
 
-    override fun getItemCount(): Int = viewModel.count
+    override fun getItemCount(): Int = items.size
 
     @Suppress("UNCHECKED_CAST")
     override fun getItemViewType(position: Int): Int {
-        val model = viewModel.currentModel().items[position]
+        val model = items[position]
         var id = layoutMap[model::class]
         if (id == null) {
             val type = model::class as KClass<RecyclerItemViewModel<out IModel>>
@@ -95,7 +96,7 @@ class RecyclerAdapter(val viewModel: RecyclerViewModel,
             val iView = viewMap[getItemViewType(holder.layoutPosition)]
             iView?.let {
                 (it as IView<in ItemViewHolder, RecyclerItemViewModel<out IModel>>)
-                        .bind(holder, viewModel.currentModel().items[holder.layoutPosition], holder.layoutPosition)
+                        .bind(holder, items[holder.layoutPosition], holder.layoutPosition)
             }
 //            viewModel.currentModel().items[holder.layoutPosition].action.onNext(WidgetLifeCircleEvent.Attach)
         }
@@ -114,11 +115,11 @@ class RecyclerAdapter(val viewModel: RecyclerViewModel,
     private fun checkLoadMore(position: Int) {
         val loadingModel = viewModel.currentModel().loadingViewModel
         loadingModel?.let {
-            if ((position == itemCount - 1) && !viewModel.currentModel().isLoading && !loading) {
+            loading = if ((position == itemCount - 1) && !viewModel.currentModel().isLoading && !loading) {
                 viewModel.action.onNext(LoadMore)
-                loading = true
+                true
             } else {
-                loading = false
+                false
             }
         }
     }
@@ -128,7 +129,7 @@ class RecyclerAdapter(val viewModel: RecyclerViewModel,
         super.onAttachedToRecyclerView(recyclerView)
         recyclerView.addOnAttachStateChangeListener(object : View.OnAttachStateChangeListener {
             override fun onViewDetachedFromWindow(v: View?) {
-                viewModel.currentModel().items.forEach {
+                items.forEach {
                     it.dispose()
                 }
                 disposables.dispose()
@@ -151,26 +152,34 @@ class RecyclerAdapter(val viewModel: RecyclerViewModel,
 
     override fun accept(result: DiffUtil.DiffResult) {
         if (viewModel.currentModel().isAnim && !notify) {
+            items.clear()
+            viewModel.currentModel().items.mapTo(items) { it }
             result.dispatchUpdatesTo(this)
         } else {
             result.dispatchUpdatesTo(object : ListUpdateCallback {
                 override fun onChanged(position: Int, count: Int, payload: Any?) {
-                    notifyDataSetChanged()
+                    updateData()
                 }
 
                 override fun onMoved(fromPosition: Int, toPosition: Int) {
-                    notifyDataSetChanged()
+                    updateData()
                 }
 
                 override fun onInserted(position: Int, count: Int) {
-                    notifyDataSetChanged()
+                    updateData()
                 }
 
                 override fun onRemoved(position: Int, count: Int) {
-                    notifyDataSetChanged()
+                    updateData()
                 }
             })
         }
         notify = viewModel.currentModel().isRefresh
+    }
+
+    private fun updateData() {
+        items.clear()
+        viewModel.currentModel().items.mapTo(items) { it }
+        notifyDataSetChanged()
     }
 }
