@@ -4,6 +4,45 @@
 
 #### 支持Activity Fragment RecyclerView ViewPager 以及普通自定义View
 
+##### 支持DSL:
+
+```koltin
+viewModel.toEvents {
+            section<Unit, View> {
+                observable = { clicks() }
+                item {
+                    event { TimerViewModel.Event.StartButtonClicked }
+                    view = start
+                }
+                item {
+                    event { TimerViewModel.Event.StopButtonClicked }
+                    view = stop
+                }
+            }
+        }.addTo(disposables)
+
+        viewModel.toBuilder {
+            section<TimerViewModel.Model> {
+                mapItem<String> {
+                    value { this }
+                    filter {
+                        filter {
+                            it.status == TimerViewModel.TimerStatus.Completed
+                        }
+                    }
+                    map { "Timer" }
+                    behavior = time.text()
+                }
+                mapItem<String> {
+                    value { this }
+                    filter { filter { it.status == TimerViewModel.TimerStatus.Timing } }
+                    map { "$time" }
+                    behavior = time.text()
+                }
+            }
+        }.addTo(disposables)
+```
+
 ##### 以RecyclerView为例:
 
 * 初始化
