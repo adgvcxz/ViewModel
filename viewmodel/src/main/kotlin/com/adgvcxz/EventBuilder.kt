@@ -61,6 +61,10 @@ class EventSection<T, V : View> {
 
         }
     }
+
+    fun observable(init: V.() -> Observable<T>) {
+        observable = init
+    }
 }
 
 sealed class IItem<T, V : View> {

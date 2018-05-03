@@ -16,3 +16,7 @@ fun <T, R : T> Observable<T>.bindTo(observer: Subject<in R>): Disposable = this.
 fun Disposable.addTo(disposables: CompositeDisposable) {
     disposables.add(this)
 }
+
+fun List<Disposable>.addTo(disposables: CompositeDisposable) {
+    disposables.addAll(*this.toTypedArray())
+}

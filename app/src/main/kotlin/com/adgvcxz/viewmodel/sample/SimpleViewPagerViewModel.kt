@@ -1,8 +1,7 @@
 package com.adgvcxz.viewmodel.sample
 
-import com.adgvcxz.IModel
-import com.adgvcxz.IMutation
-import com.adgvcxz.addTo
+import android.view.View
+import com.adgvcxz.*
 import com.adgvcxz.viewpagermodel.*
 import com.jakewharton.rxbinding2.view.clicks
 import com.jakewharton.rxbinding2.widget.text
@@ -47,14 +46,24 @@ class ItemView : IPagerItemView<ViewPagerItemHolder, ItemViewModel> {
     override val layoutId: Int = R.layout.item_view_pager
 
     override fun bind(holder: ViewPagerItemHolder, viewModel: ItemViewModel, position: Int) {
-        viewModel.model.map { it.value }
-                .distinctUntilChanged()
-                .subscribe(holder.view.textView.text())
-                .addTo(holder.disposables)
-        holder.view.textView
-                .clicks()
-                .doOnNext { RxBus.instance.post(ViewPagerEvent(UUID.randomUUID().toString())) }
-                .subscribe()
-                .addTo(holder.disposables)
+        holder.view.run {
+            viewModel.toBuilder {
+                section<String> {
+                    filter { distinctUntilChanged() }
+                    item {
+                        behavior = textView.text()
+                    }
+                }
+            }.addTo(holder.disposables)
+            viewModel.toEvents {
+                section<Unit, View> {
+                    observable { clicks() }
+                    actionItem {
+                        view = textView
+                        action { RxBus.instance.post(ViewPagerEvent(UUID.randomUUID().toString())) }
+                    }
+                }
+            }.addTo(holder.disposables)
+        }
     }
 }

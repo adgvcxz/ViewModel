@@ -33,6 +33,10 @@ class ViewModelSection<M : IModel, S> {
 
     private val itemList = arrayListOf<ViewModelItem<M, S, Any>>()
 
+    fun filter(init: Observable<S>.() -> Observable<S>) {
+        filter = init
+    }
+
     @Suppress("UNCHECKED_CAST")
     fun <R> mapItem(init: ViewModelItem<M, S, R>.() -> Unit) {
         val item = ViewModelItem<M, S, R>()

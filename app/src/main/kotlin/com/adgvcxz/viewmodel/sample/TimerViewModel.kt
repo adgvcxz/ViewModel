@@ -1,5 +1,6 @@
 package com.adgvcxz.viewmodel.sample
 
+import android.util.Log
 import com.adgvcxz.*
 import io.reactivex.Observable
 import java.util.concurrent.TimeUnit
@@ -38,6 +39,7 @@ class TimerViewModel : AFViewModel<TimerViewModel.Model>() {
         when (event) {
             Event.StartButtonClicked -> {
                 if (this.currentModel().status == TimerStatus.Completed) {
+                    Log.e("zhaow", "event  $event")
                     val startTimer = Observable.just(Mutation.StartTimer)
                     val timing = Observable.interval(1, 1, TimeUnit.SECONDS)
                             .filter { this.currentModel().status == TimerStatus.Timing }
@@ -65,10 +67,12 @@ class TimerViewModel : AFViewModel<TimerViewModel.Model>() {
     override fun scan(model: Model, mutation: IMutation): Model {
         when (mutation) {
             Mutation.StartTimer -> return model.also {
+                Log.e("zhaow", "开始计时")
                 it.time = 0
                 it.status = TimerStatus.Timing
             }
             Mutation.Timing -> return model.also {
+                Log.e("zhaow", "正在计时")
                 it.status = TimerStatus.Timing
                 it.time += 1
             }
