@@ -47,6 +47,7 @@ class RecyclerAdapter(val viewModel: RecyclerViewModel,
                 .map { LoadMore }
                 .bindTo(viewModel.action)
                 .addTo(disposables)
+        viewModel.currentModel().items.mapTo(items) { it }
     }
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ItemViewHolder {
