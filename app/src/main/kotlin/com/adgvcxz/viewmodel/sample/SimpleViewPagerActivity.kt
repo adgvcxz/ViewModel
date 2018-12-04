@@ -4,6 +4,7 @@ import android.os.Bundle
 import android.support.v7.app.AppCompatActivity
 import com.adgvcxz.addTo
 import com.adgvcxz.bindTo
+import com.adgvcxz.viewpagermodel.AppendData
 import com.adgvcxz.viewpagermodel.RemoveData
 import com.adgvcxz.viewpagermodel.SetData
 import com.adgvcxz.viewpagermodel.ViewPagerAdapter
@@ -30,7 +31,7 @@ class SimpleViewPagerActivity: AppCompatActivity() {
         val adapter = ViewPagerAdapter(viewModel, { ItemView() })
         viewPager.adapter = adapter
         add.clicks()
-                .map { SetData(arrayListOf(ItemViewModel(), ItemViewModel())) }
+                .map { AppendData(arrayListOf(ItemViewModel())) }
                 .bindTo(viewModel.action)
                 .addTo(disposables)
         remove.clicks()

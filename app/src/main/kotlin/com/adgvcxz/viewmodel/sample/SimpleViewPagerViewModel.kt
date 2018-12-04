@@ -51,6 +51,7 @@ class ItemView : IPagerItemView<ViewPagerItemHolder, ItemViewModel> {
                 section<String> {
                     filter { distinctUntilChanged() }
                     item {
+                        value { value }
                         behavior = textView.text()
                     }
                 }
