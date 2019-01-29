@@ -1,6 +1,6 @@
 package com.adgvcxz.recyclerviewmodel
 
-import android.support.v7.util.DiffUtil
+import androidx.recyclerview.widget.DiffUtil
 import com.adgvcxz.IModel
 
 /**

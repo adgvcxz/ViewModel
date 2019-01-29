@@ -7,8 +7,7 @@ import com.adgvcxz.IModel
 import com.adgvcxz.IMutation
 import com.adgvcxz.addTo
 import com.adgvcxz.recyclerviewmodel.*
-import com.jakewharton.rxbinding2.view.visibility
-import com.jakewharton.rxbinding2.widget.text
+import com.jakewharton.rxbinding3.view.visibility
 import io.reactivex.Observable
 import kotlinx.android.synthetic.main.item_loading.view.*
 import java.util.*
@@ -58,7 +57,7 @@ class TextItemView : IView<TextItemView.TextItemViewHolder, TextItemViewModel> {
 //        viewHolder.content.text = viewModel.currentModel().content
         viewModel.model.map { it.content }
                 .distinctUntilChanged()
-                .subscribe(viewHolder.content.text())
+                .subscribe { viewHolder.content.text = it }
                 .addTo(viewHolder.disposables)
     }
 }

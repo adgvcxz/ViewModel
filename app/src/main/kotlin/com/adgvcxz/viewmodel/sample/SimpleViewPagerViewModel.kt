@@ -3,8 +3,7 @@ package com.adgvcxz.viewmodel.sample
 import android.view.View
 import com.adgvcxz.*
 import com.adgvcxz.viewpagermodel.*
-import com.jakewharton.rxbinding2.view.clicks
-import com.jakewharton.rxbinding2.widget.text
+import com.jakewharton.rxbinding3.view.clicks
 import io.reactivex.Observable
 import kotlinx.android.synthetic.main.item_view_pager.view.*
 import java.util.*
@@ -52,7 +51,9 @@ class ItemView : IPagerItemView<ViewPagerItemHolder, ItemViewModel> {
                     filter { distinctUntilChanged() }
                     item {
                         value { value }
-                        behavior = textView.text()
+                        behavior {
+                            textView.text = it
+                        }
                     }
                 }
             }.addTo(holder.disposables)

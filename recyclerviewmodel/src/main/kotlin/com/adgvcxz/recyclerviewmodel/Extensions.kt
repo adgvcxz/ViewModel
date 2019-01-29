@@ -1,6 +1,6 @@
 package com.adgvcxz.recyclerviewmodel
 
-import android.support.v7.util.DiffUtil
+import androidx.recyclerview.widget.DiffUtil
 import com.adgvcxz.IModel
 import io.reactivex.Observable
 import io.reactivex.android.schedulers.AndroidSchedulers
@@ -19,7 +19,7 @@ fun Observable<List<RecyclerItemViewModel<out IModel>>>.bindTo(adapter: Recycler
                     DiffUtil.DiffResult?>(adapter.viewModel.currentModel().items, null)) { (first), list ->
                 val diff = ItemDiffCallback(first, list)
                 val result = DiffUtil.calculateDiff(diff, true)
-                list.to(result)
+                list to result
             }
             .skip(1)
             .map { it.second!! }

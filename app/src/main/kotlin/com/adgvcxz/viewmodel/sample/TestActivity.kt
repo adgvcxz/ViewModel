@@ -5,8 +5,7 @@ import com.adgvcxz.AFViewModel
 import com.adgvcxz.IModel
 import com.adgvcxz.IMutation
 import com.adgvcxz.addTo
-import com.jakewharton.rxbinding2.view.clicks
-import com.jakewharton.rxbinding2.widget.text
+import com.jakewharton.rxbinding3.view.clicks
 import io.reactivex.Observable
 import kotlinx.android.synthetic.main.activity_test.*
 import java.util.*
@@ -34,7 +33,7 @@ class TestActivity : BaseActivity() {
 
         viewModel.model.map { it.value }
                 .distinctUntilChanged()
-                .subscribe(testTextView.text())
+                .subscribe { testTextView.text = it }
                 .addTo(disposables)
 
         Observable.just("abcd")
@@ -44,7 +43,7 @@ class TestActivity : BaseActivity() {
                             .map { it.value })
 
                 }
-                .subscribe(button.text())
+                .subscribe { button.text = it }
                 .addTo(disposables)
     }
 

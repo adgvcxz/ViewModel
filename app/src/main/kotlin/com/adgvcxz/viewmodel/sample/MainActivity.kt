@@ -1,10 +1,8 @@
 package com.adgvcxz.viewmodel.sample
 
 import android.content.Intent
-import android.util.Log
 import com.adgvcxz.addTo
-import com.jakewharton.rxbinding2.view.clicks
-import io.reactivex.Observable
+import com.jakewharton.rxbinding3.view.clicks
 import kotlinx.android.synthetic.main.activity_main.*
 import java.util.concurrent.TimeUnit
 
