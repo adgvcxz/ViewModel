@@ -7,7 +7,7 @@ import com.adgvcxz.IModel
 import com.adgvcxz.IMutation
 import com.adgvcxz.addTo
 import com.adgvcxz.recyclerviewmodel.*
-import com.jakewharton.rxbinding3.view.visibility
+import com.jakewharton.rxbinding2.view.visibility
 import io.reactivex.Observable
 import kotlinx.android.synthetic.main.item_loading.view.*
 import java.util.*

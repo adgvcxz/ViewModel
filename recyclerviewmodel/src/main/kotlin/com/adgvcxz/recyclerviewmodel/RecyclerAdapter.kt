@@ -1,12 +1,12 @@
 package com.adgvcxz.recyclerviewmodel
 
+import android.support.v7.util.DiffUtil
+import android.support.v7.util.ListUpdateCallback
+import android.support.v7.widget.RecyclerView
+import android.support.v7.widget.RecyclerView.NO_POSITION
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import androidx.recyclerview.widget.DiffUtil
-import androidx.recyclerview.widget.ListUpdateCallback
-import androidx.recyclerview.widget.RecyclerView
-import androidx.recyclerview.widget.RecyclerView.NO_POSITION
 import com.adgvcxz.IModel
 import com.adgvcxz.addTo
 import com.adgvcxz.bindTo
@@ -40,6 +40,7 @@ open class RecyclerAdapter(val viewModel: RecyclerViewModel,
     init {
 //        setHasStableIds(true)
         initItems()
+        viewModel.currentModel().items.mapTo(items) { it }
     }
 
     private fun initItems() {
@@ -52,7 +53,6 @@ open class RecyclerAdapter(val viewModel: RecyclerViewModel,
                 .map { LoadMore }
                 .bindTo(viewModel.action)
                 .addTo(disposables)
-        viewModel.currentModel().items.mapTo(items) { it }
     }
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ItemViewHolder {

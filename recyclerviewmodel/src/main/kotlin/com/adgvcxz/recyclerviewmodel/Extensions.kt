@@ -1,6 +1,6 @@
 package com.adgvcxz.recyclerviewmodel
 
-import androidx.recyclerview.widget.DiffUtil
+import android.support.v7.util.DiffUtil
 import com.adgvcxz.IModel
 import io.reactivex.Observable
 import io.reactivex.android.schedulers.AndroidSchedulers

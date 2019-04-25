@@ -1,9 +1,9 @@
 package com.adgvcxz.viewpagermodel
 
+import android.support.v4.view.PagerAdapter
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import androidx.viewpager.widget.PagerAdapter
 import com.adgvcxz.IModel
 import com.adgvcxz.addTo
 import io.reactivex.disposables.CompositeDisposable

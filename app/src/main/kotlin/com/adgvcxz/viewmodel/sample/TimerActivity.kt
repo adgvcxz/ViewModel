@@ -6,7 +6,7 @@ import com.adgvcxz.AFLifeCircleEvent
 import com.adgvcxz.addTo
 import com.adgvcxz.toBuilder
 import com.adgvcxz.toEvents
-import com.jakewharton.rxbinding3.view.clicks
+import com.jakewharton.rxbinding2.view.clicks
 import kotlinx.android.synthetic.main.activity_timer.*
 
 /**
