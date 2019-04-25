@@ -19,25 +19,30 @@ import kotlin.reflect.KClass
  * zhaowei
  * Created by zhaowei on 2017/6/5.
  */
-class RecyclerAdapter(val viewModel: RecyclerViewModel,
-                      private val configureItem: ((RecyclerItemViewModel<out IModel>) -> IView<*, *>)) :
+open class RecyclerAdapter(val viewModel: RecyclerViewModel,
+                           private val configureItem: ((RecyclerItemViewModel<out IModel>) -> IView<*, *>)) :
         RecyclerView.Adapter<ItemViewHolder>(),
         Consumer<DiffUtil.DiffResult> {
 
     private var inflater: LayoutInflater? = null
     private var viewMap: HashMap<Int, IView<*, *>?> = HashMap()
     private val layoutMap: HashMap<KClass<RecyclerItemViewModel<out IModel>>, Int> = HashMap()
-    private val items: MutableList<RecyclerItemViewModel<out IModel>> = arrayListOf()
+    val items: MutableList<RecyclerItemViewModel<out IModel>> = arrayListOf()
     internal var itemClickListener: View.OnClickListener? = null
     internal var action: Subject<Int>? = null
     private var notify: Boolean = false
     private var loading: Boolean = false
-    private val disposables: CompositeDisposable by lazy { CompositeDisposable() }
-    private val holders = arrayListOf<ItemViewHolder>()
-    var isAttachToBind = true
+    val disposables: CompositeDisposable by lazy { CompositeDisposable() }
+    val holders = arrayListOf<ItemViewHolder>()
+    open var isAttachToBind = true
+    open var disposeWhenDetached = true
 
     init {
 //        setHasStableIds(true)
+        initItems()
+    }
+
+    private fun initItems() {
         viewModel.model.map { it.items }
                 .bindTo(this)
                 .addTo(disposables)
@@ -130,19 +135,31 @@ class RecyclerAdapter(val viewModel: RecyclerViewModel,
         super.onAttachedToRecyclerView(recyclerView)
         recyclerView.addOnAttachStateChangeListener(object : View.OnAttachStateChangeListener {
             override fun onViewDetachedFromWindow(v: View?) {
-                items.forEach {
-                    it.dispose()
-                }
-                disposables.dispose()
-                holders.forEach { it.disposables.dispose() }
-                (0 until recyclerView.childCount).forEach {
-                    val view = recyclerView.getChildAt(it)
-                    val holder = (recyclerView.getChildViewHolder(view) as ItemViewHolder)
-                    holder.disposables.dispose()
+                if (disposeWhenDetached) {
+                    items.forEach { it.dispose() }
+                    disposables.dispose()
+                    holders.forEach { it.disposables.dispose() }
+                    (0 until recyclerView.childCount).forEach {
+                        val view = recyclerView.getChildAt(it)
+                        val holder = (recyclerView.getChildViewHolder(view) as ItemViewHolder)
+                        holder.disposables.dispose()
+                    }
+                } else {
+                    disposables.clear()
+                    holders.forEach { it.disposables.clear() }
+                    (0 until recyclerView.childCount).forEach {
+                        val view = recyclerView.getChildAt(it)
+                        val holder = (recyclerView.getChildViewHolder(view) as ItemViewHolder)
+                        holder.disposables.clear()
+                    }
                 }
             }
 
             override fun onViewAttachedToWindow(v: View?) {
+                if (!disposeWhenDetached && disposables.size() == 0) {
+                    initItems()
+                    notifyDataSetChanged()
+                }
             }
         })
     }
