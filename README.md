@@ -7,36 +7,15 @@
 ##### 支持DSL:
 
 ```koltin
-viewModel.toEvents {
-    section<Unit, View> {
-        observable = { clicks() }
-        item {
-            event { TimerViewModel.Event.StartButtonClicked }
-            view = start
-        }
-        item {
-            event { TimerViewModel.Event.StopButtonClicked }
-            view = stop
-        }
-    }
-}.addTo(disposables)
+viewModel.toEventBind(disposables) {
+    add({ clicks() }, start, { TimerViewModel.Event.StartButtonClicked })
+    add({ clicks() }, stop, { TimerViewModel.Event.StopButtonClicked })
+}
 
-viewModel.toBuilder {
-    section<TimerViewModel.Model> {
-        mapItem<String> {
-            value { this }
-            filter { filter { it.status == TimerViewModel.TimerStatus.Completed } }
-            map { "Timer" }
-            behavior = time.text()
-        }
-        mapItem<String> {
-            value { this }
-            filter { filter { it.status == TimerViewModel.TimerStatus.Timing } }
-            map { "$time" }
-            behavior = time.text()
-        }
-    }
-}.addTo(disposables)
+viewModel.toBind(disposables) {
+    add({ status }, { time.text = "Timer" }) { filter { it == TimerViewModel.TimerStatus.Completed } }
+    add({ time }, { time.text = toString() }) { filter { viewModel.currentModel().status == TimerViewModel.TimerStatus.Timing } }
+}
 ```
 
 ##### 以RecyclerView为例:
@@ -81,10 +60,9 @@ viewodel.action.onNext(AppendData(arrayListOf()))
 内部已经实现自动`Refresh`或者`LoadMore`等操作，只需要
 1. 绑定SwipeRefreshLayout
 ```kotlin
-refreshLayout.refreshes()
-                .map { Refresh }
-                .bindTo(viewModel.action)
-                .addTo(disposables)
+viewModel.toEventBind(disposables) {
+    add({ refreshes() }, refreshLayout, { Refresh })
+}
 ```
 2. 实现request方法
 ```java
@@ -116,7 +94,7 @@ adapter.itemClicks().subscribe()
 	}
 	
 	dependencies {
-	    compile 'com.github.adgvcxz.viewModel:viewmodel:0.6.4'
-        compile 'com.github.adgvcxz.viewModel:recyclerviewmodel:0.6.4'
-        compile 'com.github.adgvcxz.viewModel:viewpagermodel:0.6.4'
+	    implementation 'com.github.adgvcxz.viewModel:viewmodel:0.7.0'
+        implementation 'com.github.adgvcxz.viewModel:recyclerviewmodel:0.7.0'
+        implementation 'com.github.adgvcxz.viewModel:viewpagermodel:0.7.0'
     }

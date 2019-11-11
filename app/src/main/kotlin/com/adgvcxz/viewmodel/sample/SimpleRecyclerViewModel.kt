@@ -5,9 +5,9 @@ import android.view.ViewGroup
 import android.widget.TextView
 import com.adgvcxz.IModel
 import com.adgvcxz.IMutation
-import com.adgvcxz.addTo
+import com.adgvcxz.add
 import com.adgvcxz.recyclerviewmodel.*
-import com.jakewharton.rxbinding2.view.visibility
+import com.adgvcxz.toBind
 import io.reactivex.Observable
 import kotlinx.android.synthetic.main.item_loading.view.*
 import java.util.*
@@ -22,7 +22,7 @@ var initId = 0
 
 class SimpleRecyclerViewModel : RecyclerViewModel() {
 
-    override var initModel: RecyclerModel = RecyclerModel(null, true, true)
+    override var initModel: RecyclerModel = RecyclerModel(null, hasLoadingItem = true, isAnim = true)
 
 
     override fun request(refresh: Boolean): Observable<IMutation> {
@@ -55,10 +55,9 @@ class TextItemView : IView<TextItemView.TextItemViewHolder, TextItemViewModel> {
 
     override fun bind(viewHolder: TextItemViewHolder, viewModel: TextItemViewModel, position: Int) {
 //        viewHolder.content.text = viewModel.currentModel().content
-        viewModel.model.map { it.content }
-                .distinctUntilChanged()
-                .subscribe { viewHolder.content.text = it }
-                .addTo(viewHolder.disposables)
+        viewModel.toBind(viewHolder.disposables) {
+            add({ content }, { viewHolder.content.text = this })
+        }
     }
 }
 
@@ -92,14 +91,13 @@ class LoadingItemView : IDefaultView<LoadingItemViewModel> {
     override val layoutId: Int = R.layout.item_loading
 
     override fun bind(viewHolder: ItemViewHolder, viewModel: LoadingItemViewModel, position: Int) {
-        viewModel.model.map { it.state }
-                .map { it != LoadingItemViewModel.State.Failure }
-                .subscribe(viewHolder.itemView.loading.visibility())
-                .addTo(viewHolder.disposables)
-
-        viewModel.model.map { it.state }
-                .map { it == LoadingItemViewModel.State.Failure }
-                .subscribe(viewHolder.itemView.failed.visibility())
-                .addTo(viewHolder.disposables)
+        with(viewHolder.itemView) {
+            viewModel.toBind(viewHolder.disposables) {
+                add({ state != LoadingItemViewModel.State.Failure }, {
+                    loading.visibility = if (this) View.VISIBLE else View.GONE
+                    failed.visibility = if (this) View.GONE else View.VISIBLE
+                })
+            }
+        }
     }
 }

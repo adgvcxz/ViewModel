@@ -2,10 +2,7 @@ package com.adgvcxz.viewmodel.sample
 
 //import android.arch.lifecycle.ViewModelProviders
 import android.view.View
-import com.adgvcxz.AFLifeCircleEvent
-import com.adgvcxz.addTo
-import com.adgvcxz.toBuilder
-import com.adgvcxz.toEvents
+import com.adgvcxz.*
 import com.jakewharton.rxbinding2.view.clicks
 import kotlinx.android.synthetic.main.activity_timer.*
 
@@ -30,49 +27,15 @@ class TimerActivity : BaseActivity() {
 
 //        lifecycle.addObserver(viewModel)
 
-        viewModel.toEvents {
-            section<Unit, View> {
-                observable = { clicks() }
-                item {
-                    event { TimerViewModel.Event.StartButtonClicked }
-                    view = start
-                }
-                item {
-                    event { TimerViewModel.Event.StopButtonClicked }
-                    view = stop
-                }
-            }
-        }.addTo(disposables)
+        viewModel.toEventBind(disposables) {
+            add({ clicks() }, start, { TimerViewModel.Event.StartButtonClicked })
+            add({ clicks() }, stop, { TimerViewModel.Event.StopButtonClicked })
+        }
 
-        viewModel.toBuilder {
-            section<TimerViewModel.Model> {
-                mapItem<String> {
-                    value { this }
-                    filter {
-                        filter {
-                            it.status == TimerViewModel.TimerStatus.Completed
-                        }
-                    }
-                    map { "Timer" }
-                    behavior {
-                        time.text = it
-                    }
-                }
-                mapItem<String> {
-                    value { this }
-                    filter { filter { it.status == TimerViewModel.TimerStatus.Timing } }
-                    map { "$time" }
-                    behavior {
-                        time.text = it
-                    }
-                }
-            }
-        }.addTo(disposables)
+        viewModel.toBind(disposables) {
+            add({ status }, { time.text = "Timer" }) { filter { it == TimerViewModel.TimerStatus.Completed } }
+            add({ time }, { time.text = toString() }) { filter { viewModel.currentModel().status == TimerViewModel.TimerStatus.Timing } }
+        }
 
-    }
-
-    override fun onDestroy() {
-        super.onDestroy()
-        viewModel.action.onNext(AFLifeCircleEvent.Destroy)
     }
 }

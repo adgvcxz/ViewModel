@@ -1,13 +1,14 @@
 package com.adgvcxz.recyclerviewmodel
 
+import android.os.Handler
 import android.support.v7.util.DiffUtil
-import android.support.v7.util.ListUpdateCallback
 import android.support.v7.widget.RecyclerView
 import android.support.v7.widget.RecyclerView.NO_POSITION
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import com.adgvcxz.IModel
+import com.adgvcxz.IMutation
 import com.adgvcxz.addTo
 import com.adgvcxz.bindTo
 import io.reactivex.disposables.CompositeDisposable
@@ -27,26 +28,34 @@ open class RecyclerAdapter(val viewModel: RecyclerViewModel,
     private var inflater: LayoutInflater? = null
     private var viewMap: HashMap<Int, IView<*, *>?> = HashMap()
     private val layoutMap: HashMap<KClass<RecyclerItemViewModel<out IModel>>, Int> = HashMap()
-    val items: MutableList<RecyclerItemViewModel<out IModel>> = arrayListOf()
+    var items: List<RecyclerItemViewModel<out IModel>> = emptyList()
     internal var itemClickListener: View.OnClickListener? = null
     internal var action: Subject<Int>? = null
     private var notify: Boolean = false
     private var loading: Boolean = false
     val disposables: CompositeDisposable by lazy { CompositeDisposable() }
-    val holders = arrayListOf<ItemViewHolder>()
+    val holders = mutableListOf<ItemViewHolder>()
     open var isAttachToBind = true
     open var disposeWhenDetached = true
+    private val handler = Handler()
 
     init {
 //        setHasStableIds(true)
         initItems()
-        viewModel.currentModel().items.mapTo(items) { it }
+        items = viewModel.currentModel().items
+        viewModel.changed = { model, mutation ->
+            if (viewModel.currentModel().isAnim) {
+                handler.post { updateByMutation(model.items, mutation) }
+            }
+        }
     }
 
     private fun initItems() {
         viewModel.model.map { it.items }
-                .bindTo(this)
-                .addTo(disposables)
+                .filter { !viewModel.currentModel().isAnim }
+                .subscribe {
+                    updateData()
+                }.addTo(disposables)
 
         itemClicks()
                 .filter { items[it] is LoadingItemViewModel }
@@ -169,35 +178,43 @@ open class RecyclerAdapter(val viewModel: RecyclerViewModel,
 //    }
 
     override fun accept(result: DiffUtil.DiffResult) {
-        if (viewModel.currentModel().isAnim && !notify) {
-            items.clear()
-            viewModel.currentModel().items.mapTo(items) { it }
-            result.dispatchUpdatesTo(this)
-        } else {
-            result.dispatchUpdatesTo(object : ListUpdateCallback {
-                override fun onChanged(position: Int, count: Int, payload: Any?) {
-                    updateData()
-                }
-
-                override fun onMoved(fromPosition: Int, toPosition: Int) {
-                    updateData()
-                }
-
-                override fun onInserted(position: Int, count: Int) {
-                    updateData()
-                }
-
-                override fun onRemoved(position: Int, count: Int) {
-                    updateData()
-                }
-            })
-        }
+        updateData()
         notify = viewModel.currentModel().isRefresh
     }
 
     private fun updateData() {
-        items.clear()
-        viewModel.currentModel().items.mapTo(items) { it }
+        items = viewModel.currentModel().items
         notifyDataSetChanged()
+    }
+
+    open fun updateByMutation(items: List<RecyclerItemViewModel<out IModel>>, mutation: IMutation) {
+        this.items = items
+        when (mutation) {
+            is SetData -> notifyDataSetChanged()
+            is ReplaceData -> {
+                val min = mutation.index.min()
+                val max = mutation.index.max()
+                if (min != null && max != null) {
+                    notifyItemRangeChanged(min, max)
+                }
+            }
+            is AppendData -> {
+                val first = mutation.data.firstOrNull()
+                if (first != null) {
+                    val firstIndex = items.indexOf(first)
+                    if (firstIndex >= 0) {
+                        notifyItemRangeInserted(firstIndex, mutation.data.size)
+                    }
+                }
+            }
+            is InsertData -> {
+                notifyItemRangeInserted(mutation.index, mutation.data.size)
+            }
+            is RemoveData -> {
+                for (index in mutation.index) {
+                    notifyItemRemoved(index)
+                }
+            }
+        }
     }
 }

@@ -4,14 +4,12 @@ import android.content.Intent
 import android.os.Bundle
 import android.support.v7.app.AppCompatActivity
 import android.support.v7.widget.LinearLayoutManager
-import com.adgvcxz.addTo
-import com.adgvcxz.bindTo
+import com.adgvcxz.*
 import com.adgvcxz.recyclerviewmodel.RecyclerAdapter
 import com.adgvcxz.recyclerviewmodel.Refresh
 import com.adgvcxz.recyclerviewmodel.ReplaceData
 import com.adgvcxz.recyclerviewmodel.itemClicks
 import com.jakewharton.rxbinding2.support.v4.widget.refreshes
-import com.jakewharton.rxbinding2.support.v4.widget.refreshing
 import io.reactivex.disposables.CompositeDisposable
 import kotlinx.android.synthetic.main.activity_simple_recycler.*
 
@@ -38,10 +36,9 @@ class SimpleRecyclerActivity : AppCompatActivity() {
         recyclerView.adapter = adapter
 //        recyclerView.setHasFixedSize(true)
 
-        refreshLayout.refreshes()
-                .map { Refresh }
-                .bindTo(viewModel.action)
-                .addTo(disposables)
+        viewModel.toEventBind(disposables) {
+            add({ refreshes() }, refreshLayout, { Refresh })
+        }
 
         adapter.itemClicks()
                 .filter { viewModel.currentModel().items[it].currentModel() is TextItemViewModel.Model }
@@ -75,10 +72,10 @@ class SimpleRecyclerActivity : AppCompatActivity() {
 //                .bindTo(viewModel.action)
 //                .addTo(disposables)
 
-        viewModel.model.map { it.isRefresh }
-                .filter { it != refreshLayout.isRefreshing }
-                .subscribe(refreshLayout.refreshing())
-                .addTo(disposables)
+        viewModel.toBind(disposables) {
+            add({ isRefresh }, { refreshLayout.isRefreshing = this })
+        }
+
 
         viewModel.action.onNext(Refresh)
     }
