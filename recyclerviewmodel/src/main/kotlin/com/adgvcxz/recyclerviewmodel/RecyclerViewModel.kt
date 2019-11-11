@@ -57,12 +57,15 @@ sealed class RecyclerViewEventMutation : IEvent, IMutation
 object RemoveLoadingItem : RecyclerViewEventMutation()
 data class SetAnim(val value: Boolean) : RecyclerViewEventMutation()
 data class AppendData(val data: List<RecyclerItemViewModel<out IModel>>) : RecyclerViewEventMutation()
+data class InsertData(val index: Int, val data: List<RecyclerItemViewModel<out IModel>>) : RecyclerViewEventMutation()
 data class ReplaceData(val index: List<Int>, val data: List<RecyclerItemViewModel<out IModel>>) : RecyclerViewEventMutation()
 data class RemoveData(val index: List<Int>) : RecyclerViewEventMutation()
 data class SetData(val data: List<RecyclerItemViewModel<out IModel>>) : RecyclerViewEventMutation()
 
 
 abstract class RecyclerViewModel : WidgetViewModel<RecyclerModel>() {
+
+    internal var changed: ((RecyclerModel, IMutation) -> Unit)? = null
 
     override fun mutate(event: IEvent): Observable<IMutation> {
         when (event) {
@@ -147,6 +150,12 @@ abstract class RecyclerViewModel : WidgetViewModel<RecyclerModel>() {
                     }
                 }
             }
+            is InsertData -> {
+                model.items = model.items.subList(0, mutation.index) + mutation.data + model.items.subList(
+                        mutation.index,
+                        model.items.size
+                )
+            }
             is RemoveData -> {
                 model.items = model.items.filterIndexed { index, viewModel ->
                     val exist = mutation.index.contains(index)
@@ -164,6 +173,7 @@ abstract class RecyclerViewModel : WidgetViewModel<RecyclerModel>() {
                 }
             }
         }
+        changed?.invoke(model, mutation)
         return model
     }
 

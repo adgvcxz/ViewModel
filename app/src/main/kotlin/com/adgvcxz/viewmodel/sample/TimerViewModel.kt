@@ -1,7 +1,10 @@
 package com.adgvcxz.viewmodel.sample
 
 import android.util.Log
-import com.adgvcxz.*
+import com.adgvcxz.AFViewModel
+import com.adgvcxz.IEvent
+import com.adgvcxz.IModel
+import com.adgvcxz.IMutation
 import io.reactivex.Observable
 import java.util.concurrent.TimeUnit
 
@@ -32,7 +35,7 @@ class TimerViewModel : AFViewModel<TimerViewModel.Model>() {
 
     class Model : IModel {
         var time: Int = 0
-        var status: TimerViewModel.TimerStatus = TimerViewModel.TimerStatus.Completed
+        var status: TimerStatus = TimerStatus.Completed
     }
 
     override fun mutate(event: IEvent): Observable<IMutation> {
@@ -52,14 +55,6 @@ class TimerViewModel : AFViewModel<TimerViewModel.Model>() {
             Event.StopButtonClicked -> return Observable.just(Mutation.StopTimer)
                     .filter { this.currentModel().status == TimerStatus.Timing }
                     .map { it }
-
-            AFLifeCircleEvent.Pause -> return Observable.just(Mutation.PauseTimer)
-                    .filter { this.currentModel().status == TimerStatus.Timing }
-                    .map { it }
-
-            AFLifeCircleEvent.Resume -> return Observable.just(Mutation.Timing)
-                    .filter { this.currentModel().status == TimerStatus.Pause }
-                    .map { it }
         }
         return Observable.empty()
     }
@@ -67,12 +62,12 @@ class TimerViewModel : AFViewModel<TimerViewModel.Model>() {
     override fun scan(model: Model, mutation: IMutation): Model {
         when (mutation) {
             Mutation.StartTimer -> return model.also {
-                Log.e("zhaow", "开始计时")
+                Log.e("zhaow", "Start")
                 it.time = 0
                 it.status = TimerStatus.Timing
             }
             Mutation.Timing -> return model.also {
-                Log.e("zhaow", "正在计时")
+                Log.e("zhaow", "Timing")
                 it.status = TimerStatus.Timing
                 it.time += 1
             }
