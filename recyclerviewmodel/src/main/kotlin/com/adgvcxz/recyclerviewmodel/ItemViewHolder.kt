@@ -9,5 +9,5 @@ import io.reactivex.disposables.CompositeDisposable
  * Created by zhaowei on 2017/6/19.
  */
 open class ItemViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView) {
-    val disposables: CompositeDisposable by lazy { CompositeDisposable() }
+    val disposables: CompositeDisposable = CompositeDisposable()
 }

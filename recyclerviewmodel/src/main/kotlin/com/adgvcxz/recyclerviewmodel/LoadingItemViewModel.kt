@@ -14,22 +14,22 @@ class LoadingItemViewModel : RecyclerItemViewModel<LoadingItemViewModel.Model>()
 
     override var initModel: Model = Model()
 
-    enum class State {
-        Success,
-        Failure,
-        Loading
+    companion object {
+        const val Success = 1
+        const val Failure = 2
+        const val Loading = 3
     }
 
     class Model : IModel {
-        var state: State = State.Success
+        var state: Int = Success
     }
 
-    sealed class StateEvent(val state: State) : IEvent {
-        class SetState(state: State) : StateEvent(state)
+    sealed class StateEvent(val state: Int) : IEvent {
+        class SetState(state: Int) : StateEvent(state)
     }
 
-    sealed class StateMutation(val state: State) : IMutation {
-        class SetState(state: State) : StateMutation(state)
+    sealed class StateMutation(val state: Int) : IMutation {
+        class SetState(state: Int) : StateMutation(state)
     }
 
     override fun mutate(event: IEvent): Observable<IMutation> {

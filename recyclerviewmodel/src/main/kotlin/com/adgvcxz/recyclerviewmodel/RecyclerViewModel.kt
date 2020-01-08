@@ -25,7 +25,7 @@ class RecyclerModel(values: List<RecyclerItemViewModel<out IModel>>? = null,
             loadingViewModel = LoadingItemViewModel()
         }
         loadingViewModel?.let {
-            if (!items.isEmpty()) {
+            if (items.isNotEmpty()) {
                 items += it
             }
         }
@@ -36,7 +36,7 @@ class RecyclerModel(values: List<RecyclerItemViewModel<out IModel>>? = null,
         get() {
             val state = loadingViewModel?.currentModel()?.state
             if (state != null) {
-                return state == LoadingItemViewModel.State.Loading
+                return state == LoadingItemViewModel.Loading
             }
             return false
         }
@@ -89,7 +89,7 @@ abstract class RecyclerViewModel : WidgetViewModel<RecyclerModel>() {
                     return Observable.empty()
                 }
                 currentModel().loadingViewModel?.action?.onNext(
-                        LoadingItemViewModel.StateEvent.SetState(LoadingItemViewModel.State.Loading))
+                        LoadingItemViewModel.StateEvent.SetState(LoadingItemViewModel.Loading))
                 return request(false)
                         .map {
                             when (it) {
@@ -100,9 +100,9 @@ abstract class RecyclerViewModel : WidgetViewModel<RecyclerModel>() {
                         .doOnNext {
                             when (it) {
                                 is LoadFailure -> currentModel().loadingViewModel?.action?.onNext(
-                                        LoadingItemViewModel.StateEvent.SetState(LoadingItemViewModel.State.Failure))
+                                        LoadingItemViewModel.StateEvent.SetState(LoadingItemViewModel.Failure))
                                 is AppendData -> currentModel().loadingViewModel?.action?.onNext(
-                                        LoadingItemViewModel.StateEvent.SetState(LoadingItemViewModel.State.Success))
+                                        LoadingItemViewModel.StateEvent.SetState(LoadingItemViewModel.Success))
                             }
                         }
             }

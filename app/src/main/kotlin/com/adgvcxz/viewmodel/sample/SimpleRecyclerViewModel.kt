@@ -93,7 +93,7 @@ class LoadingItemView : IDefaultView<LoadingItemViewModel> {
     override fun bind(viewHolder: ItemViewHolder, viewModel: LoadingItemViewModel, position: Int) {
         with(viewHolder.itemView) {
             viewModel.toBind(viewHolder.disposables) {
-                add({ state != LoadingItemViewModel.State.Failure }, {
+                add({ state != LoadingItemViewModel.Failure }, {
                     loading.visibility = if (this) View.VISIBLE else View.GONE
                     failed.visibility = if (this) View.GONE else View.VISIBLE
                 })

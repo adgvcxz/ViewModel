@@ -33,7 +33,7 @@ open class RecyclerAdapter(val viewModel: RecyclerViewModel,
     internal var action: Subject<Int>? = null
     private var notify: Boolean = false
     private var loading: Boolean = false
-    val disposables: CompositeDisposable by lazy { CompositeDisposable() }
+    val disposables: CompositeDisposable = CompositeDisposable()
     val holders = mutableListOf<ItemViewHolder>()
     open var isAttachToBind = true
     open var disposeWhenDetached = true
