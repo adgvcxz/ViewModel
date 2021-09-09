@@ -8,7 +8,7 @@ import com.adgvcxz.IMutation
 import com.adgvcxz.add
 import com.adgvcxz.recyclerviewmodel.*
 import com.adgvcxz.toBind
-import io.reactivex.Observable
+import io.reactivex.rxjava3.core.Observable
 import kotlinx.android.synthetic.main.item_loading.view.*
 import java.util.*
 import java.util.concurrent.TimeUnit
@@ -27,17 +27,17 @@ class SimpleRecyclerViewModel : RecyclerViewModel() {
 
     override fun request(refresh: Boolean): Observable<IMutation> {
         return if (Random().nextInt() < 16) {
-            Observable.timer(1, TimeUnit.SECONDS)
-                    .map { (0 until 10).map { TextItemViewModel() } }
-                    .flatMap {
-                        if (!refresh && currentModel().items.size > 30) {
-                            Observable.concat(Observable.just(UpdateData(it)), Observable.just(RemoveLoadingItem))
-                        } else {
-                            Observable.just(UpdateData(it))
-                        }
+            Observable.timer(3, TimeUnit.SECONDS)
+                .map { (0 until 10).map { TextItemViewModel() } }
+                .flatMap {
+                    if (!refresh && currentModel().items.size > 30) {
+                        Observable.concat(Observable.just(UpdateData(it)), Observable.just(RemoveLoadingItem))
+                    } else {
+                        Observable.just(UpdateData(it))
                     }
+                }
         } else {
-            Observable.just(LoadFailure)
+            Observable.timer(3, TimeUnit.SECONDS).map { LoadFailure }
         }
     }
 }
@@ -51,7 +51,7 @@ class TextItemView : IView<TextItemView.TextItemViewHolder, TextItemViewModel> {
 
 
     override fun initView(view: View, parent: ViewGroup): TextItemViewHolder =
-            TextItemViewHolder(view)
+        TextItemViewHolder(view)
 
     override fun bind(viewHolder: TextItemViewHolder, viewModel: TextItemViewModel, position: Int) {
 //        viewHolder.content.text = viewModel.currentModel().content
@@ -68,8 +68,8 @@ class TextItemViewModel : RecyclerItemViewModel<TextItemViewModel.Model>() {
 
     override fun transformMutation(mutation: Observable<IMutation>): Observable<IMutation> {
         val value = RxBus.instance.toObservable(ValueChangeEvent::class.java)
-                .filter { it.id == currentModel().id }
-                .map { ValueChangeMutation(it.value) }
+            .filter { it.id == currentModel().id }
+            .map { ValueChangeMutation(it.value) }
         return Observable.merge(value, mutation)
     }
 

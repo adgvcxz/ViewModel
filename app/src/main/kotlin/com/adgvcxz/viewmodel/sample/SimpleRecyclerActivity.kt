@@ -2,15 +2,18 @@ package com.adgvcxz.viewmodel.sample
 
 import android.content.Intent
 import android.os.Bundle
-import android.support.v7.app.AppCompatActivity
-import android.support.v7.widget.LinearLayoutManager
-import com.adgvcxz.*
+import androidx.appcompat.app.AppCompatActivity
+import androidx.recyclerview.widget.LinearLayoutManager
+import com.adgvcxz.add
+import com.adgvcxz.addTo
 import com.adgvcxz.recyclerviewmodel.RecyclerAdapter
 import com.adgvcxz.recyclerviewmodel.Refresh
 import com.adgvcxz.recyclerviewmodel.ReplaceData
 import com.adgvcxz.recyclerviewmodel.itemClicks
-import com.jakewharton.rxbinding2.support.v4.widget.refreshes
-import io.reactivex.disposables.CompositeDisposable
+import com.adgvcxz.toBind
+import com.adgvcxz.toEventBind
+import com.jakewharton.rxbinding4.swiperefreshlayout.refreshes
+import io.reactivex.rxjava3.disposables.CompositeDisposable
 import kotlinx.android.synthetic.main.activity_simple_recycler.*
 
 
@@ -41,19 +44,19 @@ class SimpleRecyclerActivity : AppCompatActivity() {
         }
 
         adapter.itemClicks()
-                .filter { viewModel.currentModel().items[it].currentModel() is TextItemViewModel.Model }
-                .map { viewModel.currentModel().items[it].currentModel() as TextItemViewModel.Model }
-                .subscribe {
-                    if (it.id == 0) {
-                        val intent = Intent(this, TestActivity::class.java)
-                        intent.putExtra("id", it.id)
-                        intent.putExtra("value", it.content)
-                        startActivity(intent)
-                    } else {
-                        viewModel.action.onNext(ReplaceData(arrayListOf(it.id), arrayListOf(TextItemViewModel())))
-                    }
+            .filter { viewModel.currentModel().items[it].currentModel() is TextItemViewModel.Model }
+            .map { viewModel.currentModel().items[it].currentModel() as TextItemViewModel.Model }
+            .subscribe {
+                if (it.id == 0) {
+                    val intent = Intent(this, TestActivity::class.java)
+                    intent.putExtra("id", it.id)
+                    intent.putExtra("value", it.content)
+                    startActivity(intent)
+                } else {
+                    viewModel.action.onNext(ReplaceData(arrayListOf(it.id), arrayListOf(TextItemViewModel())))
                 }
-                .addTo(disposables)
+            }
+            .addTo(disposables)
 
 //        adapter.itemClicks()
 //                .filter { it != adapter.itemCount - 1 }
@@ -73,11 +76,14 @@ class SimpleRecyclerActivity : AppCompatActivity() {
 //                .addTo(disposables)
 
         viewModel.toBind(disposables) {
-            add({ isRefresh }, { refreshLayout.isRefreshing = this })
+            add({ isRefresh }, {
+                refreshLayout.isRefreshing = this
+            })
         }
 
 
         viewModel.action.onNext(Refresh)
+
     }
 
     override fun onDestroy() {

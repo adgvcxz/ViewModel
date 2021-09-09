@@ -1,8 +1,8 @@
 package com.adgvcxz.recyclerviewmodel
 
-import android.support.v7.widget.RecyclerView
 import android.view.View
-import io.reactivex.disposables.CompositeDisposable
+import androidx.recyclerview.widget.RecyclerView
+import io.reactivex.rxjava3.disposables.CompositeDisposable
 
 /**
  * zhaowei

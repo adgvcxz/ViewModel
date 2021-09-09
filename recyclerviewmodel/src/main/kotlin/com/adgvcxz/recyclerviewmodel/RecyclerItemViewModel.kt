@@ -2,7 +2,7 @@ package com.adgvcxz.recyclerviewmodel
 
 import com.adgvcxz.IModel
 import com.adgvcxz.WidgetViewModel
-import io.reactivex.disposables.Disposable
+import io.reactivex.rxjava3.disposables.Disposable
 
 /**
  * zhaowei

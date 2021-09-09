@@ -1,10 +1,11 @@
 package com.adgvcxz
 
+import io.reactivex.rxjava3.android.schedulers.AndroidSchedulers
+import io.reactivex.rxjava3.core.Observable
+
 //import android.arch.lifecycle.Lifecycle
 //import android.arch.lifecycle.OnLifecycleEvent
 //import android.arch.lifecycle.ViewModel
-import io.reactivex.Observable
-import io.reactivex.android.schedulers.AndroidSchedulers
 
 /**
  * zhaowei

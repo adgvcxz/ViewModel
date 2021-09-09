@@ -1,7 +1,7 @@
 package com.adgvcxz.viewpagermodel
 
 import android.view.View
-import io.reactivex.disposables.CompositeDisposable
+import io.reactivex.rxjava3.disposables.CompositeDisposable
 
 /**
  * zhaowei

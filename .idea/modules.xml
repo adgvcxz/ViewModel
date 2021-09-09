@@ -2,11 +2,11 @@
 <project version="4">
   <component name="ProjectModuleManager">
     <modules>
-      <module fileurl="file://$PROJECT_DIR$/ViewModel.iml" filepath="$PROJECT_DIR$/ViewModel.iml" />
-      <module fileurl="file://$PROJECT_DIR$/app/app.iml" filepath="$PROJECT_DIR$/app/app.iml" />
-      <module fileurl="file://$PROJECT_DIR$/recyclerviewmodel/recyclerviewmodel.iml" filepath="$PROJECT_DIR$/recyclerviewmodel/recyclerviewmodel.iml" />
-      <module fileurl="file://$PROJECT_DIR$/viewmodel/viewmodel.iml" filepath="$PROJECT_DIR$/viewmodel/viewmodel.iml" />
-      <module fileurl="file://$PROJECT_DIR$/viewpagermodel/viewpagermodel.iml" filepath="$PROJECT_DIR$/viewpagermodel/viewpagermodel.iml" />
+      <module fileurl="file://$PROJECT_DIR$/.idea/modules/app/ViewModel.app.iml" filepath="$PROJECT_DIR$/.idea/modules/app/ViewModel.app.iml" />
+      <module fileurl="file://$PROJECT_DIR$/.idea/modules/recyclerviewmodel/ViewModel.recyclerviewmodel.iml" filepath="$PROJECT_DIR$/.idea/modules/recyclerviewmodel/ViewModel.recyclerviewmodel.iml" />
+      <module fileurl="file://$PROJECT_DIR$/.idea/modules/viewmodel/ViewModel.viewmodel.iml" filepath="$PROJECT_DIR$/.idea/modules/viewmodel/ViewModel.viewmodel.iml" />
+      <module fileurl="file://$PROJECT_DIR$/.idea/modules/viewpagermodel/ViewModel.viewpagermodel.iml" filepath="$PROJECT_DIR$/.idea/modules/viewpagermodel/ViewModel.viewpagermodel.iml" />
+      <module fileurl="file://$PROJECT_DIR$/.idea/modules/android.ViewModel.iml" filepath="$PROJECT_DIR$/.idea/modules/android.ViewModel.iml" />
     </modules>
   </component>
 </project>

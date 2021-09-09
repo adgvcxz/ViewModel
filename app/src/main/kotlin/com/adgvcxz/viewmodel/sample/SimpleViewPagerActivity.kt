@@ -1,14 +1,14 @@
 package com.adgvcxz.viewmodel.sample
 
 import android.os.Bundle
-import android.support.v7.app.AppCompatActivity
+import androidx.appcompat.app.AppCompatActivity
 import com.adgvcxz.addTo
 import com.adgvcxz.bindTo
 import com.adgvcxz.viewpagermodel.AppendData
 import com.adgvcxz.viewpagermodel.RemoveData
 import com.adgvcxz.viewpagermodel.ViewPagerAdapter
-import com.jakewharton.rxbinding2.view.clicks
-import io.reactivex.disposables.CompositeDisposable
+import com.jakewharton.rxbinding4.view.clicks
+import io.reactivex.rxjava3.disposables.CompositeDisposable
 import kotlinx.android.synthetic.main.activity_simple_view_pager.*
 
 /**

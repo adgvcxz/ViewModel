@@ -5,8 +5,8 @@ import com.adgvcxz.AFViewModel
 import com.adgvcxz.IModel
 import com.adgvcxz.IMutation
 import com.adgvcxz.addTo
-import com.jakewharton.rxbinding2.view.clicks
-import io.reactivex.Observable
+import com.jakewharton.rxbinding4.view.clicks
+import io.reactivex.rxjava3.core.Observable
 import kotlinx.android.synthetic.main.activity_test.*
 import java.util.*
 

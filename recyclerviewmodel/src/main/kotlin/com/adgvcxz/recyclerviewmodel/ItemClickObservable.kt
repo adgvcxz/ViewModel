@@ -1,10 +1,10 @@
 package com.adgvcxz.recyclerviewmodel
 
-import android.support.v7.widget.RecyclerView
 import android.view.View
-import io.reactivex.Observable
-import io.reactivex.Observer
-import io.reactivex.android.MainThreadDisposable
+import androidx.recyclerview.widget.RecyclerView
+import io.reactivex.rxjava3.android.MainThreadDisposable
+import io.reactivex.rxjava3.core.Observable
+import io.reactivex.rxjava3.core.Observer
 
 /**
  * zhaowei

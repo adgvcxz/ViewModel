@@ -4,7 +4,7 @@ import com.adgvcxz.IEvent
 import com.adgvcxz.IModel
 import com.adgvcxz.IMutation
 import com.adgvcxz.WidgetViewModel
-import io.reactivex.Observable
+import io.reactivex.rxjava3.core.Observable
 
 /**
  * zhaowei

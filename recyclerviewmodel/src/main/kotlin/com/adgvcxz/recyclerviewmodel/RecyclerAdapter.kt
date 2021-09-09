@@ -1,29 +1,28 @@
 package com.adgvcxz.recyclerviewmodel
 
 import android.os.Handler
-import android.support.v7.util.DiffUtil
-import android.support.v7.widget.RecyclerView
-import android.support.v7.widget.RecyclerView.NO_POSITION
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import androidx.recyclerview.widget.DiffUtil
+import androidx.recyclerview.widget.RecyclerView
 import com.adgvcxz.IModel
 import com.adgvcxz.IMutation
 import com.adgvcxz.addTo
 import com.adgvcxz.bindTo
-import io.reactivex.disposables.CompositeDisposable
-import io.reactivex.functions.Consumer
-import io.reactivex.subjects.Subject
+import io.reactivex.rxjava3.disposables.CompositeDisposable
+import io.reactivex.rxjava3.functions.Consumer
+import io.reactivex.rxjava3.subjects.Subject
 import kotlin.reflect.KClass
 
 /**
  * zhaowei
  * Created by zhaowei on 2017/6/5.
  */
-open class RecyclerAdapter(val viewModel: RecyclerViewModel,
-                           private val configureItem: ((RecyclerItemViewModel<out IModel>) -> IView<*, *>)) :
-        RecyclerView.Adapter<ItemViewHolder>(),
-        Consumer<DiffUtil.DiffResult> {
+open class RecyclerAdapter(
+    val viewModel: RecyclerViewModel,
+    private val configureItem: ((RecyclerItemViewModel<out IModel>) -> IView<*, *>)
+) : RecyclerView.Adapter<ItemViewHolder>(), Consumer<DiffUtil.DiffResult> {
 
     private var inflater: LayoutInflater? = null
     private var viewMap: HashMap<Int, IView<*, *>?> = HashMap()
@@ -52,16 +51,16 @@ open class RecyclerAdapter(val viewModel: RecyclerViewModel,
 
     private fun initItems() {
         viewModel.model.map { it.items }
-                .filter { !viewModel.currentModel().isAnim }
-                .subscribe {
-                    updateData()
-                }.addTo(disposables)
+            .filter { !viewModel.currentModel().isAnim }
+            .subscribe {
+                updateData()
+            }.addTo(disposables)
 
         itemClicks()
-                .filter { items[it] is LoadingItemViewModel }
-                .map { LoadMore }
-                .bindTo(viewModel.action)
-                .addTo(disposables)
+            .filter { items[it] is LoadingItemViewModel }
+            .map { LoadMore }
+            .bindTo(viewModel.action)
+            .addTo(disposables)
     }
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ItemViewHolder {
@@ -82,7 +81,7 @@ open class RecyclerAdapter(val viewModel: RecyclerViewModel,
                 holder.disposables.clear()
                 holders.add(holder)
                 (it as IView<in ItemViewHolder, RecyclerItemViewModel<out IModel>>)
-                        .bind(holder, items[holder.layoutPosition], holder.layoutPosition)
+                    .bind(holder, items[holder.layoutPosition], holder.layoutPosition)
             }
         }
         checkLoadMore(position)
@@ -107,11 +106,11 @@ open class RecyclerAdapter(val viewModel: RecyclerViewModel,
     @Suppress("UNCHECKED_CAST")
     override fun onViewAttachedToWindow(holder: ItemViewHolder) {
         super.onViewAttachedToWindow(holder)
-        if (holder.layoutPosition != NO_POSITION && isAttachToBind) {
+        if (holder.layoutPosition != RecyclerView.NO_POSITION && isAttachToBind) {
             val iView = viewMap[getItemViewType(holder.layoutPosition)]
             iView?.let {
                 (it as IView<in ItemViewHolder, RecyclerItemViewModel<out IModel>>)
-                        .bind(holder, items[holder.layoutPosition], holder.layoutPosition)
+                    .bind(holder, items[holder.layoutPosition], holder.layoutPosition)
             }
 //            viewModel.currentModel().items[holder.layoutPosition].action.onNext(WidgetLifeCircleEvent.Attach)
         }
@@ -119,7 +118,7 @@ open class RecyclerAdapter(val viewModel: RecyclerViewModel,
 
     override fun onViewDetachedFromWindow(holder: ItemViewHolder) {
         super.onViewDetachedFromWindow(holder)
-        if (holder.layoutPosition != NO_POSITION) {
+        if (holder.layoutPosition != RecyclerView.NO_POSITION) {
 //            viewModel.currentModel().items[holder.layoutPosition].action.onNext(WidgetLifeCircleEvent.Detach)
             holders.remove(holder)
             holder.disposables.clear()
@@ -192,8 +191,8 @@ open class RecyclerAdapter(val viewModel: RecyclerViewModel,
         when (mutation) {
             is SetData -> notifyDataSetChanged()
             is ReplaceData -> {
-                val min = mutation.index.min()
-                val max = mutation.index.max()
+                val min = mutation.index.minOrNull()
+                val max = mutation.index.minOrNull()
                 if (min != null && max != null) {
                     notifyItemRangeChanged(min, max)
                 }

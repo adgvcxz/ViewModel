@@ -1,9 +1,10 @@
 package com.adgvcxz.viewmodel.sample
 
 //import android.arch.lifecycle.ViewModelProviders
-import android.view.View
-import com.adgvcxz.*
-import com.jakewharton.rxbinding2.view.clicks
+import com.adgvcxz.add
+import com.adgvcxz.toBind
+import com.adgvcxz.toEventBind
+import com.jakewharton.rxbinding4.view.clicks
 import kotlinx.android.synthetic.main.activity_timer.*
 
 /**
@@ -34,7 +35,11 @@ class TimerActivity : BaseActivity() {
 
         viewModel.toBind(disposables) {
             add({ status }, { time.text = "Timer" }) { filter { it == TimerViewModel.TimerStatus.Completed } }
-            add({ time }, { time.text = toString() }) { filter { viewModel.currentModel().status == TimerViewModel.TimerStatus.Timing } }
+            add(
+                { time },
+                {
+                    time.text = toString()
+                }) { filter { viewModel.currentModel().status == TimerViewModel.TimerStatus.Timing } }
         }
 
     }

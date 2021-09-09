@@ -3,8 +3,8 @@ package com.adgvcxz.viewmodel.sample
 //import android.arch.lifecycle.LifecycleRegistry
 //import android.arch.lifecycle.LifecycleRegistryOwner
 import android.os.Bundle
-import android.support.v7.app.AppCompatActivity
-import io.reactivex.disposables.CompositeDisposable
+import androidx.appcompat.app.AppCompatActivity
+import io.reactivex.rxjava3.disposables.CompositeDisposable
 
 /**
  * zhaowei

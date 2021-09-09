@@ -1,21 +1,23 @@
 package com.adgvcxz.viewpagermodel
 
-import android.support.v4.view.PagerAdapter
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import androidx.viewpager.widget.PagerAdapter
 import com.adgvcxz.IModel
 import com.adgvcxz.addTo
-import io.reactivex.disposables.CompositeDisposable
+import io.reactivex.rxjava3.disposables.CompositeDisposable
 import kotlin.reflect.KClass
 
 /**
  * zhaowei
  * Created by zhaowei on 2017/8/4.
  */
-class ViewPagerAdapter(val viewModel: ViewPagerViewModel,
-                       private val configureItem: ((ViewPagerItemViewModel<out IModel>) -> IPagerItemView<*, *>),
-                       private val configureTitle: ((Int) -> CharSequence)? = null) : PagerAdapter() {
+class ViewPagerAdapter(
+    val viewModel: ViewPagerViewModel,
+    private val configureItem: ((ViewPagerItemViewModel<out IModel>) -> IPagerItemView<*, *>),
+    private val configureTitle: ((Int) -> CharSequence)? = null
+) : PagerAdapter() {
 
     var viewGroup: ViewGroup? = null
 
@@ -26,8 +28,8 @@ class ViewPagerAdapter(val viewModel: ViewPagerViewModel,
 
     init {
         viewModel.model.map { it.items }
-                .subscribe { notifyDataSetChanged() }
-                .addTo(disposables)
+            .subscribe { notifyDataSetChanged() }
+            .addTo(disposables)
     }
 
     override fun isViewFromObject(view: View, `object`: Any): Boolean = view == `object`
@@ -66,7 +68,7 @@ class ViewPagerAdapter(val viewModel: ViewPagerViewModel,
         })
         container.addView(view)
         (viewMap[layoutId] as IPagerItemView<ViewPagerItemHolder, ViewPagerItemViewModel<out IModel>>)
-                .bind(holder, viewModel.currentModel().items[position], position)
+            .bind(holder, viewModel.currentModel().items[position], position)
         return view
     }
 

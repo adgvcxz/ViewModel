@@ -2,8 +2,8 @@ package com.adgvcxz.viewmodel.sample
 
 import com.adgvcxz.*
 import com.adgvcxz.viewpagermodel.*
-import com.jakewharton.rxbinding2.view.clicks
-import io.reactivex.Observable
+import com.jakewharton.rxbinding4.view.clicks
+import io.reactivex.rxjava3.core.Observable
 import kotlinx.android.synthetic.main.item_view_pager.view.*
 import java.util.*
 

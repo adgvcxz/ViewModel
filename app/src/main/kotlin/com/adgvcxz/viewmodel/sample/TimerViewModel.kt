@@ -5,7 +5,7 @@ import com.adgvcxz.AFViewModel
 import com.adgvcxz.IEvent
 import com.adgvcxz.IModel
 import com.adgvcxz.IMutation
-import io.reactivex.Observable
+import io.reactivex.rxjava3.core.Observable
 import java.util.concurrent.TimeUnit
 
 /**
@@ -42,37 +42,35 @@ class TimerViewModel : AFViewModel<TimerViewModel.Model>() {
         when (event) {
             Event.StartButtonClicked -> {
                 if (this.currentModel().status == TimerStatus.Completed) {
-                    Log.e("zhaow", "event  $event")
                     val startTimer = Observable.just(Mutation.StartTimer)
                     val timing = Observable.interval(1, 1, TimeUnit.SECONDS)
-                            .filter { this.currentModel().status == TimerStatus.Timing }
-                            .map { Mutation.Timing }
-                            .takeWhile { this.currentModel().status == TimerStatus.Timing }
+                        .map { Mutation.Timing }
+                        .takeWhile { this.currentModel().status == TimerStatus.Timing }
                     return Observable.concat(startTimer, timing)
                 }
             }
 
             Event.StopButtonClicked -> return Observable.just(Mutation.StopTimer)
-                    .filter { this.currentModel().status == TimerStatus.Timing }
-                    .map { it }
+                .filter { this.currentModel().status == TimerStatus.Timing }
+                .map { it }
         }
         return Observable.empty()
     }
 
     override fun scan(model: Model, mutation: IMutation): Model {
         when (mutation) {
-            Mutation.StartTimer -> return model.also {
+            Mutation.StartTimer -> {
                 Log.e("zhaow", "Start")
-                it.time = 0
-                it.status = TimerStatus.Timing
+                model.time = 0
+                model.status = TimerStatus.Timing
             }
-            Mutation.Timing -> return model.also {
+            Mutation.Timing -> {
                 Log.e("zhaow", "Timing")
-                it.status = TimerStatus.Timing
-                it.time += 1
+                model.status = TimerStatus.Timing
+                model.time += 1
             }
-            Mutation.PauseTimer -> return model.also { it.status = TimerStatus.Pause }
-            Mutation.StopTimer -> return model.also { it.status = TimerStatus.Completed }
+            Mutation.PauseTimer -> model.status = TimerStatus.Pause
+            Mutation.StopTimer -> model.status = TimerStatus.Completed
         }
         return model
     }
