@@ -10,7 +10,6 @@ import io.reactivex.rxjava3.core.Observable
  */
 abstract class WidgetViewModel<M : IModel> : IViewModel<M>() {
 
-    //initialization initModel maybe have some parameters, so there is no abstract method initModel()
     abstract val initModel: M
 
     private var _currentModel: M? = null
@@ -31,13 +30,4 @@ abstract class WidgetViewModel<M : IModel> : IViewModel<M>() {
 
     fun currentModel(): M = _currentModel ?: initModel
 
-//    @OnLifecycleEvent(Lifecycle.Event.ON_CREATE)
-//    fun onCreate() {
-//        this.action.onNext(WidgetLifeCircleEvent.Attach)
-//    }
-//
-//    @OnLifecycleEvent(Lifecycle.Event.ON_DESTROY)
-//    fun onDestroy() {
-//        this.action.onNext(WidgetLifeCircleEvent.Detach)
-//    }
 }

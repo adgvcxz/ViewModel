@@ -1,7 +1,6 @@
 package com.adgvcxz
 
 import io.reactivex.rxjava3.core.Observable
-import io.reactivex.rxjava3.disposables.CompositeDisposable
 import io.reactivex.rxjava3.subjects.PublishSubject
 import io.reactivex.rxjava3.subjects.Subject
 
@@ -12,8 +11,6 @@ import io.reactivex.rxjava3.subjects.Subject
  */
 
 abstract class IViewModel<M> {
-
-    val disposables = CompositeDisposable()
 
     var action: Subject<IEvent> = PublishSubject.create<IEvent>().toSerialized()
 
@@ -30,12 +27,5 @@ abstract class IViewModel<M> {
 
     open fun transformEvent(event: Observable<IEvent>): Observable<IEvent> = event
 
-    open fun onCreate() {
-        model.subscribe().addTo(disposables)
-    }
-
-    open fun onDestroy() {
-        disposables.dispose()
-    }
 
 }

@@ -9,7 +9,7 @@ import io.reactivex.rxjava3.subjects.Subject
  * Created by zhaowei on 2018/5/3.
  */
 class EventBuilder {
-     private val items = mutableListOf<EventItem<Any>>()
+    private val items = mutableListOf<EventItem<Any>>()
 
 
     fun build(subject: Subject<IEvent>): List<Disposable> {
@@ -27,7 +27,7 @@ class EventBuilder {
     }
 
     @Suppress("UNCHECKED_CAST")
-    fun <T>add(init: EventItem<T>.() -> Unit) {
+    fun <T> add(init: EventItem<T>.() -> Unit) {
         val item = EventItem<T>()
         item.init()
         items.add(item as EventItem<Any>)
@@ -45,9 +45,11 @@ class EventItem<T> {
     fun observable(init: () -> Observable<T>) {
         observable = init
     }
+
     fun action(init: T.() -> Any) {
         action = init
     }
+
     fun transform(init: Observable<IEvent>.() -> Observable<IEvent>) {
         transform = init
     }

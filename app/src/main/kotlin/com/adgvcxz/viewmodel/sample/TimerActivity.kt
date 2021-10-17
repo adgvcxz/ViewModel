@@ -1,9 +1,8 @@
 package com.adgvcxz.viewmodel.sample
 
-//import android.arch.lifecycle.ViewModelProviders
 import com.adgvcxz.add
-import com.adgvcxz.toBind
-import com.adgvcxz.toEventBind
+import com.adgvcxz.bindEvent
+import com.adgvcxz.bindModel
 import com.jakewharton.rxbinding4.view.clicks
 import kotlinx.android.synthetic.main.activity_timer.*
 
@@ -22,12 +21,12 @@ class TimerActivity : BaseActivity() {
 
     override fun initBinding() {
 
-        viewModel.toEventBind {
+        viewModel.bindEvent {
             add({ stop.clicks() }, { TimerViewModel.Event.StopButtonClicked })
             add({ start.clicks() }, { TimerViewModel.Event.StartButtonClicked })
         }
 
-        viewModel.toBind {
+        viewModel.bindModel {
             add({ status }, { time.text = "Timer" }) { filter { it == TimerViewModel.TimerStatus.Completed } }
             add(
                 { time },

@@ -6,12 +6,12 @@ import androidx.appcompat.app.AppCompatActivity
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.adgvcxz.add
 import com.adgvcxz.addTo
+import com.adgvcxz.bindEvent
+import com.adgvcxz.bindModel
 import com.adgvcxz.recyclerviewmodel.RecyclerAdapter
 import com.adgvcxz.recyclerviewmodel.Refresh
 import com.adgvcxz.recyclerviewmodel.ReplaceData
 import com.adgvcxz.recyclerviewmodel.itemClicks
-import com.adgvcxz.toBind
-import com.adgvcxz.toEventBind
 import com.jakewharton.rxbinding4.swiperefreshlayout.refreshes
 import io.reactivex.rxjava3.disposables.CompositeDisposable
 import kotlinx.android.synthetic.main.activity_simple_recycler.*
@@ -39,7 +39,7 @@ class SimpleRecyclerActivity : AppCompatActivity() {
         recyclerView.adapter = adapter
 //        recyclerView.setHasFixedSize(true)
 
-        viewModel.toEventBind(disposables) {
+        viewModel.bindEvent(disposables) {
             add({ refreshLayout.refreshes() }, { Refresh })
         }
 
@@ -75,10 +75,8 @@ class SimpleRecyclerActivity : AppCompatActivity() {
 //                .bindTo(viewModel.action)
 //                .addTo(disposables)
 
-        viewModel.toBind(disposables) {
-            add({ isRefresh }, {
-                refreshLayout.isRefreshing = this
-            })
+        viewModel.bindModel(disposables) {
+            add({ isRefresh }, { refreshLayout.isRefreshing = this })
         }
 
 

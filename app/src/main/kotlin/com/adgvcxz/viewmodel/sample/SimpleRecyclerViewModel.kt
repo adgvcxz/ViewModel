@@ -3,11 +3,8 @@ package com.adgvcxz.viewmodel.sample
 import android.view.View
 import android.view.ViewGroup
 import android.widget.TextView
-import com.adgvcxz.IModel
-import com.adgvcxz.IMutation
-import com.adgvcxz.add
+import com.adgvcxz.*
 import com.adgvcxz.recyclerviewmodel.*
-import com.adgvcxz.toBind
 import io.reactivex.rxjava3.core.Observable
 import kotlinx.android.synthetic.main.item_loading.view.*
 import java.util.*
@@ -55,7 +52,7 @@ class TextItemView : IView<TextItemView.TextItemViewHolder, TextItemViewModel> {
 
     override fun bind(viewHolder: TextItemViewHolder, viewModel: TextItemViewModel, position: Int) {
 //        viewHolder.content.text = viewModel.currentModel().content
-        viewModel.toBind(viewHolder.disposables) {
+        viewModel.bindModel(viewHolder.disposables) {
             add({ content }, { viewHolder.content.text = this })
         }
     }
@@ -92,7 +89,7 @@ class LoadingItemView : IDefaultView<LoadingItemViewModel> {
 
     override fun bind(viewHolder: ItemViewHolder, viewModel: LoadingItemViewModel, position: Int) {
         with(viewHolder.itemView) {
-            viewModel.toBind(viewHolder.disposables) {
+            viewModel.bindModel(viewHolder.disposables) {
                 add({ state != LoadingItemViewModel.Failure }, {
                     loading.visibility = if (this) View.VISIBLE else View.GONE
                     failed.visibility = if (this) View.GONE else View.VISIBLE

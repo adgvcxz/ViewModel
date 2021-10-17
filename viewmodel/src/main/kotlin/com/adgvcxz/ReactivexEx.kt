@@ -12,7 +12,8 @@ import io.reactivex.rxjava3.subjects.Subject
  */
 
 @Suppress("UNCHECKED_CAST")
-fun <T, R : T> Observable<T>.bindTo(observer: Subject<in R>): Disposable = this.subscribe { observer.onNext(it as R) }
+fun <T, R : T> Observable<T>.bindTo(observer: Subject<in R>): Disposable =
+    this.subscribe { observer.onNext(it as R) }
 
 fun Disposable.addTo(disposables: CompositeDisposable) {
     disposables.add(this)
@@ -22,73 +23,36 @@ fun List<Disposable>.addTo(disposables: CompositeDisposable) {
     disposables.addAll(*this.toTypedArray())
 }
 
-interface IBind<M : IModel, T> {
-    fun bind(value: T)
-    fun data(model: M): T
-    fun filter(observable: Observable<T>): Observable<T>
-}
 
-class Bind<M : IModel, T>(
-        val data: M.() -> T,
-        val action: T.() -> Unit,
-        val filter: (Observable<T>.() -> Observable<T>)? = null
-) : IBind<M, T> {
-    override fun filter(observable: Observable<T>): Observable<T> {
-        return observable.flatMap { filter?.invoke(Observable.just(it)) ?: Observable.just(it) }
-    }
-
-    override fun data(model: M): T {
-        return data.invoke(model)
-    }
-
-    override fun bind(value: T) {
-        action.invoke(value)
-    }
-}
-
-
-fun <M : IModel, T> ViewModelBuilder<M>.add(
-        data: M.() -> T,
-        action: T.() -> Unit,
-        filter: (Observable<T>.() -> Observable<T>)? = null
+fun <M, T> ViewModelBuilder<M>.add(
+    data: M.() -> T,
+    action: T.() -> Unit,
+    filter: (Observable<T>.() -> Observable<T>)? = null
 ) {
-    section<T> {
-        filter { distinctUntilChanged() }
-        item {
-            value { data(this) }
-            filter { filter?.invoke(this) ?: this }
-            behavior {
-                action.invoke(it)
-            }
-        }
+    add<T> {
+        value { data(this) }
+        filter { filter?.invoke(this) ?: this }
+        behavior { action.invoke(it) }
     }
 }
 
-fun <M : IModel> IViewModel<M>.toBind(
-        disposables: CompositeDisposable,
-        init: ViewModelBuilder<M>.() -> Unit
+fun <M : IModel> IViewModel<M>.bindModel(
+    disposables: CompositeDisposable,
+    init: ViewModelBuilder<M>.() -> Unit
 ) {
     val builder = ViewModelBuilder<M>()
     builder.init()
     builder.build(this).addTo(disposables)
 }
 
-fun <M : IModel> IViewModel<M>.toBind(init: ViewModelBuilder<M>.() -> Unit) {
+fun <M : IModel> AFViewModel<M>.bindModel(init: ViewModelBuilder<M>.() -> Unit) {
     val builder = ViewModelBuilder<M>()
     builder.init()
     builder.build(this).addTo(disposables)
 }
 
-fun <M : IModel> IViewModel<M>.toEventBind(
-        disposables: CompositeDisposable,
-        init: EventBuilder.() -> Any
-) {
-    val builder = EventBuilder()
-    builder.init()
-    builder.build(this.action).addTo(disposables)
-}
-
-fun <M : IModel> IViewModel<M>.toEventBind(
+fun <M : IModel> IViewModel<M>.bindEvent(
+    disposables: CompositeDisposable,
     init: EventBuilder.() -> Any
 ) {
     val builder = EventBuilder()
@@ -96,18 +60,23 @@ fun <M : IModel> IViewModel<M>.toEventBind(
     builder.build(this.action).addTo(disposables)
 }
 
-fun <M : IModel, T> ViewModelBuilder<M>.add(
-        data: M.() -> T,
-        action: Consumer<T>,
-        filter: (Observable<T>.() -> Observable<T>)? = null
+fun <M : IModel> AFViewModel<M>.bindEvent(
+    init: EventBuilder.() -> Any
 ) {
-    section<T> {
-        filter { distinctUntilChanged() }
-        item {
-            value { data(this) }
-            filter { filter?.invoke(this) ?: this }
-            behavior = action
-        }
+    val builder = EventBuilder()
+    builder.init()
+    builder.build(this.action).addTo(disposables)
+}
+
+fun <M, T> ViewModelBuilder<M>.add(
+    data: M.() -> T,
+    action: Consumer<T>,
+    filter: (Observable<T>.() -> Observable<T>)? = null
+) {
+    add<T> {
+        value { data(this) }
+        filter { filter?.invoke(this) ?: this }
+        behavior = action
     }
 }
 
@@ -116,7 +85,7 @@ fun <T> EventBuilder.add(
     action: T.() -> Any,
     transform: (Observable<IEvent>.() -> Observable<IEvent>)? = null
 ) {
-    add<T>  {
+    add<T> {
         this.transform = transform
         observable { observable() }
         action { action.invoke(this) }
