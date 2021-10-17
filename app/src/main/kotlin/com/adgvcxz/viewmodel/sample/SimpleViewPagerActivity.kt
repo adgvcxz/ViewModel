@@ -1,46 +1,34 @@
 package com.adgvcxz.viewmodel.sample
 
-import android.os.Bundle
-import androidx.appcompat.app.AppCompatActivity
 import com.adgvcxz.addTo
 import com.adgvcxz.bindTo
 import com.adgvcxz.viewpagermodel.AppendData
 import com.adgvcxz.viewpagermodel.RemoveData
 import com.adgvcxz.viewpagermodel.ViewPagerAdapter
+import com.adgvcxz.viewpagermodel.ViewPagerModel
 import com.jakewharton.rxbinding4.view.clicks
-import io.reactivex.rxjava3.disposables.CompositeDisposable
 import kotlinx.android.synthetic.main.activity_simple_view_pager.*
 
 /**
  * zhaowei
  * Created by zhaowei on 2017/8/7.
  */
-class SimpleViewPagerActivity : AppCompatActivity() {
+class SimpleViewPagerActivity : BaseActivity<SimpleViewPagerViewModel, ViewPagerModel>() {
+    override val layoutId: Int = R.layout.activity_simple_view_pager
 
-    private val disposables: CompositeDisposable by lazy { CompositeDisposable() }
+    override val viewModel: SimpleViewPagerViewModel = SimpleViewPagerViewModel()
 
-    override fun onCreate(savedInstanceState: Bundle?) {
-        super.onCreate(savedInstanceState)
-        setContentView(R.layout.activity_simple_view_pager)
-        initViewModel()
-    }
-
-    private fun initViewModel() {
-        val viewModel = SimpleViewPagerViewModel()
+    override fun initBinding() {
         val adapter = ViewPagerAdapter(viewModel, { ItemView() })
         viewPager.adapter = adapter
         add.clicks()
-                .map { AppendData(arrayListOf(ItemViewModel())) }
-                .bindTo(viewModel.action)
-                .addTo(disposables)
+            .map { AppendData(arrayListOf(ItemViewModel())) }
+            .bindTo(viewModel.action)
+            .addTo(viewModel.disposables)
         remove.clicks()
-                .map { RemoveData(arrayListOf(0)) }
-                .bindTo(viewModel.action)
-                .addTo(disposables)
+            .map { RemoveData(arrayListOf(0)) }
+            .bindTo(viewModel.action)
+            .addTo(viewModel.disposables)
     }
 
-    override fun onDestroy() {
-        super.onDestroy()
-        disposables.dispose()
-    }
 }

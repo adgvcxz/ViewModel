@@ -1,9 +1,9 @@
 package com.adgvcxz.recyclerviewmodel
 
+import com.adgvcxz.AFViewModel
 import com.adgvcxz.IEvent
 import com.adgvcxz.IModel
 import com.adgvcxz.IMutation
-import com.adgvcxz.WidgetViewModel
 import io.reactivex.rxjava3.annotations.NonNull
 import io.reactivex.rxjava3.core.Observable
 
@@ -69,7 +69,7 @@ data class RemoveData(val index: List<Int>) : RecyclerViewEventMutation()
 data class SetData(val data: List<RecyclerItemViewModel<out IModel>>) : RecyclerViewEventMutation()
 
 
-abstract class RecyclerViewModel : WidgetViewModel<RecyclerModel>() {
+abstract class RecyclerViewModel : AFViewModel<RecyclerModel>() {
 
     internal var changed: ((RecyclerModel, IMutation) -> Unit)? = null
 

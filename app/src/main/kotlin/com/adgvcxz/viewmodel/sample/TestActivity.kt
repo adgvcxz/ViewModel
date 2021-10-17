@@ -1,6 +1,5 @@
 package com.adgvcxz.viewmodel.sample
 
-import android.os.Bundle
 import com.adgvcxz.AFViewModel
 import com.adgvcxz.IModel
 import com.adgvcxz.IMutation
@@ -15,36 +14,37 @@ import java.util.*
  * Created by zhaowei on 2017/7/12.
  */
 
-class TestActivity : BaseActivity() {
+class TestActivity : BaseActivity<TestViewModel, TextModel>() {
     override val layoutId: Int get() = R.layout.activity_test
 
-    lateinit var viewModel: TestViewModel
-
-    override fun onCreate(savedInstanceState: Bundle?) {
-        viewModel = TestViewModel(intent.getIntExtra("id", 0), intent.getStringExtra("value") ?: "")
-        super.onCreate(savedInstanceState)
+    override val viewModel: TestViewModel by lazy {
+        TestViewModel(
+            intent.getIntExtra("id", 0),
+            intent.getStringExtra("value") ?: ""
+        )
     }
+
 
     override fun initBinding() {
         button.clicks()
-                .doOnNext { RxBus.instance.post(ValueChangeEvent(12, UUID.randomUUID().toString())) }
-                .subscribe()
-                .addTo(disposables)
+            .doOnNext { RxBus.instance.post(ValueChangeEvent(12, UUID.randomUUID().toString())) }
+            .subscribe()
+            .addTo(viewModel.disposables)
 
         viewModel.model.map { it.value }
-                .distinctUntilChanged()
-                .subscribe { testTextView.text = it }
-                .addTo(disposables)
+            .distinctUntilChanged()
+            .subscribe { testTextView.text = it }
+            .addTo(viewModel.disposables)
 
         Observable.just("abcd")
-                .compose {
-                    Observable.merge(it, RxBus.instance
-                            .toObservable(ValueChangeEvent::class.java)
-                            .map { it.value })
+            .compose {
+                Observable.merge(it, RxBus.instance
+                    .toObservable(ValueChangeEvent::class.java)
+                    .map { it.value })
 
-                }
-                .subscribe { button.text = it }
-                .addTo(disposables)
+            }
+            .subscribe { button.text = it }
+            .addTo(viewModel.disposables)
     }
 
 }
@@ -58,7 +58,7 @@ class TestViewModel(id: Int, value: String) : AFViewModel<TextModel>() {
 
     override fun transformMutation(mutation: Observable<IMutation>): Observable<IMutation> {
         val add = RxBus.instance.toObservable(ValueChangeEvent::class.java)
-                .map { ValueChangeMutation(it.value) }
+            .map { ValueChangeMutation(it.value) }
         return Observable.merge(add, mutation)
     }
 

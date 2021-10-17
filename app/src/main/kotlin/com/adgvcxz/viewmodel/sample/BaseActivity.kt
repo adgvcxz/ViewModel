@@ -2,6 +2,7 @@ package com.adgvcxz.viewmodel.sample
 
 import android.os.Bundle
 import androidx.appcompat.app.AppCompatActivity
+import com.adgvcxz.IViewModel
 import io.reactivex.rxjava3.disposables.CompositeDisposable
 
 /**
@@ -9,23 +10,22 @@ import io.reactivex.rxjava3.disposables.CompositeDisposable
  * Created by zhaowei on 2017/4/27.
  */
 
-abstract class BaseActivity : AppCompatActivity() {
+abstract class BaseActivity<T : IViewModel<M>, M> : AppCompatActivity() {
 
     abstract val layoutId: Int
-    val disposables: CompositeDisposable by lazy { CompositeDisposable() }
+
+    abstract val viewModel: T
+
+    val disposables: CompositeDisposable get() = viewModel.disposables
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(layoutId)
+        viewModel.bind(lifecycle)
         initBinding()
     }
 
     open fun initBinding() {
 
-    }
-
-    override fun onDestroy() {
-        super.onDestroy()
-        disposables.dispose()
     }
 }

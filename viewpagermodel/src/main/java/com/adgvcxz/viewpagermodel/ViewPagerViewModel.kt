@@ -1,9 +1,9 @@
 package com.adgvcxz.viewpagermodel
 
+import com.adgvcxz.AFViewModel
 import com.adgvcxz.IEvent
 import com.adgvcxz.IModel
 import com.adgvcxz.IMutation
-import com.adgvcxz.WidgetViewModel
 import io.reactivex.rxjava3.core.Observable
 
 /**
@@ -26,7 +26,7 @@ data class ReplaceData(val index: List<Int>, val data: List<ViewPagerItemViewMod
 data class RemoveData(val index: List<Int>) : ViewPagerEventMutation()
 data class SetData(val data: List<ViewPagerItemViewModel<out IModel>>) : ViewPagerEventMutation()
 
-abstract class ViewPagerViewModel: WidgetViewModel<ViewPagerModel>() {
+abstract class ViewPagerViewModel: AFViewModel<ViewPagerModel>() {
 
     override fun mutate(event: IEvent): Observable<IMutation> {
         if (event is IMutation) {

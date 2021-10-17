@@ -1,34 +1,24 @@
 package com.adgvcxz.viewmodel.sample
 
 import android.content.Intent
-import android.os.Bundle
-import androidx.appcompat.app.AppCompatActivity
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.adgvcxz.add
 import com.adgvcxz.addTo
 import com.adgvcxz.bindEvent
 import com.adgvcxz.bindModel
-import com.adgvcxz.recyclerviewmodel.RecyclerAdapter
-import com.adgvcxz.recyclerviewmodel.Refresh
-import com.adgvcxz.recyclerviewmodel.ReplaceData
-import com.adgvcxz.recyclerviewmodel.itemClicks
+import com.adgvcxz.recyclerviewmodel.*
 import com.jakewharton.rxbinding4.swiperefreshlayout.refreshes
-import io.reactivex.rxjava3.disposables.CompositeDisposable
 import kotlinx.android.synthetic.main.activity_simple_recycler.*
 
 
-class SimpleRecyclerActivity : AppCompatActivity() {
+class SimpleRecyclerActivity : BaseActivity<SimpleRecyclerViewModel, RecyclerModel>() {
+    override val layoutId: Int = R.layout.activity_simple_recycler
 
-    private val disposables: CompositeDisposable by lazy { CompositeDisposable() }
+    override val viewModel: SimpleRecyclerViewModel = SimpleRecyclerViewModel()
 
-    override fun onCreate(savedInstanceState: Bundle?) {
-        super.onCreate(savedInstanceState)
-        setContentView(R.layout.activity_simple_recycler)
-        initViewModel()
-    }
 
-    private fun initViewModel() {
-        val viewModel = SimpleRecyclerViewModel()
+    override fun initBinding() {
+
         val adapter = RecyclerAdapter(viewModel) {
             when (it) {
                 is TextItemViewModel -> TextItemView()
@@ -39,7 +29,7 @@ class SimpleRecyclerActivity : AppCompatActivity() {
         recyclerView.adapter = adapter
 //        recyclerView.setHasFixedSize(true)
 
-        viewModel.bindEvent(disposables) {
+        viewModel.bindEvent {
             add({ refreshLayout.refreshes() }, { Refresh })
         }
 
@@ -53,10 +43,15 @@ class SimpleRecyclerActivity : AppCompatActivity() {
                     intent.putExtra("value", it.content)
                     startActivity(intent)
                 } else {
-                    viewModel.action.onNext(ReplaceData(arrayListOf(it.id), arrayListOf(TextItemViewModel())))
+                    viewModel.action.onNext(
+                        ReplaceData(
+                            arrayListOf(it.id),
+                            arrayListOf(TextItemViewModel())
+                        )
+                    )
                 }
             }
-            .addTo(disposables)
+            .addTo(viewModel.disposables)
 
 //        adapter.itemClicks()
 //                .filter { it != adapter.itemCount - 1 }
@@ -75,7 +70,7 @@ class SimpleRecyclerActivity : AppCompatActivity() {
 //                .bindTo(viewModel.action)
 //                .addTo(disposables)
 
-        viewModel.bindModel(disposables) {
+        viewModel.bindModel {
             add({ isRefresh }, { refreshLayout.isRefreshing = this })
         }
 
@@ -84,8 +79,4 @@ class SimpleRecyclerActivity : AppCompatActivity() {
 
     }
 
-    override fun onDestroy() {
-        super.onDestroy()
-        disposables.dispose()
-    }
 }

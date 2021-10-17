@@ -11,13 +11,11 @@ import kotlinx.android.synthetic.main.activity_timer.*
  * Created by zhaowei on 2017/4/27.
  */
 
-class TimerActivity : BaseActivity() {
-
-    private val viewModel: TimerViewModel by lazy {
-        TimerViewModel().bind(lifecycle)
-    }
+class TimerActivity : BaseActivity<TimerViewModel, TimerViewModel.Model>() {
 
     override val layoutId: Int = R.layout.activity_timer
+
+    override val viewModel: TimerViewModel = TimerViewModel()
 
     override fun initBinding() {
 
@@ -27,7 +25,9 @@ class TimerActivity : BaseActivity() {
         }
 
         viewModel.bindModel {
-            add({ status }, { time.text = "Timer" }) { filter { it == TimerViewModel.TimerStatus.Completed } }
+            add(
+                { status },
+                { time.text = "Timer" }) { filter { it == TimerViewModel.TimerStatus.Completed } }
             add(
                 { time },
                 {
@@ -36,4 +36,5 @@ class TimerActivity : BaseActivity() {
         }
 
     }
+
 }
