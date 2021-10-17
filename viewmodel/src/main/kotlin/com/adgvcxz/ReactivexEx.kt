@@ -1,6 +1,5 @@
 package com.adgvcxz
 
-import android.view.View
 import io.reactivex.rxjava3.core.Observable
 import io.reactivex.rxjava3.disposables.CompositeDisposable
 import io.reactivex.rxjava3.disposables.Disposable
@@ -74,9 +73,23 @@ fun <M : IModel> IViewModel<M>.toBind(
     builder.build(this).addTo(disposables)
 }
 
+fun <M : IModel> IViewModel<M>.toBind(init: ViewModelBuilder<M>.() -> Unit) {
+    val builder = ViewModelBuilder<M>()
+    builder.init()
+    builder.build(this).addTo(disposables)
+}
+
 fun <M : IModel> IViewModel<M>.toEventBind(
         disposables: CompositeDisposable,
         init: EventBuilder.() -> Any
+) {
+    val builder = EventBuilder()
+    builder.init()
+    builder.build(this.action).addTo(disposables)
+}
+
+fun <M : IModel> IViewModel<M>.toEventBind(
+    init: EventBuilder.() -> Any
 ) {
     val builder = EventBuilder()
     builder.init()
@@ -98,61 +111,16 @@ fun <M : IModel, T> ViewModelBuilder<M>.add(
     }
 }
 
-fun <T, V : View> EventBuilder.add(
-        observable: V.() -> Observable<T>,
-        widget: V,
-        action: T.() -> IEvent
+fun <T> EventBuilder.add(
+    observable: () -> Observable<T>,
+    action: T.() -> Any,
+    transform: (Observable<IEvent>.() -> Observable<IEvent>)? = null
 ) {
-    section<T, V> {
+    add<T>  {
+        this.transform = transform
         observable { observable() }
-        item {
-            view = widget
-            event { action.invoke(this) }
-        }
+        action { action.invoke(this) }
     }
 }
 
-fun <T, V : View> EventBuilder.addAction(
-        observable: V.() -> Observable<T>,
-        widget: V,
-        action: () -> Unit
-) {
-    section<T, V> {
-        observable { observable() }
-        actionItem {
-            view = widget
-            action { action.invoke() }
-        }
-    }
-}
-
-fun <T, V : View> EventBuilder.add(
-        observable: V.() -> Observable<T>,
-        vararg list: Pair<V, () -> IEvent>
-) {
-    section<T, V> {
-        observable { observable() }
-        for (data in list) {
-            item {
-                view = data.first
-                event { data.second.invoke() }
-            }
-        }
-    }
-}
-
-fun <T, V : View> EventBuilder.addAction(
-        observable: V.() -> Observable<T>,
-        vararg list: Pair<V, () -> Any>
-) {
-    section<T, V> {
-        observable { observable() }
-        for (data in list) {
-            actionItem {
-                view = data.first
-                action { data.second.invoke() }
-            }
-        }
-    }
-}
 

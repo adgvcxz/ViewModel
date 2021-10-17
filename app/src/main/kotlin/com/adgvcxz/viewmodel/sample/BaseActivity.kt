@@ -1,7 +1,5 @@
 package com.adgvcxz.viewmodel.sample
 
-//import android.arch.lifecycle.LifecycleRegistry
-//import android.arch.lifecycle.LifecycleRegistryOwner
 import android.os.Bundle
 import androidx.appcompat.app.AppCompatActivity
 import io.reactivex.rxjava3.disposables.CompositeDisposable
@@ -11,9 +9,7 @@ import io.reactivex.rxjava3.disposables.CompositeDisposable
  * Created by zhaowei on 2017/4/27.
  */
 
-abstract class BaseActivity : AppCompatActivity()/*, LifecycleRegistryOwner*/ {
-
-//    val lifecycleRegistry: LifecycleRegistry = LifecycleRegistry(this)
+abstract class BaseActivity : AppCompatActivity() {
 
     abstract val layoutId: Int
     val disposables: CompositeDisposable by lazy { CompositeDisposable() }
@@ -27,10 +23,6 @@ abstract class BaseActivity : AppCompatActivity()/*, LifecycleRegistryOwner*/ {
     open fun initBinding() {
 
     }
-
-//    override fun getLifecycle(): LifecycleRegistry {
-//        return lifecycleRegistry
-//    }
 
     override fun onDestroy() {
         super.onDestroy()

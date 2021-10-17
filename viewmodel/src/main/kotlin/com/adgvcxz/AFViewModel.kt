@@ -1,18 +1,17 @@
 package com.adgvcxz
 
+import androidx.lifecycle.Lifecycle
+import androidx.lifecycle.LifecycleEventObserver
+import androidx.lifecycle.LifecycleOwner
 import io.reactivex.rxjava3.android.schedulers.AndroidSchedulers
 import io.reactivex.rxjava3.core.Observable
-
-//import android.arch.lifecycle.Lifecycle
-//import android.arch.lifecycle.OnLifecycleEvent
-//import android.arch.lifecycle.ViewModel
 
 /**
  * zhaowei
  * Created by zhaowei on 2017/4/27.
  */
 
-abstract class AFViewModel<M : IModel> : /*: ViewModel(),*/ IViewModel<M>() {
+abstract class AFViewModel<M : IModel>: IViewModel<M>(), LifecycleEventObserver {
 
     abstract val initModel: M
 
@@ -34,33 +33,19 @@ abstract class AFViewModel<M : IModel> : /*: ViewModel(),*/ IViewModel<M>() {
 
     fun currentModel(): M = _currentModel ?: initModel
 
-//    @OnLifecycleEvent(Lifecycle.Event.ON_CREATE)
-//    fun onCreate() {
-//        this.action.onNext(AFLifeCircleEvent.Create)
-//    }
-//
-//    @OnLifecycleEvent(Lifecycle.Event.ON_RESUME)
-//    fun onResume() {
-//        this.action.onNext(AFLifeCircleEvent.Resume)
-//    }
-//
-//    @OnLifecycleEvent(Lifecycle.Event.ON_START)
-//    fun onStart() {
-//        this.action.onNext(AFLifeCircleEvent.Start)
-//    }
-//
-//    @OnLifecycleEvent(Lifecycle.Event.ON_PAUSE)
-//    fun onPause() {
-//        this.action.onNext(AFLifeCircleEvent.Pause)
-//    }
-//
-//    @OnLifecycleEvent(Lifecycle.Event.ON_STOP)
-//    fun onStop() {
-//        this.action.onNext(AFLifeCircleEvent.Stop)
-//    }
-//
-//    @OnLifecycleEvent(Lifecycle.Event.ON_DESTROY)
-//    fun onDestroy() {
-//        this.action.onNext(AFLifeCircleEvent.Destroy)
-//    }
+    inline fun <reified T: AFViewModel<M>>bind(lifecycle: Lifecycle): T {
+        lifecycle.addObserver(this)
+        return this as T
+    }
+
+    override fun onStateChanged(source: LifecycleOwner, event: Lifecycle.Event) {
+        if (event == Lifecycle.Event.ON_CREATE) {
+            onCreate()
+        } else if (event == Lifecycle.Event.ON_DESTROY) {
+            onDestroy()
+        }
+        action.onNext(LifecycleEventChanged(source, event))
+    }
+
+
 }

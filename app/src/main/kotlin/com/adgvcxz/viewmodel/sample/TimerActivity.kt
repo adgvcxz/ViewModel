@@ -14,26 +14,20 @@ import kotlinx.android.synthetic.main.activity_timer.*
 
 class TimerActivity : BaseActivity() {
 
-//    val viewModel: TimerViewModel by lazy {
-//        ViewModelProviders.of(this).get(TimerViewModel::class.java)
-//    }
-
     private val viewModel: TimerViewModel by lazy {
-        TimerViewModel()
+        TimerViewModel().bind(lifecycle)
     }
 
     override val layoutId: Int = R.layout.activity_timer
 
     override fun initBinding() {
 
-//        lifecycle.addObserver(viewModel)
-
-        viewModel.toEventBind(disposables) {
-            add({ clicks() }, start, { TimerViewModel.Event.StartButtonClicked })
-            add({ clicks() }, stop, { TimerViewModel.Event.StopButtonClicked })
+        viewModel.toEventBind {
+            add({ stop.clicks() }, { TimerViewModel.Event.StopButtonClicked })
+            add({ start.clicks() }, { TimerViewModel.Event.StartButtonClicked })
         }
 
-        viewModel.toBind(disposables) {
+        viewModel.toBind {
             add({ status }, { time.text = "Timer" }) { filter { it == TimerViewModel.TimerStatus.Completed } }
             add(
                 { time },

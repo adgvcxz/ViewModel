@@ -1,6 +1,5 @@
 package com.adgvcxz.viewmodel.sample
 
-import android.util.Log
 import com.adgvcxz.AFViewModel
 import com.adgvcxz.IEvent
 import com.adgvcxz.IModel
@@ -60,12 +59,10 @@ class TimerViewModel : AFViewModel<TimerViewModel.Model>() {
     override fun scan(model: Model, mutation: IMutation): Model {
         when (mutation) {
             Mutation.StartTimer -> {
-                Log.e("zhaow", "Start")
                 model.time = 0
                 model.status = TimerStatus.Timing
             }
             Mutation.Timing -> {
-                Log.e("zhaow", "Timing")
                 model.status = TimerStatus.Timing
                 model.time += 1
             }

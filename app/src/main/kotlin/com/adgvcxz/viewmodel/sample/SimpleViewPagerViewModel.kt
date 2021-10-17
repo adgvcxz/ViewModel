@@ -49,7 +49,7 @@ class ItemView : IPagerItemView<ViewPagerItemHolder, ItemViewModel> {
                 add({ value }, { textView.text = this })
             }
             viewModel.toEventBind(holder.disposables) {
-                addAction({ clicks() }, textView, {
+                add({ textView.clicks() }, {
                     RxBus.instance.post(ViewPagerEvent(UUID.randomUUID().toString()))
                 })
             }

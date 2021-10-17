@@ -1,9 +1,7 @@
 package com.adgvcxz
 
-import android.view.View
 import io.reactivex.rxjava3.core.Observable
 import io.reactivex.rxjava3.disposables.Disposable
-import io.reactivex.rxjava3.functions.Consumer
 import io.reactivex.rxjava3.subjects.Subject
 
 /**
@@ -11,84 +9,46 @@ import io.reactivex.rxjava3.subjects.Subject
  * Created by zhaowei on 2018/5/3.
  */
 class EventBuilder {
-    private val sectionList = arrayListOf<EventSection<Any, View>>()
+     private val items = mutableListOf<EventItem<Any>>()
 
-    @Suppress("UNCHECKED_CAST")
-    fun <S, V : View> section(init: EventSection<S, V>.() -> Unit) {
-        val section = EventSection<S, V>()
-        section.init()
-        sectionList.add(section as EventSection<Any, View>)
-    }
 
     fun build(subject: Subject<IEvent>): List<Disposable> {
-        return sectionList.map {
-            it.build(subject)
-        }.reduce { acc, list -> acc + list }
-    }
-}
-
-class EventSection<T, V : View> {
-
-    var filter: (Observable<T>.() -> Observable<T>)? = null
-    lateinit var observable: V.() -> Observable<T>
-    private val itemList = arrayListOf<IItem<T, V>>()
-
-    fun item(init: EventItem<T, V>.() -> Unit) {
-        val item = EventItem<T, V>()
-        item.init()
-        itemList.add(item)
-    }
-
-    fun actionItem(init: ActionItem<T, V>.() -> Unit) {
-        val item = ActionItem<T, V>()
-        item.init()
-        itemList.add(item)
-    }
-
-    fun build(subject: Subject<IEvent>): List<Disposable> {
-        return itemList.map { item ->
-            when (item) {
-                is EventItem -> item.view.observable()
-                        .compose { filter?.invoke(it) ?: it }
-                        .compose { item.filter?.invoke(it) ?: it }
-                        .map { item.event.invoke(it) }
-                        .subscribe { subject.onNext(it) }
-                is ActionItem -> item.view.observable()
-                        .compose { filter?.invoke(it) ?: it }
-                        .compose { item.filter?.invoke(it) ?: it }
-                        .subscribe(item.action)
-            }
-
+        return items.map { item ->
+            item.observable()
+                .map { item.action.invoke(it) }
+                .flatMap {
+                    if (it is IEvent) {
+                        item.transform?.invoke(Observable.just(it)) ?: Observable.just(it)
+                    } else {
+                        Observable.empty()
+                    }
+                }.doOnNext { subject.onNext(it) }.subscribe()
         }
     }
 
-    fun observable(init: V.() -> Observable<T>) {
+    @Suppress("UNCHECKED_CAST")
+    fun <T>add(init: EventItem<T>.() -> Unit) {
+        val item = EventItem<T>()
+        item.init()
+        items.add(item as EventItem<Any>)
+    }
+}
+
+
+class EventItem<T> {
+    var transform: (Observable<IEvent>.() -> Observable<IEvent>)? = null
+
+    lateinit var action: (T) -> Any
+
+    lateinit var observable: () -> Observable<T>
+
+    fun observable(init: () -> Observable<T>) {
         observable = init
     }
-}
-
-sealed class IItem<T, V : View> {
-    open var filter: (Observable<T>.() -> Observable<T>)? = null
-    lateinit var view: V
-}
-
-class EventItem<T, V : View> : IItem<T, V>() {
-    lateinit var event: (T) -> IEvent
-
-    fun event(init: T.() -> IEvent) {
-        event = init
+    fun action(init: T.() -> Any) {
+        action = init
     }
-}
-
-class ActionItem<T, V : View> : IItem<T, V>() {
-    lateinit var action: Consumer<in T>
-    fun action(init: (T) -> Unit) {
-        action = Consumer { init.invoke(it) }
+    fun transform(init: Observable<IEvent>.() -> Observable<IEvent>) {
+        transform = init
     }
-}
-
-fun <M : IModel> IViewModel<M>.toEvents(init: EventBuilder.() -> Unit): List<Disposable> {
-    val builder = EventBuilder()
-    builder.init()
-    return builder.build(this.action)
 }

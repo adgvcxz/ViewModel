@@ -55,12 +55,12 @@ class ViewModelSection<M : IModel, S> {
     fun build(viewModel: IViewModel<M>): List<Disposable> {
         return itemList.map { item ->
             viewModel.model.map { item.value.invoke(it) }
-                    .compose { filter?.invoke(it) ?: it }
-                    .compose { item.filter?.invoke(it) ?: it }
-                    .map { item.map?.invoke(it) ?: it }
-                    .subscribe {
-                        item.behavior.accept(it)
-                    }
+                .compose { filter?.invoke(it) ?: it }
+                .compose { item.filter?.invoke(it) ?: it }
+                .flatMap {
+                    val value = item.map?.invoke(it) ?: it
+                    if (value == null) Observable.empty() else Observable.just(value)
+                }.subscribe { item.behavior.accept(it) }
         }
     }
 

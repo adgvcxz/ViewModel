@@ -26,7 +26,7 @@ class SimpleRecyclerViewModel : RecyclerViewModel() {
 
 
     override fun request(refresh: Boolean): Observable<IMutation> {
-        return if (Random().nextInt() < 16) {
+        return if (refresh) {
             Observable.timer(3, TimeUnit.SECONDS)
                 .map { (0 until 10).map { TextItemViewModel() } }
                 .flatMap {
@@ -37,7 +37,7 @@ class SimpleRecyclerViewModel : RecyclerViewModel() {
                     }
                 }
         } else {
-            Observable.timer(3, TimeUnit.SECONDS).map { LoadFailure }
+            Observable.timer(100, TimeUnit.MILLISECONDS).map { LoadFailure }
         }
     }
 }

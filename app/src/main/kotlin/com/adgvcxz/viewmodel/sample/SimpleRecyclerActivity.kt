@@ -40,7 +40,7 @@ class SimpleRecyclerActivity : AppCompatActivity() {
 //        recyclerView.setHasFixedSize(true)
 
         viewModel.toEventBind(disposables) {
-            add({ refreshes() }, refreshLayout, { Refresh })
+            add({ refreshLayout.refreshes() }, { Refresh })
         }
 
         adapter.itemClicks()
