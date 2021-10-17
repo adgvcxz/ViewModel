@@ -1,11 +1,14 @@
 package com.adgvcxz.viewmodel.sample
 
 import android.view.View
-import android.view.ViewGroup
-import android.widget.TextView
-import com.adgvcxz.*
+import com.adgvcxz.IModel
+import com.adgvcxz.IMutation
+import com.adgvcxz.add
+import com.adgvcxz.bindModel
 import com.adgvcxz.recyclerviewmodel.*
+import com.adgvcxz.viewmodel.sample.databinding.ItemTextViewBinding
 import io.reactivex.rxjava3.core.Observable
+import io.reactivex.rxjava3.disposables.CompositeDisposable
 import kotlinx.android.synthetic.main.item_loading.view.*
 import java.util.*
 import java.util.concurrent.TimeUnit
@@ -19,7 +22,8 @@ var initId = 0
 
 class SimpleRecyclerViewModel : RecyclerViewModel() {
 
-    override var initModel: RecyclerModel = RecyclerModel(null, hasLoadingItem = true, isAnim = true)
+    override var initModel: RecyclerModel =
+        RecyclerModel(null, hasLoadingItem = true, isAnim = true)
 
 
     override fun request(refresh: Boolean): Observable<IMutation> {
@@ -28,7 +32,10 @@ class SimpleRecyclerViewModel : RecyclerViewModel() {
                 .map { (0 until 10).map { TextItemViewModel() } }
                 .flatMap {
                     if (!refresh && currentModel().items.size > 30) {
-                        Observable.concat(Observable.just(UpdateData(it)), Observable.just(RemoveLoadingItem))
+                        Observable.concat(
+                            Observable.just(UpdateData(it)),
+                            Observable.just(RemoveLoadingItem)
+                        )
                     } else {
                         Observable.just(UpdateData(it))
                     }
@@ -39,21 +46,21 @@ class SimpleRecyclerViewModel : RecyclerViewModel() {
     }
 }
 
-class TextItemView : IView<TextItemView.TextItemViewHolder, TextItemViewModel> {
+class TextItemView : ItemBindingView<ItemTextViewBinding, TextItemViewModel> {
     override val layoutId: Int = R.layout.item_text_view
 
-    class TextItemViewHolder(view: View) : ItemViewHolder(view) {
-        var content: TextView = view.findViewById(R.id.textView)
+    override fun generateViewBinding(view: View): ItemTextViewBinding {
+        return ItemTextViewBinding.bind(view)
     }
 
-
-    override fun initView(view: View, parent: ViewGroup): TextItemViewHolder =
-        TextItemViewHolder(view)
-
-    override fun bind(viewHolder: TextItemViewHolder, viewModel: TextItemViewModel, position: Int) {
-//        viewHolder.content.text = viewModel.currentModel().content
-        viewModel.bindModel(viewHolder.disposables) {
-            add({ content }, { viewHolder.content.text = this })
+    override fun bind(
+        binding: ItemTextViewBinding,
+        viewModel: TextItemViewModel,
+        position: Int,
+        disposable: CompositeDisposable
+    ) {
+        viewModel.bindModel(disposable) {
+            add({ content }, { binding.textView.text = this })
         }
     }
 }

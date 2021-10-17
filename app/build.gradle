@@ -22,6 +22,9 @@ android {
         main.java.srcDirs += 'src/main/kotlin'
     }
 
+    viewBinding {
+        enabled = true
+    }
 }
 
 dependencies {

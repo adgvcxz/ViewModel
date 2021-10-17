@@ -2,6 +2,7 @@ package com.adgvcxz.viewmodel.sample
 
 import android.content.Intent
 import com.adgvcxz.*
+import com.adgvcxz.viewmodel.sample.databinding.ActivityMainBinding
 import com.jakewharton.rxbinding4.view.clicks
 import kotlinx.android.synthetic.main.activity_main.*
 
