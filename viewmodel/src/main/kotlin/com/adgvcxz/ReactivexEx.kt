@@ -29,14 +29,14 @@ fun <M, T> ViewModelBuilder<M>.add(
     action: T.() -> Unit,
     filter: (Observable<T>.() -> Observable<T>)? = null
 ) {
-    add<T> {
+    addItem<T> {
         value { data(this) }
         filter { filter?.invoke(this) ?: this }
         behavior { action.invoke(it) }
     }
 }
 
-fun <M : IModel> IViewModel<M>.bindModel(
+fun <M> IViewModel<M>.bindModel(
     disposables: CompositeDisposable,
     init: ViewModelBuilder<M>.() -> Unit
 ) {
@@ -45,13 +45,13 @@ fun <M : IModel> IViewModel<M>.bindModel(
     builder.build(this).addTo(disposables)
 }
 
-fun <M : IModel> AFViewModel<M>.bindModel(init: ViewModelBuilder<M>.() -> Unit) {
+fun <M> IViewModel<M>.bindModel(init: ViewModelBuilder<M>.() -> Unit) {
     val builder = ViewModelBuilder<M>()
     builder.init()
     builder.build(this).addTo(disposables)
 }
 
-fun <M : IModel> IViewModel<M>.bindEvent(
+fun <M> IViewModel<M>.bindEvent(
     disposables: CompositeDisposable,
     init: EventBuilder.() -> Any
 ) {
@@ -60,7 +60,7 @@ fun <M : IModel> IViewModel<M>.bindEvent(
     builder.build(this.action).addTo(disposables)
 }
 
-fun <M : IModel> AFViewModel<M>.bindEvent(
+fun <M> IViewModel<M>.bindEvent(
     init: EventBuilder.() -> Any
 ) {
     val builder = EventBuilder()
@@ -73,7 +73,7 @@ fun <M, T> ViewModelBuilder<M>.add(
     action: Consumer<T>,
     filter: (Observable<T>.() -> Observable<T>)? = null
 ) {
-    add<T> {
+    addItem<T> {
         value { data(this) }
         filter { filter?.invoke(this) ?: this }
         behavior = action
@@ -85,11 +85,22 @@ fun <T> EventBuilder.add(
     action: T.() -> Any,
     transform: (Observable<IEvent>.() -> Observable<IEvent>)? = null
 ) {
-    add<T> {
+    addItem<T> {
         this.transform = transform
         observable { observable() }
         action { action.invoke(this) }
     }
 }
 
+fun <T> EventBuilder.add(
+    observable: Observable<T>,
+    action: T.() -> Any,
+    transform: (Observable<IEvent>.() -> Observable<IEvent>)? = null
+) {
+    addItem<T> {
+        this.transform = transform
+        observable { observable }
+        action { action.invoke(this) }
+    }
+}
 

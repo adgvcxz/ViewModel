@@ -1,11 +1,9 @@
 package com.adgvcxz.viewmodel.sample
 
 import android.content.Intent
-import com.adgvcxz.AFViewModel
-import com.adgvcxz.addTo
+import com.adgvcxz.*
 import com.jakewharton.rxbinding4.view.clicks
 import kotlinx.android.synthetic.main.activity_main.*
-import java.util.concurrent.TimeUnit
 
 class EmptyModel
 class EmptyViewModel : AFViewModel<EmptyModel>() {
@@ -24,24 +22,19 @@ class MainActivity : EmptyActivity() {
 
     override fun initBinding() {
 
-        timer.clicks()
-            .throttleFirst(300, TimeUnit.MILLISECONDS)
-            .subscribe { startActivity(Intent(this, TimerActivity::class.java)) }
-            .addTo(disposables)
-
-        recycler.clicks()
-            .throttleFirst(300, TimeUnit.MILLISECONDS)
-            .subscribe { startActivity(Intent(this, SimpleRecyclerActivity::class.java)) }
-            .addTo(disposables)
-
-        rxbus.clicks()
-            .throttleFirst(300, TimeUnit.MILLISECONDS)
-            .subscribe { startActivity(Intent(this, TestActivity::class.java)) }
-            .addTo(disposables)
-
-        viewPager.clicks()
-            .throttleFirst(300, TimeUnit.MILLISECONDS)
-            .subscribe { startActivity(Intent(this, SimpleViewPagerActivity::class.java)) }
-            .addTo(disposables)
+        viewModel.bindEvent {
+            add(
+                timer.clicks(),
+                { startActivity(Intent(this@MainActivity, TimerActivity::class.java)) })
+            add(
+                recycler.clicks(),
+                { startActivity(Intent(this@MainActivity, SimpleRecyclerActivity::class.java)) })
+            add(
+                rxbus.clicks(),
+                { startActivity(Intent(this@MainActivity, TestActivity::class.java)) })
+            add(
+                viewPager.clicks(),
+                { startActivity(Intent(this@MainActivity, SimpleViewPagerActivity::class.java)) })
+        }
     }
 }

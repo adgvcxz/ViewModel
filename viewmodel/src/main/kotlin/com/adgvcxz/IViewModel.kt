@@ -20,16 +20,16 @@ abstract class IViewModel<M> : LifecycleEventObserver {
 
     abstract val model: Observable<M>
 
-    open fun scan(model: M, mutation: IMutation): M = model
+    protected open fun scan(model: M, mutation: IMutation): M = model
 
-    open fun mutate(event: IEvent): Observable<IMutation> {
+    protected open fun mutate(event: IEvent): Observable<IMutation> {
         if (event is IMutation) return Observable.just(event)
         return Observable.empty()
     }
 
-    open fun transformMutation(mutation: Observable<IMutation>): Observable<IMutation> = mutation
+    protected open fun transformMutation(mutation: Observable<IMutation>): Observable<IMutation> = mutation
 
-    open fun transformEvent(event: Observable<IEvent>): Observable<IEvent> = event
+    protected open fun transformEvent(event: Observable<IEvent>): Observable<IEvent> = event
 
     val disposables: CompositeDisposable = CompositeDisposable()
 

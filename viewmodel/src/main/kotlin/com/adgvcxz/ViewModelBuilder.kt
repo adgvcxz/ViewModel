@@ -25,7 +25,7 @@ class ViewModelBuilder<M> {
     }
 
     @Suppress("UNCHECKED_CAST")
-    fun <S> add(init: ViewModelItem<M, S, S>.() -> Unit) {
+    fun <S> addItem(init: ViewModelItem<M, S, S>.() -> Unit) {
         val item = ViewModelItem<M, S, S>()
         item.init()
         items.add(item as ViewModelItem<M, Any, Any>)

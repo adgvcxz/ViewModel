@@ -9,7 +9,7 @@ import io.reactivex.rxjava3.core.Observable
  */
 
 abstract class AFViewModel<M> : IViewModel<M>() {
-    abstract val initModel: M
+    protected abstract val initModel: M
 
     private var _currentModel: M? = null
 
@@ -28,4 +28,5 @@ abstract class AFViewModel<M> : IViewModel<M>() {
     }
 
     fun currentModel(): M = _currentModel ?: initModel
+
 }

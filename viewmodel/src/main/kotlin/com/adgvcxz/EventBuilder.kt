@@ -27,7 +27,7 @@ class EventBuilder {
     }
 
     @Suppress("UNCHECKED_CAST")
-    fun <T> add(init: EventItem<T>.() -> Unit) {
+    fun <T> addItem(init: EventItem<T>.() -> Unit) {
         val item = EventItem<T>()
         item.init()
         items.add(item as EventItem<Any>)
