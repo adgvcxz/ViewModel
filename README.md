@@ -7,12 +7,12 @@
 ##### 支持DSL:
 
 ```koltin
-viewModel.toEventBind(disposables) {
-    add({ clicks() }, start, { TimerViewModel.Event.StartButtonClicked })
-    add({ clicks() }, stop, { TimerViewModel.Event.StopButtonClicked })
+viewModel.bindEvent {
+    add({ start.clicks() }, { TimerViewModel.Event.StartButtonClicked })
+    add({ stop.clicks() }, { TimerViewModel.Event.StopButtonClicked })
 }
 
-viewModel.toBind(disposables) {
+viewModel.bindModel {
     add({ status }, { time.text = "Timer" }) { filter { it == TimerViewModel.TimerStatus.Completed } }
     add({ time }, { time.text = toString() }) { filter { viewModel.currentModel().status == TimerViewModel.TimerStatus.Timing } }
 }
@@ -94,7 +94,10 @@ adapter.itemClicks().subscribe()
 	}
 	
 	dependencies {
-	    implementation 'com.github.adgvcxz.viewModel:viewmodel:0.7.0'
-        implementation 'com.github.adgvcxz.viewModel:recyclerviewmodel:0.7.0'
-        implementation 'com.github.adgvcxz.viewModel:viewpagermodel:0.7.0'
+	    implementation 'com.github.adgvcxz.viewModel:viewmodel:0.7.3'
+        implementation 'com.github.adgvcxz.viewModel:recyclerviewmodel:0.7.3'
+        implementation 'com.github.adgvcxz.viewModel:viewpagermodel:0.7.3'
     }
+
+#### Thanks
+[ReactorKit](https://github.com/ReactorKit/ReactorKit)

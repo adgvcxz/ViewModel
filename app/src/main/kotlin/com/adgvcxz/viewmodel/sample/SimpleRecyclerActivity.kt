@@ -33,9 +33,8 @@ class SimpleRecyclerActivity : BaseActivity<SimpleRecyclerViewModel, RecyclerMod
             add({ refreshLayout.refreshes() }, { Refresh })
         }
 
-        adapter.itemClicks()
-            .filter { viewModel.currentModel().items[it].currentModel() is TextItemViewModel.Model }
-            .map { viewModel.currentModel().items[it].currentModel() as TextItemViewModel.Model }
+        adapter.itemClicks().map { viewModel.currentModel().items[it].currentModel() }
+            .ofType(TextItemViewModel.Model::class.java)
             .subscribe {
                 if (it.id == 0) {
                     val intent = Intent(this, TestActivity::class.java)
