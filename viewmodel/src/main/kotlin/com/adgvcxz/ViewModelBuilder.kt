@@ -16,6 +16,7 @@ class ViewModelBuilder<M> {
     fun build(viewModel: IViewModel<M>): List<Disposable> {
         return items.map { item ->
             viewModel.model.map { item.value.invoke(it) }
+                .distinctUntilChanged()
                 .compose { item.filter?.invoke(it) ?: it }
                 .flatMap {
                     val value = item.map?.invoke(it) ?: it

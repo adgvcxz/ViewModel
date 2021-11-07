@@ -94,9 +94,9 @@ adapter.itemClicks().subscribe()
 	}
 	
 	dependencies {
-	    implementation 'com.github.adgvcxz.viewModel:viewmodel:0.7.3'
-        implementation 'com.github.adgvcxz.viewModel:recyclerviewmodel:0.7.3'
-        implementation 'com.github.adgvcxz.viewModel:viewpagermodel:0.7.3'
+	    implementation 'com.github.adgvcxz.viewModel:viewmodel:0.7.4'
+        implementation 'com.github.adgvcxz.viewModel:recyclerviewmodel:0.7.4'
+        implementation 'com.github.adgvcxz.viewModel:viewpagermodel:0.7.4'
     }
 
 #### Thanks
